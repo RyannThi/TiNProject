@@ -1,11 +1,11 @@
 marisa_player=Class(player_class)
 
 function marisa_player:init(slot)
-	LoadTexture('marisa_player','THlib/player/marisa/marisa.png')
-	LoadTexture('marisa_player2p','THlib/player/marisa/marisa_2p.png')
-	LoadTexture('marisa_spark','THlib/player/marisa/marisa_spark.png')
-	LoadTexture('MarisaLaser','THlib/player/marisa/MarisaLaser.png')
-	LoadImageFromFile('marisa_hit_par','THlib/player/marisa/marisa_hit_par.png')
+	LoadTexture('marisa_player','THlib\\player\\marisa\\marisa.png')
+	LoadTexture('marisa_player2p','THlib\\player\\marisa\\marisa_2p.png')
+	LoadTexture('marisa_spark','THlib\\player\\marisa\\marisa_spark.png')
+	LoadTexture('MarisaLaser','THlib\\player\\marisa\\MarisaLaser.png')
+	LoadImageFromFile('marisa_hit_par','THlib\\player\\marisa\\marisa_hit_par.png')
 	LoadImageGroup('marisa_player','marisa_player',0,0,32,48,8,3,1,1)
 	LoadImageGroup('marisa_player2p','marisa_player2p',0,0,32,48,8,3,1,1)
 	LoadImage('marisa_bullet','marisa_player',0,144,32,16,16,16)
@@ -23,8 +23,8 @@ function marisa_player:init(slot)
 	SetImageState('marisa_spark','mul+add',Color(0xFFFFFFFF))
 	SetImageState('marisa_spark_wave','mul+add',Color(0xFFFFFFFF))
 	SetImageCenter('marisa_spark',0,64)
-	LoadPS('marisa_sp_ef','THlib/player/marisa/marisa_sp_ef.psi','parimg6')
-	LoadPS('marisa_hit','THlib/player/marisa/marisa_hit.psi','marisa_hit_par')
+	LoadPS('marisa_sp_ef','THlib\\player\\marisa\\marisa_sp_ef.psi','parimg6')
+	LoadPS('marisa_hit','THlib\\player\\marisa\\marisa_hit.psi','marisa_hit_par')
 	player_class.init(self)
 	self.name='Marisa'
 	self.imgs={}
@@ -467,5 +467,3 @@ function CreateLaser(x,y,a,w,t,c,offset)
 				{ vx3 + w_y, vy3 - w_x, 0.5, 256 - length, 16, c })
 	end
 end
-
-AddPlayerToPlayerList('Kirisame Marisa','marisa_player','Marisa')

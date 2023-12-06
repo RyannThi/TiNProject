@@ -1,0 +1,17 @@
+{
+	"hiscore": {
+		"SpellCard@SpellCard@reimu_player": 6920
+	},
+	"spell_card_hist": {
+		"All": {
+			"「f」": {
+				"reimu_player": [
+					0,
+					2
+				]
+			}
+		}
+	},
+	"player_select": 1,
+	"difficulty_select": 2
+}

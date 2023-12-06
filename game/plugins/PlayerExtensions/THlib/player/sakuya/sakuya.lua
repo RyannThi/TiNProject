@@ -1,8 +1,8 @@
 sakuya_player=Class(player_class)
 
 function sakuya_player:init(slot)
-	LoadTexture('sakuya_player','THlib/player/sakuya/sakuya.png')
-	LoadTexture('sakuya_player2p','THlib/player/sakuya/sakuya_2p.png')
+	LoadTexture('sakuya_player','THlib\\player\\sakuya\\sakuya.png')
+	LoadTexture('sakuya_player2p','THlib\\player\\sakuya\\sakuya_2p.png')
 	LoadImageGroup('sakuya_player','sakuya_player',0,0,32,48,8,3,1,1)
 	LoadImageGroup('sakuya_player2p','sakuya_player2p',0,0,32,48,8,3,1,1)
 	LoadImageGroup('sakuya_support','sakuya_player',128,144,16,16,8,2)
@@ -12,14 +12,14 @@ function sakuya_player:init(slot)
 	LoadAnimation('sakuya_knife_blue_ef','sakuya_player',32,160,32,16,3,1,4)
 	LoadImage('sakuya_knife_green','sakuya_player',0,176,32,16,16,16)
 	LoadAnimation('sakuya_knife_green_ef','sakuya_player',32,176,32,16,3,1,4)
-	LoadImageFromFile('sakuya_white','THlib/player/sakuya/sakuya_white.png')
+	LoadImageFromFile('sakuya_white','THlib\\player\\sakuya\\sakuya_white.png')
 	
 	LoadImage('sakuya_bigknife_red','sakuya_player',0,192,64,16,16,16)
 	LoadImage('sakuya_bigknife_green','sakuya_player',128,192,64,16,16,16)
 	LoadAnimation('sakuya_bigknife_red_ef','sakuya_player',0,144,32,16,4,1,4)
 	LoadAnimation('sakuya_bigknife_green_ef','sakuya_player',0,176,32,16,4,1,4)
 	
-	LoadPS('sakuya_blood','THlib/player/sakuya/sakuya_blood.psi','parimg1')
+	LoadPS('sakuya_blood','THlib\\player\\sakuya\\sakuya_blood.psi','parimg1')
 	
 	SetImageState('sakuya_white','mul+sub',Color(0xFFFFFFFF))
 	SetImageState('sakuya_knife_red','',Color(0xA0FFFFFF))
@@ -28,7 +28,7 @@ function sakuya_player:init(slot)
 	
 	SetImageState('sakuya_bigknife_red','',Color(0xA0FFFFFF))
 	
-	LoadSound('sakuya_tick','THlib/player/sakuya/sakuya_tick.wav')
+	LoadSound('sakuya_tick','THlib\\player\\sakuya\\sakuya_tick.wav')
 	
 	player_class.init(self)
 	
@@ -298,5 +298,3 @@ function sakuya_bombdamage:frame()
 	player_bullet_hide.frame(self)
 	if self.timer>=self.delay then Del(self) end
 end
-
-AddPlayerToPlayerList('Izayoi Sakuya','sakuya_player','Sakuya')

@@ -1,10 +1,10 @@
 reimu_player=Class(player_class)
 
 function reimu_player:init(slot)
-	LoadTexture('reimu_player','THlib/player/reimu/reimu.png')
-	LoadTexture('reimu_player2p','THlib/player/reimu/reimu_2p.png')
-	LoadTexture('reimu_kekkai','THlib/player/reimu/reimu_kekkai.png')
-	LoadTexture('reimu_orange_ef2','THlib/player/reimu/reimu_orange_eff.png')
+	LoadTexture('reimu_player','THlib\\player\\reimu\\reimu.png')
+	LoadTexture('reimu_player2p','THlib\\player\\reimu\\reimu_2p.png')
+	LoadTexture('reimu_kekkai','THlib\\player\\reimu\\reimu_kekkai.png')
+	LoadTexture('reimu_orange_ef2','THlib\\player\\reimu\\reimu_orange_eff.png')
 	-----------------------------------------
 	LoadImageGroup('reimu_player','reimu_player',0,0,32,48,8,3,0.5,0.5)
 	LoadImageGroup('reimu_player2p','reimu_player2p',0,0,32,48,8,3,0.5,0.5)
@@ -32,11 +32,11 @@ function reimu_player:init(slot)
 	SetAnimationState('reimu_bullet_orange_ef2','mul+add',Color(255,255,155,155))
 	-----------------------------------------
 	LoadImage('reimu_support','reimu_player',64,144,16,16)
-	LoadImageFromFile('reimu_bomb_ef','THlib/player/reimu/reimu_bomb_ef.png')
+	LoadImageFromFile('reimu_bomb_ef','THlib\\player\\reimu\\reimu_bomb_ef.png')
 	LoadImage('reimu_kekkai','reimu_kekkai',0,0,256,256,0,0)
 	SetImageState('reimu_kekkai','mul+add',Color(0x804040FF))
-	LoadPS('reimu_bullet_ef','THlib/player/reimu/reimu_bullet_ef.psi','reimu_bullet_ef_img')
-	LoadPS('reimu_sp_ef','THlib/player/reimu/reimu_sp_ef.psi','parimg1',16,16)
+	LoadPS('reimu_bullet_ef','THlib\\player\\reimu\\reimu_bullet_ef.psi','reimu_bullet_ef_img')
+	LoadPS('reimu_sp_ef','THlib\\player\\reimu\\reimu_sp_ef.psi','parimg1',16,16)
 	-----------------------------------------
 	player_class.init(self)
 	self.name='Reimu'
@@ -424,5 +424,3 @@ function reimu_kekkai:render()
 		Render('reimu_kekkai',self.x,self.y,self.list[i].rot,self.list[i].scale)
 	end
 end
-
-AddPlayerToPlayerList('Hakurei Reimu','reimu_player','Reimu')
