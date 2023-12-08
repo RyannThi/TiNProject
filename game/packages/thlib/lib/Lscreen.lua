@@ -25,7 +25,7 @@ screen = {}
 function ResetScreen(no_reset_world)
     -- 根据横纵比选择坐标系
     if setting.resx > setting.resy then
-        screen.width = 640
+        screen.width = 854
         screen.height = 480
     else
         -- 大概只用于启动器，目前还没有做竖版的
