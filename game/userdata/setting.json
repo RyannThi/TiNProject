@@ -1,10 +1,20 @@
 {
-	"last_mod": "launcher",
-	"sevolume": 100,
-	"windowed": true,
 	"resx": 854,
 	"resy": 480,
 	"vsync": false,
+	"sevolume": 100,
+	"bgmvolume": 100,
+	"mod": "launcher",
+	"keys2": {
+		"left": 97,
+		"right": 99,
+		"slow": 65,
+		"shoot": 83,
+		"spell": 68,
+		"special": 70,
+		"up": 101,
+		"down": 98
+	},
 	"keysys": {
 		"repfast": 17,
 		"repslow": 16,
@@ -13,28 +23,18 @@
 		"retry": 82
 	},
 	"username": "User9",
-	"mod": "launcher",
 	"locale": "en_us",
-	"keys2": {
-		"down": 98,
-		"left": 97,
-		"right": 99,
-		"slow": 65,
-		"shoot": 83,
-		"spell": 68,
-		"special": 70,
-		"up": 101
-	},
 	"timezone": 8,
 	"keys": {
-		"down": 40,
 		"left": 37,
 		"right": 39,
 		"slow": 16,
 		"shoot": 90,
 		"spell": 88,
 		"special": 67,
-		"up": 38
+		"up": 38,
+		"down": 40
 	},
-	"bgmvolume": 100
+	"last_mod": "launcher",
+	"windowed": true
 }
