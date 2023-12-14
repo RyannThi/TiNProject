@@ -97,6 +97,8 @@ _LoadImageFromFile('image:'..'MainMenuGradient','TITLE\\MainMenuGradient.png',tr
 _LoadImageFromFile('image:'..'MainMenuCopyright','TITLE\\MainMenuCopyright.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'MainMenuRGB','TITLE\\MainMenuRGB.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'MainMenuDifficultyHeader','TITLE\\MainMenuDifficultyHeader.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'MainMenuDifficultyShadow','TITLE\\MainMenuDifficultyShadow.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'MainMenuDifficultyHalo','TITLE\\MainMenuDifficultyHalo.png',true,0,0,false,0)
 -- archive space: 
 _editor_class["MainMenuBG"]=Class(_object)
 _editor_class["MainMenuBG"].init=function(self,_x,_y,_)
@@ -263,9 +265,8 @@ _editor_class["MainMenuMain"].frame=function(self)
     		"image:MainMenuSelections_" .. self.index,
     		self.selections[self.index].scale - 0.7)
     		
-    		if self.index == 1 then
-    			self.canvasIndex = 1
-    		elseif self.index == 8 then
+    		self.canvasIndex = self.index
+    		if self.index == 8 then
     			stage.QuitGame()
     		end
     	end
@@ -275,8 +276,15 @@ _editor_class["MainMenuMain"].frame=function(self)
     self.shadowPos.y = LerpDecel(self.shadowPos.y, 350 - (33 * self.index), 0.1)
     self.spinWheelRot = self.spinWheelRot + self.spinWheelAdd + self.spinWheelStaticAdd
     
-    for i = 1, 4 do
-    	self.shadowRGB[i] = LerpDecel(self.shadowRGB[i], self.selections[self.index].color[i], 0.05)
+    if self.canvasIndex == 0 then
+    	for i = 1, 4 do
+    		self.shadowRGB[i] = LerpDecel(self.shadowRGB[i], self.selections[self.index].color[i], 0.05)
+    	end
+    else
+    	self.shadowRGB[1] = LerpDecel(self.shadowRGB[1], 0, 0.05)
+    	for i = 2, 4 do
+    		self.shadowRGB[i] = LerpDecel(self.shadowRGB[i], self.selections[self.index].color[i], 0.05)
+    	end
     end
     
     self.spinWheelStaticDelay = self.spinWheelStaticDelay - 1
@@ -294,8 +302,26 @@ _editor_class["MainMenuMain"].frame=function(self)
     if self.canvasIndex == 0 then
     	self.canvasX = LerpDecel(self.canvasX, 0, 0.05)
     	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
-    else
+    elseif self.canvasIndex == 1 then
     	self.canvasX = LerpDecel(self.canvasX, -854, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
+    elseif self.canvasIndex == 2 then
+    	self.canvasX = LerpDecel(self.canvasX, -854, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 480, 0.05)
+    elseif self.canvasIndex == 3 then
+    	self.canvasX = LerpDecel(self.canvasX, -854, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, -480, 0.05)
+    elseif self.canvasIndex == 4 then
+    	self.canvasX = LerpDecel(self.canvasX, 854, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
+    elseif self.canvasIndex == 5 then
+    	self.canvasX = LerpDecel(self.canvasX, 0, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, -480, 0.05)
+    elseif self.canvasIndex == 6 then
+    	self.canvasX = LerpDecel(self.canvasX, 0, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 480, 0.05)
+    else
+    	self.canvasX = LerpDecel(self.canvasX, 0, 0.05)
     	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
     end
     
@@ -438,6 +464,26 @@ _editor_class["MainMenuDifficulty"].init=function(self,_x,_y,_)
     self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
     self.canvasX = 854
     self.canvasY = 0
+    self.shadowRot = 0
+    self.shadowCol = {255, 255, 255, 255}
+    self.shadowColTarget = {
+    	{ 190, 21, 61, 36 },
+    	{ 190, 21, 35, 61 },
+    	{ 190, 61, 24, 21 },
+    	{ 190, 55, 21, 61 }
+    }
+    self.index = 1
+    self.shadowRotAdd = 0
+    lasttask=task.New(self,function()
+        do
+            local _h_angleAdd=(5-(-5))/2 local _t_angleAdd=(5+(-5))/2 local angleAdd=_h_angleAdd*sin(0)+_t_angleAdd local _w_angleAdd=0 local _d_w_angleAdd=1.5
+            for _=1,_infinite do
+                self.shadowRotAdd = angleAdd
+                task._Wait(1)
+                _w_angleAdd=_w_angleAdd+_d_w_angleAdd angleAdd=_h_angleAdd*sin(_w_angleAdd)+_t_angleAdd
+            end
+        end
+    end)
 end
 _editor_class["MainMenuDifficulty"].frame=function(self)
     if MainMenuRef.canvasIndex == 1 then
@@ -453,13 +499,49 @@ _editor_class["MainMenuDifficulty"].frame=function(self)
     		PlaySound("cancel00",0.1,self.x/256,false)
     		MainMenuRef.canvasIndex = 0
     	end
+    	
+    	if is_up_held then
+    		self.index = Wrap(self.index - 1, 1, 5)
+    		PlaySound("select00",0.1,0,false)
+    	end
+    	
+    	if is_down_held then
+    		self.index = Wrap(self.index + 1, 1, 5)
+    		PlaySound("select00",0.1,0,false)
+    	end
+    end
+    
+    if self.index == 1 then
+    	self.shadowRot = LerpDecel(self.shadowRot, -5, 0.1)
+    	for i = 1, 4 do
+    		self.shadowCol[i] = LerpDecel(self.shadowCol[i], self.shadowColTarget[self.index][i], 0.1)
+    	end
+    elseif self.index == 2 then
+    	self.shadowRot = LerpDecel(self.shadowRot, -10, 0.1)
+    	for i = 1, 4 do
+    		self.shadowCol[i] = LerpDecel(self.shadowCol[i], self.shadowColTarget[self.index][i], 0.1)
+    	end
+    elseif self.index == 3 then
+    	self.shadowRot = LerpDecel(self.shadowRot, -15, 0.1)
+    	for i = 1, 4 do
+    		self.shadowCol[i] = LerpDecel(self.shadowCol[i], self.shadowColTarget[self.index][i], 0.1)
+    	end
+    elseif self.index == 4 then
+    	self.shadowRot = LerpDecel(self.shadowRot, -20, 0.1)
+    	for i = 1, 4 do
+    		self.shadowCol[i] = LerpDecel(self.shadowCol[i], self.shadowColTarget[self.index][i], 0.1)
+    	end
     end
     self.class.base.frame(self)
 end
 _editor_class["MainMenuDifficulty"].render=function(self)
     SetViewMode'ui'
     self.class.base.render(self)
+    SetImageState("image:MainMenuDifficultyHalo","",Color(self.shadowCol[1],self.shadowCol[2],self.shadowCol[3],self.shadowCol[4]))
+    Render("image:MainMenuDifficultyHalo",screen.width/2 + self.canvasX, screen.height/2 + self.canvasY,0,1/2.25,1/2.25,0.5)
     Render("image:MainMenuDifficultyHeader",screen.width / 2 + self.canvasX, 400 + MainMenuRef.yOffset + self.canvasY,0,1/2.25 - 0.2,1/2.25 - 0.2,0.5)
+    SetImageState("image:MainMenuDifficultyShadow","",Color(self.shadowCol[1],self.shadowCol[2],self.shadowCol[3],self.shadowCol[4]))
+    Render("image:MainMenuDifficultyShadow",screen.width/2 + self.canvasX, screen.height/2 - 20 + self.canvasY + MainMenuRef.yOffset,self.shadowRot + self.shadowRotAdd,1/2.25 - 0.2, 1/2.25 - 0.2,0.5)
     SetViewMode'world'
 end
 _editor_class["MainMenuSelectionsPopup"]=Class(_object)
@@ -499,6 +581,11 @@ _editor_class["MainMenuSelectionsPopup"].init=function(self,_x,_y,img, scale)
         end
         _del(self,true)
     end)
+end
+_editor_class["MainMenuSelectionsPopup"].render=function(self)
+    SetViewMode'ui'
+    self.class.base.render(self)
+    SetViewMode'world'
 end
 -- Loading Screen
     stage_load = stage.New("load", true, true)
