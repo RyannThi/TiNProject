@@ -155,6 +155,7 @@ _editor_class["MainMenuMain"].init=function(self,_x,_y,_)
     self.canvasX = 0
     self.canvasY = 0
     self.canvasIndex = 0
+    self.interactDelay = 0
     
     self.selections = {
     	{ alpha = 255, scale = 1, color = {255, 158+20, 195+20, 255} },
@@ -168,6 +169,7 @@ _editor_class["MainMenuMain"].init=function(self,_x,_y,_)
     }
     _object.set_color(self,"",255,255,255,255)
     last=New(_editor_class["MainMenuDifficulty"],self.x,self.y,_)
+    last=New(_editor_class["MainMenuPlayer"],self.x,self.y,_)
     last=New(_editor_class["MainMenuHaraeAnim"],self.x,self.y,_)
     lasttask=task.New(self,function()
         do
@@ -259,6 +261,7 @@ _editor_class["MainMenuMain"].frame=function(self)
     	end
     	
     	if KeyIsPressed"shoot" and self.timer >= 60*2.5 and self.canvasIndex == 0 then
+    		self.interactDelay = 5
     		PlaySound("ok00",0.1,self.x/256,false)
     		New(_editor_class["MainMenuSelectionsPopup"],
     		185 + self.canvasX,
@@ -321,6 +324,9 @@ _editor_class["MainMenuMain"].frame=function(self)
     elseif self.canvasIndex == 6 then
     	self.canvasX = LerpDecel(self.canvasX, 0, 0.05)
     	self.canvasY = LerpDecel(self.canvasY, 480, 0.05)
+    elseif self.canvasIndex == 9 then
+    	self.canvasX = LerpDecel(self.canvasX, -854, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
     else
     	self.canvasX = LerpDecel(self.canvasX, 0, 0.05)
     	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
@@ -328,6 +334,9 @@ _editor_class["MainMenuMain"].frame=function(self)
     
     self.imgx = self.imgx + 0.2
     self.imgy = self.imgy + 0.2
+    if self.interactDelay > 0 then
+    	self.interactDelay = self.interactDelay - 1
+    end
     self.class.base.frame(self)
 end
 _editor_class["MainMenuMain"].render=function(self)
@@ -357,6 +366,7 @@ _editor_class["MainMenuMain"].render=function(self)
     SetImageState("white","",Color(self.fadeIn,0,0,0))
     Render("white",screen.width / 2, screen.height / 2,0,854,480,0.5)
     SetImageState("white","",Color(255,255,255,255))
+    lstg.RenderText("menu",self.canvasIndex,600, 20,0.4,4)
     SetViewMode'ui'
 end
 _editor_class["MainMenuHaraeAnim"]=Class(_object)
@@ -482,6 +492,7 @@ _editor_class["MainMenuDifficulty"].init=function(self,_x,_y,_)
     	{x = 0, y = 0, scale = 1, alpha = 255},
     }
     self.masterAlpha = 255
+    self.altPos = false
     lasttask=task.New(self,function()
         do
             local _h_angleAdd=(5-(-5))/2 local _t_angleAdd=(5+(-5))/2 local angleAdd=_h_angleAdd*sin(0)+_t_angleAdd local _w_angleAdd=0 local _d_w_angleAdd=1.5
@@ -497,21 +508,26 @@ _editor_class["MainMenuDifficulty"].frame=function(self)
     if MainMenuRef.canvasIndex == 1 then
     	self.canvasX = LerpDecel(self.canvasX, 0, 0.05)
     	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
+    elseif self.altPos == true then
+    	self.canvasX = LerpDecel(self.canvasX, -854, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
     else
     	self.canvasX = LerpDecel(self.canvasX, 854, 0.05)
     	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
     end
     
     if MainMenuRef.canvasIndex == 1 then
-    	if KeyIsPressed"shoot" then
+    	if KeyIsPressed"shoot" and MainMenuRef.interactDelay == 0 then
     		PlaySound("ok00",0.1,self.x/256,false)
     		lstg.var.difficulty = self.index
-    		MainMenuRef.canvasIndex = 2
+    		MainMenuRef.canvasIndex = 9
+    		self.altPos = true
     	end
     
     	if KeyIsPressed"spell" then
     		PlaySound("cancel00",0.1,self.x/256,false)
     		MainMenuRef.canvasIndex = 0
+    		self.altPos = false
     	end
     	
     	if is_up_held then
@@ -670,22 +686,22 @@ _editor_class["MainMenuPlayer"].init=function(self,_x,_y,_)
     self.canvasY = 0
 end
 _editor_class["MainMenuPlayer"].frame=function(self)
-    if MainMenuRef.canvasIndex == 2 then
+    if MainMenuRef.canvasIndex == 9 then
     	if KeyIsPressed"spell" then
     		PlaySound("cancel00",0.1,self.x/256,false)
     		MainMenuRef.canvasIndex = 1	
     	end
     end
     
-    if MainMenuRef.canvasIndex == 2 then
-    	self.canvasX = 0
-    	self.canvasY = 0
+    if MainMenuRef.canvasIndex == 9 then
+    	self.canvasX = LerpDecel(self.canvasX, 0, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
     elseif MainMenuRef.canvasIndex == 1 then
-    	self.canvasX = 854
-    	self.canvasY = 0
+    	self.canvasX = LerpDecel(self.canvasX, 854, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
     else
-    	self.canvasX = 854*2
-    	self.canvasY = 0
+    	self.canvasX = LerpDecel(self.canvasX, 854*2, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
     end
     self.class.base.frame(self)
 end
