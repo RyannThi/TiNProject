@@ -1,4 +1,4 @@
-﻿-- Update Log（January 1st, 2033）
+﻿-- Update Log（January 1st, 2023）
 
 v0.74.3:
 -Fixed defined items crashing the game
