@@ -503,6 +503,12 @@ _editor_class["MainMenuDifficulty"].frame=function(self)
     end
     
     if MainMenuRef.canvasIndex == 1 then
+    	if KeyIsPressed"shoot" then
+    		PlaySound("ok00",0.1,self.x/256,false)
+    		lstg.var.difficulty = self.index
+    		MainMenuRef.canvasIndex = 2
+    	end
+    
     	if KeyIsPressed"spell" then
     		PlaySound("cancel00",0.1,self.x/256,false)
     		MainMenuRef.canvasIndex = 0
@@ -644,6 +650,49 @@ _editor_class["MainMenuDifficulty"].render=function(self)
         SetImageState("image:MainMenuDifficultyLabels" .. _,"",Color(self.labels[_].alpha - self.masterAlpha,255,255,255))
         Render("image:MainMenuDifficultyLabels" .. _,self.labels[_].x + self.canvasX, self.labels[_].y + self.canvasY + MainMenuRef.yOffset,0,1/2.25 * self.labels[_].scale, 1/2.25 * self.labels[_].scale,0.5)
     end
+    SetViewMode'world'
+end
+_editor_class["MainMenuPlayer"]=Class(_object)
+_editor_class["MainMenuPlayer"].init=function(self,_x,_y,_)
+    self.x,self.y=_x,_y
+    self.img="img_void"
+    self.layer=LAYER_TOP
+    self.group=GROUP_GHOST
+    self.hide=false
+    self.bound=false
+    self.navi=false
+    self.hp=10
+    self.maxhp=10
+    self.colli=false
+    self._servants={}
+    self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
+    self.canvasX = 854 * 2
+    self.canvasY = 0
+end
+_editor_class["MainMenuPlayer"].frame=function(self)
+    if MainMenuRef.canvasIndex == 2 then
+    	if KeyIsPressed"spell" then
+    		PlaySound("cancel00",0.1,self.x/256,false)
+    		MainMenuRef.canvasIndex = 1	
+    	end
+    end
+    
+    if MainMenuRef.canvasIndex == 2 then
+    	self.canvasX = 0
+    	self.canvasY = 0
+    elseif MainMenuRef.canvasIndex == 1 then
+    	self.canvasX = 854
+    	self.canvasY = 0
+    else
+    	self.canvasX = 854*2
+    	self.canvasY = 0
+    end
+    self.class.base.frame(self)
+end
+_editor_class["MainMenuPlayer"].render=function(self)
+    SetViewMode'ui'
+    self.class.base.render(self)
+    Render("image:MainMenuDifficultyHeader",screen.width / 2 + self.canvasX, 400 + MainMenuRef.yOffset + self.canvasY,0,1/2.25 - 0.2,1/2.25 - 0.2,0.5)
     SetViewMode'world'
 end
 _editor_class["MainMenuSelectionsPopup"]=Class(_object)
