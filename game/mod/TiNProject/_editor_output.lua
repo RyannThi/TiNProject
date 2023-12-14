@@ -481,6 +481,7 @@ _editor_class["MainMenuDifficulty"].init=function(self,_x,_y,_)
     	{x = 0, y = 0, scale = 1, alpha = 255},
     	{x = 0, y = 0, scale = 1, alpha = 255},
     }
+    self.masterAlpha = 255
     lasttask=task.New(self,function()
         do
             local _h_angleAdd=(5-(-5))/2 local _t_angleAdd=(5+(-5))/2 local angleAdd=_h_angleAdd*sin(0)+_t_angleAdd local _w_angleAdd=0 local _d_w_angleAdd=1.5
@@ -539,6 +540,13 @@ _editor_class["MainMenuDifficulty"].frame=function(self)
     		self.shadowCol[i] = LerpDecel(self.shadowCol[i], self.shadowColTarget[self.index][i], 0.1)
     	end
     end
+    
+    if MainMenuRef.canvasIndex ~= 1 then
+    	self.masterAlpha = LerpDecel(self.masterAlpha, 255, 0.1)
+    else
+    	self.masterAlpha = LerpDecel(self.masterAlpha, 0, 0.1)
+    end
+    	
     
     if self.index == 1 then
     	self.labels[1].x = LerpDecel(self.labels[1].x, screen.width/2, 0.1)
@@ -633,7 +641,7 @@ _editor_class["MainMenuDifficulty"].render=function(self)
     SetImageState("image:MainMenuDifficultyShadow","",Color(self.shadowCol[1],self.shadowCol[2],self.shadowCol[3],self.shadowCol[4]))
     Render("image:MainMenuDifficultyShadow",screen.width/2 + self.canvasX, screen.height/2 - 20 + self.canvasY + MainMenuRef.yOffset,self.shadowRot + self.shadowRotAdd,1/2.25 - 0.2, 1/2.25 - 0.2,0.5)
     for _=1,4 do
-        SetImageState("image:MainMenuDifficultyLabels" .. _,"",Color(self.labels[_].alpha,255,255,255))
+        SetImageState("image:MainMenuDifficultyLabels" .. _,"",Color(self.labels[_].alpha - self.masterAlpha,255,255,255))
         Render("image:MainMenuDifficultyLabels" .. _,self.labels[_].x + self.canvasX, self.labels[_].y + self.canvasY + MainMenuRef.yOffset,0,1/2.25 * self.labels[_].scale, 1/2.25 * self.labels[_].scale,0.5)
     end
     SetViewMode'world'
