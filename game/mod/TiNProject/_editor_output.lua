@@ -99,6 +99,7 @@ _LoadImageFromFile('image:'..'MainMenuRGB','TITLE\\MainMenuRGB.png',true,0,0,fal
 _LoadImageFromFile('image:'..'MainMenuDifficultyHeader','TITLE\\MainMenuDifficultyHeader.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'MainMenuDifficultyShadow','TITLE\\MainMenuDifficultyShadow.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'MainMenuDifficultyHalo','TITLE\\MainMenuDifficultyHalo.png',true,0,0,false,0)
+_LoadImageGroupFromFile('image:'..'MainMenuDifficultyLabels','TITLE\\MainMenuDifficultyLabels.png',true,1,4,0,0,false)
 -- archive space: 
 _editor_class["MainMenuBG"]=Class(_object)
 _editor_class["MainMenuBG"].init=function(self,_x,_y,_)
@@ -474,6 +475,12 @@ _editor_class["MainMenuDifficulty"].init=function(self,_x,_y,_)
     }
     self.index = 1
     self.shadowRotAdd = 0
+    self.labels = {
+    	{x = 0, y = 0, scale = 1, alpha = 255},
+    	{x = 0, y = 0, scale = 1, alpha = 255},
+    	{x = 0, y = 0, scale = 1, alpha = 255},
+    	{x = 0, y = 0, scale = 1, alpha = 255},
+    }
     lasttask=task.New(self,function()
         do
             local _h_angleAdd=(5-(-5))/2 local _t_angleAdd=(5+(-5))/2 local angleAdd=_h_angleAdd*sin(0)+_t_angleAdd local _w_angleAdd=0 local _d_w_angleAdd=1.5
@@ -532,6 +539,89 @@ _editor_class["MainMenuDifficulty"].frame=function(self)
     		self.shadowCol[i] = LerpDecel(self.shadowCol[i], self.shadowColTarget[self.index][i], 0.1)
     	end
     end
+    
+    if self.index == 1 then
+    	self.labels[1].x = LerpDecel(self.labels[1].x, screen.width/2, 0.1)
+    	self.labels[1].y = LerpDecel(self.labels[1].y, screen.height/2 - 20, 0.1)
+    	self.labels[1].scale = LerpDecel(self.labels[1].scale, 0.8, 0.1)
+    	self.labels[1].alpha = LerpDecel(self.labels[1].alpha, 255, 0.1)
+    	--
+    	self.labels[2].x = LerpDecel(self.labels[2].x, screen.width/2 + 150, 0.1)
+    	self.labels[2].y = LerpDecel(self.labels[2].y, screen.height/2 - 20 - 150, 0.1)
+    	self.labels[2].scale = LerpDecel(self.labels[2].scale, 0.4, 0.1)
+    	self.labels[2].alpha = LerpDecel(self.labels[2].alpha, 155, 0.1)
+    	
+    	self.labels[3].x = LerpDecel(self.labels[3].x, screen.width/2 + 150*2, 0.1)
+    	self.labels[3].y = LerpDecel(self.labels[3].y, screen.height/2 - 20 - 150*2, 0.1)
+    	self.labels[3].scale = LerpDecel(self.labels[3].scale, 0.4, 0.1)
+    	self.labels[3].alpha = LerpDecel(self.labels[3].alpha, 155, 0.1)
+    	
+    	self.labels[4].x = LerpDecel(self.labels[4].x, screen.width/2 + 150*3, 0.1)
+    	self.labels[4].y = LerpDecel(self.labels[4].y, screen.height/2 - 20 - 150*3, 0.1)
+    	self.labels[4].scale = LerpDecel(self.labels[4].scale, 0.4, 0.1)
+    	self.labels[4].alpha = LerpDecel(self.labels[4].alpha, 155, 0.1)
+    	
+    elseif self.index == 2 then
+    	self.labels[1].x = LerpDecel(self.labels[1].x, screen.width/2 - 150, 0.1)
+    	self.labels[1].y = LerpDecel(self.labels[1].y, screen.height/2 - 20 + 150, 0.1)
+    	self.labels[1].scale = LerpDecel(self.labels[1].scale, 0.4, 0.1)
+    	self.labels[1].alpha = LerpDecel(self.labels[1].alpha, 155, 0.1)
+    	--
+    	self.labels[2].x = LerpDecel(self.labels[2].x, screen.width/2, 0.1)
+    	self.labels[2].y = LerpDecel(self.labels[2].y, screen.height/2 - 20, 0.1)
+    	self.labels[2].scale = LerpDecel(self.labels[2].scale, 0.8, 0.1)
+    	self.labels[2].alpha = LerpDecel(self.labels[2].alpha, 255, 0.1)
+    	--
+    	self.labels[3].x = LerpDecel(self.labels[3].x, screen.width/2 + 150, 0.1)
+    	self.labels[3].y = LerpDecel(self.labels[3].y, screen.height/2 - 20 - 150, 0.1)
+    	self.labels[3].scale = LerpDecel(self.labels[3].scale, 0.4, 0.1)
+    	self.labels[3].alpha = LerpDecel(self.labels[3].alpha, 155, 0.1)
+    	
+    	self.labels[4].x = LerpDecel(self.labels[4].x, screen.width/2 + 150*2, 0.1)
+    	self.labels[4].y = LerpDecel(self.labels[4].y, screen.height/2 - 20 - 150*2, 0.1)
+    	self.labels[4].scale = LerpDecel(self.labels[4].scale, 0.4, 0.1)
+    	self.labels[4].alpha = LerpDecel(self.labels[4].alpha, 155, 0.1)
+    elseif self.index == 3 then
+    	self.labels[1].x = LerpDecel(self.labels[1].x, screen.width/2 - 150*2, 0.1)
+    	self.labels[1].y = LerpDecel(self.labels[1].y, screen.height/2 - 20 + 150*2, 0.1)
+    	self.labels[1].scale = LerpDecel(self.labels[1].scale, 0.4, 0.1)
+    	self.labels[1].alpha = LerpDecel(self.labels[1].alpha, 155, 0.1)
+    	
+    	self.labels[2].x = LerpDecel(self.labels[2].x, screen.width/2 - 150, 0.1)
+    	self.labels[2].y = LerpDecel(self.labels[2].y, screen.height/2 - 20 + 150, 0.1)
+    	self.labels[2].scale = LerpDecel(self.labels[2].scale, 0.4, 0.1)
+    	self.labels[2].alpha = LerpDecel(self.labels[2].alpha, 155, 0.1)
+    	--
+    	self.labels[3].x = LerpDecel(self.labels[3].x, screen.width/2, 0.1)
+    	self.labels[3].y = LerpDecel(self.labels[3].y, screen.height/2 - 20, 0.1)
+    	self.labels[3].scale = LerpDecel(self.labels[3].scale, 0.8, 0.1)
+    	self.labels[3].alpha = LerpDecel(self.labels[3].alpha, 255, 0.1)
+    	--
+    	self.labels[4].x = LerpDecel(self.labels[4].x, screen.width/2 + 150, 0.1)
+    	self.labels[4].y = LerpDecel(self.labels[4].y, screen.height/2 - 20 - 150, 0.1)
+    	self.labels[4].scale = LerpDecel(self.labels[4].scale, 0.4, 0.1)
+    	self.labels[4].alpha = LerpDecel(self.labels[4].alpha, 155, 0.1)
+    else
+    	self.labels[1].x = LerpDecel(self.labels[1].x, screen.width/2 - 150*3, 0.1)
+    	self.labels[1].y = LerpDecel(self.labels[1].y, screen.height/2 - 20 + 150*3, 0.1)
+    	self.labels[1].scale = LerpDecel(self.labels[1].scale, 0.4, 0.1)
+    	self.labels[1].alpha = LerpDecel(self.labels[1].alpha, 155, 0.1)
+    	
+    	self.labels[2].x = LerpDecel(self.labels[2].x, screen.width/2 - 150*2, 0.1)
+    	self.labels[2].y = LerpDecel(self.labels[2].y, screen.height/2 - 20 + 150*2, 0.1)
+    	self.labels[2].scale = LerpDecel(self.labels[2].scale, 0.4, 0.1)
+    	self.labels[2].alpha = LerpDecel(self.labels[2].alpha, 155, 0.1)
+    	
+    	self.labels[3].x = LerpDecel(self.labels[3].x, screen.width/2 - 150, 0.1)
+    	self.labels[3].y = LerpDecel(self.labels[3].y, screen.height/2 - 20 + 150, 0.1)
+    	self.labels[3].scale = LerpDecel(self.labels[3].scale, 0.4, 0.1)
+    	self.labels[3].alpha = LerpDecel(self.labels[3].alpha, 155, 0.1)
+    	--
+    	self.labels[4].x = LerpDecel(self.labels[4].x, screen.width/2, 0.1)
+    	self.labels[4].y = LerpDecel(self.labels[4].y, screen.height/2 - 20, 0.1)
+    	self.labels[4].scale = LerpDecel(self.labels[4].scale, 0.8, 0.1)
+    	self.labels[4].alpha = LerpDecel(self.labels[4].alpha, 255, 0.1)
+    end
     self.class.base.frame(self)
 end
 _editor_class["MainMenuDifficulty"].render=function(self)
@@ -542,6 +632,10 @@ _editor_class["MainMenuDifficulty"].render=function(self)
     Render("image:MainMenuDifficultyHeader",screen.width / 2 + self.canvasX, 400 + MainMenuRef.yOffset + self.canvasY,0,1/2.25 - 0.2,1/2.25 - 0.2,0.5)
     SetImageState("image:MainMenuDifficultyShadow","",Color(self.shadowCol[1],self.shadowCol[2],self.shadowCol[3],self.shadowCol[4]))
     Render("image:MainMenuDifficultyShadow",screen.width/2 + self.canvasX, screen.height/2 - 20 + self.canvasY + MainMenuRef.yOffset,self.shadowRot + self.shadowRotAdd,1/2.25 - 0.2, 1/2.25 - 0.2,0.5)
+    for _=1,4 do
+        SetImageState("image:MainMenuDifficultyLabels" .. _,"",Color(self.labels[_].alpha,255,255,255))
+        Render("image:MainMenuDifficultyLabels" .. _,self.labels[_].x + self.canvasX, self.labels[_].y + self.canvasY + MainMenuRef.yOffset,0,1/2.25 * self.labels[_].scale, 1/2.25 * self.labels[_].scale,0.5)
+    end
     SetViewMode'world'
 end
 _editor_class["MainMenuSelectionsPopup"]=Class(_object)
