@@ -100,7 +100,7 @@ _LoadImageFromFile('image:'..'MainMenuDifficultyHeader','TITLE\\MainMenuDifficul
 _LoadImageFromFile('image:'..'MainMenuDifficultyShadow','TITLE\\MainMenuDifficultyShadow.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'MainMenuDifficultyHalo','TITLE\\MainMenuDifficultyHalo.png',true,0,0,false,0)
 _LoadImageGroupFromFile('image:'..'MainMenuDifficultyLabels','TITLE\\MainMenuDifficultyLabels.png',true,1,4,0,0,false)
-_LoadImageGroupFromFile('image:'..'MainMenuPlayerBanners_','TITLE\\MainMenuPlayerBanners_.png',true,5,1,0,0,false)
+_LoadImageGroupFromFile('image:'..'MainMenuPlayerBanners_','TITLE\\MainMenuPlayerBanners_.png',false,5,1,0,0,false)
 -- archive space: 
 _editor_class["MainMenuBG"]=Class(_object)
 _editor_class["MainMenuBG"].init=function(self,_x,_y,_)
@@ -523,6 +523,11 @@ _editor_class["MainMenuDifficulty"].frame=function(self)
     		lstg.var.difficulty = self.index
     		MainMenuRef.canvasIndex = 9
     		self.altPos = true
+    		New(_editor_class["MainMenuDifficultyPopup"],
+    		self.labels[self.index].x + self.canvasX, 
+    		self.labels[self.index].y + self.canvasY + MainMenuRef.yOffset,
+    		"image:MainMenuDifficultyLabels" .. self.index,
+    		1/2.25 * self.labels[self.index].scale)
     	end
     
     	if KeyIsPressed"spell" then
@@ -667,6 +672,51 @@ _editor_class["MainMenuDifficulty"].render=function(self)
         SetImageState("image:MainMenuDifficultyLabels" .. _,"",Color(self.labels[_].alpha - self.masterAlpha,255,255,255))
         Render("image:MainMenuDifficultyLabels" .. _,self.labels[_].x + self.canvasX, self.labels[_].y + self.canvasY + MainMenuRef.yOffset,0,1/2.25 * self.labels[_].scale, 1/2.25 * self.labels[_].scale,0.5)
     end
+    SetViewMode'world'
+end
+_editor_class["MainMenuDifficultyPopup"]=Class(_object)
+_editor_class["MainMenuDifficultyPopup"].init=function(self,_x,_y,img, scale)
+    self.x,self.y=_x,_y
+    self.img=img
+    self.layer=LAYER_TOP
+    self.group=GROUP_GHOST
+    self.hide=false
+    self.bound=false
+    self.navi=false
+    self.hp=10
+    self.maxhp=10
+    self.colli=false
+    self._servants={}
+    self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
+    self.hscale, self.vscale = scale, scale
+    self.alpha = 255
+    self.alphaTarget = 175
+    lasttask=task.New(self,function()
+        do
+            local _beg_size=scale local size=_beg_size  local _w_size=0 local _end_size=0.2 local _d_w_size=90/(30-1)
+            for _=1,30 do
+                self.hscale, self.vscale = size, size
+                task._Wait(1)
+                _w_size=_w_size+_d_w_size size=(_end_size-_beg_size)*sin(_w_size)+(_beg_size)
+            end
+        end
+    end)
+end
+_editor_class["MainMenuDifficultyPopup"].frame=function(self)
+    if KeyIsPressed"spell" then
+    	self.alphaTarget = 0
+    end
+    
+    self.alpha = LerpDecel(self.alpha, self.alphaTarget, 0.2)
+    self.x = LerpDecel(self.x, screen.width/2, 0.06)
+    self.y = LerpDecel(self.y, 55, 0.06)
+    if self.alpha <= 1 then Del(self) end
+    _object.set_color(self,"",self.alpha,255,255,255)
+    self.class.base.frame(self)
+end
+_editor_class["MainMenuDifficultyPopup"].render=function(self)
+    SetViewMode'ui'
+    self.class.base.render(self)
     SetViewMode'world'
 end
 _editor_class["MainMenuPlayer"]=Class(_object)
