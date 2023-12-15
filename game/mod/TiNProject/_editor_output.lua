@@ -100,6 +100,7 @@ _LoadImageFromFile('image:'..'MainMenuDifficultyHeader','TITLE\\MainMenuDifficul
 _LoadImageFromFile('image:'..'MainMenuDifficultyShadow','TITLE\\MainMenuDifficultyShadow.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'MainMenuDifficultyHalo','TITLE\\MainMenuDifficultyHalo.png',true,0,0,false,0)
 _LoadImageGroupFromFile('image:'..'MainMenuDifficultyLabels','TITLE\\MainMenuDifficultyLabels.png',true,1,4,0,0,false)
+_LoadImageGroupFromFile('image:'..'MainMenuPlayerBanners_','TITLE\\MainMenuPlayerBanners_.png',true,5,1,0,0,false)
 -- archive space: 
 _editor_class["MainMenuBG"]=Class(_object)
 _editor_class["MainMenuBG"].init=function(self,_x,_y,_)
@@ -530,12 +531,12 @@ _editor_class["MainMenuDifficulty"].frame=function(self)
     		self.altPos = false
     	end
     	
-    	if is_up_held then
+    	if is_up_held or is_left_held then
     		self.index = Wrap(self.index - 1, 1, 5)
     		PlaySound("select00",0.1,0,false)
     	end
     	
-    	if is_down_held then
+    	if is_down_held or is_right_held then
     		self.index = Wrap(self.index + 1, 1, 5)
     		PlaySound("select00",0.1,0,false)
     	end
@@ -684,12 +685,34 @@ _editor_class["MainMenuPlayer"].init=function(self,_x,_y,_)
     self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
     self.canvasX = 854 * 2
     self.canvasY = 0
+    self.index = 1
+    self.playerSel = {
+    	{scaleX = 1, alpha = 0},
+    	{scaleX = 1, alpha = 0},
+    	{scaleX = 1, alpha = 0},
+    	{scaleX = 1, alpha = 0},
+    }
+    self.tmpScaleX = 0
 end
 _editor_class["MainMenuPlayer"].frame=function(self)
     if MainMenuRef.canvasIndex == 9 then
+    	if KeyIsPressed"shoot" and MainMenuRef.interactDelay == 0 then
+    		PlaySound("ok00",0.1,self.x/256,false)
+    	end
+    
     	if KeyIsPressed"spell" then
     		PlaySound("cancel00",0.1,self.x/256,false)
-    		MainMenuRef.canvasIndex = 1	
+    		MainMenuRef.canvasIndex = 1
+    	end
+    	
+    	if is_up_held or is_left_held then
+    		self.index = Wrap(self.index - 1, 1, 5)
+    		PlaySound("select00",0.1,0,false)
+    	end
+    	
+    	if is_down_held or is_right_held then
+    		self.index = Wrap(self.index + 1, 1, 5)
+    		PlaySound("select00",0.1,0,false)
     	end
     end
     
@@ -703,12 +726,84 @@ _editor_class["MainMenuPlayer"].frame=function(self)
     	self.canvasX = LerpDecel(self.canvasX, 854*2, 0.05)
     	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
     end
+    
+    self.tmpScaleX = self.playerSel[self.index].scaleX
+    
+    self.playerSel[1].scaleX = LerpDecel(self.playerSel[1].scaleX, 0, 0.1)
+    self.playerSel[2].scaleX = LerpDecel(self.playerSel[2].scaleX, 0, 0.1)
+    self.playerSel[3].scaleX = LerpDecel(self.playerSel[3].scaleX, 0, 0.1)
+    self.playerSel[4].scaleX = LerpDecel(self.playerSel[4].scaleX, 0, 0.1)
+    
+    self.playerSel[self.index].scaleX = LerpDecel(self.tmpScaleX, 1, 0.1)
+    self.tmpScaleX = self.playerSel[self.index].scaleX
+    
+    
+    --[[
+    
+    if self.index == 1 then
+    	self.playerSel[1].scaleX = LerpDecel(self.playerSel[1].scaleX, 1, 0.1)
+    	self.playerSel[1].alpha = LerpDecel(self.playerSel[1].alpha, 255, 0.3)
+    	
+    	self.playerSel[2].scaleX = LerpDecel(self.playerSel[2].scaleX, 0, 0.1)
+    	self.playerSel[2].alpha = LerpDecel(self.playerSel[2].alpha, 0, 0.3)
+    	
+    	self.playerSel[3].scaleX = LerpDecel(self.playerSel[3].scaleX, 0, 0.1)
+    	self.playerSel[3].alpha = LerpDecel(self.playerSel[3].alpha, 0, 0.3)
+    	
+    	self.playerSel[4].scaleX = LerpDecel(self.playerSel[4].scaleX, 0, 0.1)
+    	self.playerSel[4].alpha = LerpDecel(self.playerSel[4].alpha, 0, 0.3)
+    elseif self.index == 2 then
+    	self.playerSel[1].scaleX = LerpDecel(self.playerSel[1].scaleX, 0, 0.1)
+    	self.playerSel[1].alpha = LerpDecel(self.playerSel[1].alpha, 0, 0.3)
+    	
+    	self.playerSel[2].scaleX = LerpDecel(self.playerSel[2].scaleX, 1, 0.1)
+    	self.playerSel[2].alpha = LerpDecel(self.playerSel[2].alpha, 255, 0.3)
+    	
+    	self.playerSel[3].scaleX = LerpDecel(self.playerSel[3].scaleX, 0, 0.1)
+    	self.playerSel[3].alpha = LerpDecel(self.playerSel[3].alpha, 0, 0.3)
+    	
+    	self.playerSel[4].scaleX = LerpDecel(self.playerSel[4].scaleX, 0, 0.1)
+    	self.playerSel[4].alpha = LerpDecel(self.playerSel[4].alpha, 0, 0.3)
+    elseif self.index == 3 then
+    	self.playerSel[1].scaleX = LerpDecel(self.playerSel[1].scaleX, 0, 0.1)
+    	self.playerSel[1].alpha = LerpDecel(self.playerSel[1].alpha, 0, 0.3)
+    	
+    	self.playerSel[2].scaleX = LerpDecel(self.playerSel[2].scaleX, 0, 0.1)
+    	self.playerSel[2].alpha = LerpDecel(self.playerSel[2].alpha, 0, 0.3)
+    	
+    	self.playerSel[3].scaleX = LerpDecel(self.playerSel[3].scaleX, 1, 0.1)
+    	self.playerSel[3].alpha = LerpDecel(self.playerSel[3].alpha, 255, 0.3)
+    	
+    	self.playerSel[4].scaleX = LerpDecel(self.playerSel[4].scaleX, 0, 0.1)
+    	self.playerSel[4].alpha = LerpDecel(self.playerSel[4].alpha, 0, 0.3)
+    else
+    	self.playerSel[1].scaleX = LerpDecel(self.playerSel[1].scaleX, 0, 0.1)
+    	self.playerSel[1].alpha = LerpDecel(self.playerSel[1].alpha, 0, 0.3)
+    	
+    	self.playerSel[2].scaleX = LerpDecel(self.playerSel[2].scaleX, 0, 0.1)
+    	self.playerSel[2].alpha = LerpDecel(self.playerSel[2].alpha, 0, 0.3)
+    	
+    	self.playerSel[3].scaleX = LerpDecel(self.playerSel[3].scaleX, 0, 0.1)
+    	self.playerSel[3].alpha = LerpDecel(self.playerSel[3].alpha, 0, 0.3)
+    	
+    	self.playerSel[4].scaleX = LerpDecel(self.playerSel[4].scaleX, 1, 0.1)
+    	self.playerSel[4].alpha = LerpDecel(self.playerSel[4].alpha, 255, 0.3)
+    end 
+    --]]
     self.class.base.frame(self)
 end
 _editor_class["MainMenuPlayer"].render=function(self)
     SetViewMode'ui'
     self.class.base.render(self)
     Render("image:MainMenuDifficultyHeader",screen.width / 2 + self.canvasX, 400 + MainMenuRef.yOffset + self.canvasY,0,1/2.25 - 0.2,1/2.25 - 0.2,0.5)
+    for _=1,4 do
+        SetImageState("image:MainMenuPlayerBanners_" .. _,"",Color(self.playerSel[_].alpha,255,255,255))
+        if _ == self.index then
+            Render("image:MainMenuPlayerBanners_" .. self.index,screen.width/2 + 180 + self.canvasX, screen.height/2 - 35 + self.canvasY + MainMenuRef.yOffset,0,(1/2.25 - 0.25) * self.playerSel[_].scaleX,1/2.25 - 0.25,0.5)
+        else
+            Render("image:MainMenuPlayerBanners_" .. self.index,screen.width/2 + 180 + self.canvasX, screen.height/2 - 35 + self.canvasY + MainMenuRef.yOffset,0,(1/2.25 - 0.25) * self.playerSel[_].scaleX,1/2.25 - 0.25,0.4)
+        end
+    end
     SetViewMode'world'
 end
 _editor_class["MainMenuSelectionsPopup"]=Class(_object)
