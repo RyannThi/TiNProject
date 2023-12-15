@@ -101,6 +101,7 @@ _LoadImageFromFile('image:'..'MainMenuDifficultyShadow','TITLE\\MainMenuDifficul
 _LoadImageFromFile('image:'..'MainMenuDifficultyHalo','TITLE\\MainMenuDifficultyHalo.png',true,0,0,false,0)
 _LoadImageGroupFromFile('image:'..'MainMenuDifficultyLabels','TITLE\\MainMenuDifficultyLabels.png',true,1,4,0,0,false)
 _LoadImageGroupFromFile('image:'..'MainMenuPlayerBanners_','TITLE\\MainMenuPlayerBanners_.png',true,5,1,0,0,false)
+_LoadImageGroupFromFile('image:'..'MainMenuCharShadow_','TITLE\\MainMenuCharShadow_.png',true,5,1,0,0,false)
 -- archive space: 
 _editor_class["MainMenuBG"]=Class(_object)
 _editor_class["MainMenuBG"].init=function(self,_x,_y,_)
@@ -797,6 +798,18 @@ end
 _editor_class["MainMenuPlayer"].render=function(self)
     SetViewMode'ui'
     self.class.base.render(self)
+    for _=1,4 do
+        SetImageState("image:MainMenuCharShadow_" .. _,"",Color(self.playerSel[_].alpha,255,255,255))
+    end
+    for _=1,4 do
+        if self.index ~= _ then
+            Render("image:MainMenuCharShadow_" .. _,screen.width/2 + self.canvasX, screen.height/2 + self.canvasY,0,1/2.25,1/2.25,0.5)
+        else
+        end
+    end
+    Render("image:MainMenuCharShadow_" .. self.index,screen.width/2 + self.canvasX, screen.height/2 + self.canvasY,0,1/2.25,1/2.25,0.5)
+    --[[ -------------------------------------------]]
+    
     Render("image:MainMenuDifficultyHeader",screen.width / 2 + self.canvasX, 400 + MainMenuRef.yOffset + self.canvasY,0,1/2.25 - 0.2,1/2.25 - 0.2,0.5)
     for _=1,4 do
         SetImageState("image:MainMenuPlayerBanners_" .. _,"",Color(self.playerSel[_].alpha,255,255,255))
