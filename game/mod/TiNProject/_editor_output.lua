@@ -102,6 +102,11 @@ _LoadImageFromFile('image:'..'MainMenuDifficultyHalo','TITLE\\MainMenuDifficulty
 _LoadImageGroupFromFile('image:'..'MainMenuDifficultyLabels','TITLE\\MainMenuDifficultyLabels.png',true,1,4,0,0,false)
 _LoadImageGroupFromFile('image:'..'MainMenuPlayerBanners_','TITLE\\MainMenuPlayerBanners_.png',true,5,1,0,0,false)
 _LoadImageGroupFromFile('image:'..'MainMenuCharShadow_','TITLE\\MainMenuCharShadow_.png',true,5,1,0,0,false)
+_LoadImageFromFile('image:'..'MainMenuPortrait_1','TITLE\\MainMenuPortrait_1.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'MainMenuPortrait_2','TITLE\\MainMenuPortrait_2.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'MainMenuPortrait_3','TITLE\\MainMenuPortrait_3.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'MainMenuPortrait_4','TITLE\\MainMenuPortrait_4.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'MainMenuPortrait_5','TITLE\\MainMenuPortrait_5.png',true,0,0,false,0)
 -- archive space: 
 _editor_class["MainMenuBG"]=Class(_object)
 _editor_class["MainMenuBG"].init=function(self,_x,_y,_)
@@ -368,7 +373,6 @@ _editor_class["MainMenuMain"].render=function(self)
     SetImageState("white","",Color(self.fadeIn,0,0,0))
     Render("white",screen.width / 2, screen.height / 2,0,854,480,0.5)
     SetImageState("white","",Color(255,255,255,255))
-    lstg.RenderText("menu",self.canvasIndex,600, 20,0.4,4)
     SetViewMode'ui'
 end
 _editor_class["MainMenuHaraeAnim"]=Class(_object)
@@ -691,7 +695,7 @@ _editor_class["MainMenuDifficultyPopup"].init=function(self,_x,_y,img, scale)
     self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
     self.hscale, self.vscale = scale, scale
     self.alpha = 255
-    self.alphaTarget = 175
+    self.alphaTarget = 240
     lasttask=task.New(self,function()
         do
             local _beg_size=scale local size=_beg_size  local _w_size=0 local _end_size=0.2 local _d_w_size=90/(30-1)
@@ -799,7 +803,7 @@ _editor_class["MainMenuPlayer"].render=function(self)
     SetViewMode'ui'
     self.class.base.render(self)
     for _=1,4 do
-        SetImageState("image:MainMenuCharShadow_" .. _,"",Color(self.playerSel[_].alpha,255,255,255))
+        SetImageState("image:MainMenuCharShadow_" .. _,"",Color(self.playerSel[_].alpha - 100,255,255,255))
     end
     for _=1,4 do
         if self.index ~= _ then
@@ -816,11 +820,23 @@ _editor_class["MainMenuPlayer"].render=function(self)
     end
     for _=1,4 do
         if self.index ~= _ then
-            Render("image:MainMenuPlayerBanners_" .. self.index,screen.width/2 + 180 + self.canvasX, screen.height/2 - 35 + self.canvasY + MainMenuRef.yOffset,0,(1/2.25 - 0.25) * self.playerSel[_].scaleX,1/2.25 - 0.25,0.5)
+            Render("image:MainMenuPlayerBanners_" .. _,screen.width/2 + 180 + self.canvasX, screen.height/2 - 35 + self.canvasY + MainMenuRef.yOffset,0,(1/2.25 - 0.25) * self.playerSel[_].scaleX,1/2.25 - 0.25,0.5)
         else
         end
     end
     Render("image:MainMenuPlayerBanners_" .. self.index,screen.width/2 + 180 + self.canvasX, screen.height/2 - 35 + self.canvasY + MainMenuRef.yOffset,0,(1/2.25 - 0.25) * self.playerSel[self.index].scaleX,1/2.25 - 0.25,0.5)
+    --[[ -------------------------------------------]]
+    
+    for _=1,4 do
+        SetImageState("image:MainMenuPortrait_" .. _,"",Color(self.playerSel[_].alpha,255,255,255))
+    end
+    for _=1,4 do
+        if self.index ~= _ then
+            Render("image:MainMenuPortrait_" .. _,screen.width/2 - 180 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset,0,(1/2.25 - 0.3) * self.playerSel[_].scaleX,1/2.25 - 0.3,0.5)
+        else
+        end
+    end
+    Render("image:MainMenuPortrait_" .. self.index,screen.width/2 - 180 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset,0,(1/2.25 - 0.3) * self.playerSel[self.index].scaleX,1/2.25 - 0.3,0.5)
     SetViewMode'world'
 end
 _editor_class["MainMenuSelectionsPopup"]=Class(_object)
