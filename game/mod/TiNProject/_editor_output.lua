@@ -687,10 +687,10 @@ _editor_class["MainMenuPlayer"].init=function(self,_x,_y,_)
     self.canvasY = 0
     self.index = 1
     self.playerSel = {
-    	{scaleX = 1, alpha = 0},
-    	{scaleX = 1, alpha = 0},
-    	{scaleX = 1, alpha = 0},
-    	{scaleX = 1, alpha = 0},
+    	{scaleX = 1, alpha = 250},
+    	{scaleX = 1, alpha = 250},
+    	{scaleX = 1, alpha = 250},
+    	{scaleX = 1, alpha = 250},
     }
     self.tmpScaleX = 0
 end
@@ -728,68 +728,20 @@ _editor_class["MainMenuPlayer"].frame=function(self)
     end
     
     self.tmpScaleX = self.playerSel[self.index].scaleX
+    self.tmpAlpha = self.playerSel[self.index].alpha
     
     self.playerSel[1].scaleX = LerpDecel(self.playerSel[1].scaleX, 0, 0.1)
     self.playerSel[2].scaleX = LerpDecel(self.playerSel[2].scaleX, 0, 0.1)
     self.playerSel[3].scaleX = LerpDecel(self.playerSel[3].scaleX, 0, 0.1)
     self.playerSel[4].scaleX = LerpDecel(self.playerSel[4].scaleX, 0, 0.1)
+    self.playerSel[1].alpha = LerpDecel(self.playerSel[1].alpha, 0, 0.1)
+    self.playerSel[2].alpha = LerpDecel(self.playerSel[2].alpha, 0, 0.1)
+    self.playerSel[3].alpha = LerpDecel(self.playerSel[3].alpha, 0, 0.1)
+    self.playerSel[4].alpha = LerpDecel(self.playerSel[4].alpha, 0, 0.1)
     
     self.playerSel[self.index].scaleX = LerpDecel(self.tmpScaleX, 1, 0.1)
-    self.tmpScaleX = self.playerSel[self.index].scaleX
-    
-    
-    --[[
-    
-    if self.index == 1 then
-    	self.playerSel[1].scaleX = LerpDecel(self.playerSel[1].scaleX, 1, 0.1)
-    	self.playerSel[1].alpha = LerpDecel(self.playerSel[1].alpha, 255, 0.3)
-    	
-    	self.playerSel[2].scaleX = LerpDecel(self.playerSel[2].scaleX, 0, 0.1)
-    	self.playerSel[2].alpha = LerpDecel(self.playerSel[2].alpha, 0, 0.3)
-    	
-    	self.playerSel[3].scaleX = LerpDecel(self.playerSel[3].scaleX, 0, 0.1)
-    	self.playerSel[3].alpha = LerpDecel(self.playerSel[3].alpha, 0, 0.3)
-    	
-    	self.playerSel[4].scaleX = LerpDecel(self.playerSel[4].scaleX, 0, 0.1)
-    	self.playerSel[4].alpha = LerpDecel(self.playerSel[4].alpha, 0, 0.3)
-    elseif self.index == 2 then
-    	self.playerSel[1].scaleX = LerpDecel(self.playerSel[1].scaleX, 0, 0.1)
-    	self.playerSel[1].alpha = LerpDecel(self.playerSel[1].alpha, 0, 0.3)
-    	
-    	self.playerSel[2].scaleX = LerpDecel(self.playerSel[2].scaleX, 1, 0.1)
-    	self.playerSel[2].alpha = LerpDecel(self.playerSel[2].alpha, 255, 0.3)
-    	
-    	self.playerSel[3].scaleX = LerpDecel(self.playerSel[3].scaleX, 0, 0.1)
-    	self.playerSel[3].alpha = LerpDecel(self.playerSel[3].alpha, 0, 0.3)
-    	
-    	self.playerSel[4].scaleX = LerpDecel(self.playerSel[4].scaleX, 0, 0.1)
-    	self.playerSel[4].alpha = LerpDecel(self.playerSel[4].alpha, 0, 0.3)
-    elseif self.index == 3 then
-    	self.playerSel[1].scaleX = LerpDecel(self.playerSel[1].scaleX, 0, 0.1)
-    	self.playerSel[1].alpha = LerpDecel(self.playerSel[1].alpha, 0, 0.3)
-    	
-    	self.playerSel[2].scaleX = LerpDecel(self.playerSel[2].scaleX, 0, 0.1)
-    	self.playerSel[2].alpha = LerpDecel(self.playerSel[2].alpha, 0, 0.3)
-    	
-    	self.playerSel[3].scaleX = LerpDecel(self.playerSel[3].scaleX, 1, 0.1)
-    	self.playerSel[3].alpha = LerpDecel(self.playerSel[3].alpha, 255, 0.3)
-    	
-    	self.playerSel[4].scaleX = LerpDecel(self.playerSel[4].scaleX, 0, 0.1)
-    	self.playerSel[4].alpha = LerpDecel(self.playerSel[4].alpha, 0, 0.3)
-    else
-    	self.playerSel[1].scaleX = LerpDecel(self.playerSel[1].scaleX, 0, 0.1)
-    	self.playerSel[1].alpha = LerpDecel(self.playerSel[1].alpha, 0, 0.3)
-    	
-    	self.playerSel[2].scaleX = LerpDecel(self.playerSel[2].scaleX, 0, 0.1)
-    	self.playerSel[2].alpha = LerpDecel(self.playerSel[2].alpha, 0, 0.3)
-    	
-    	self.playerSel[3].scaleX = LerpDecel(self.playerSel[3].scaleX, 0, 0.1)
-    	self.playerSel[3].alpha = LerpDecel(self.playerSel[3].alpha, 0, 0.3)
-    	
-    	self.playerSel[4].scaleX = LerpDecel(self.playerSel[4].scaleX, 1, 0.1)
-    	self.playerSel[4].alpha = LerpDecel(self.playerSel[4].alpha, 255, 0.3)
-    end 
-    --]]
+    self.playerSel[self.index].alpha = LerpDecel(self.tmpAlpha, 255, 0.1)
+    --self.tmpScaleX = self.playerSel[self.index].scaleX
     self.class.base.frame(self)
 end
 _editor_class["MainMenuPlayer"].render=function(self)
@@ -798,12 +750,14 @@ _editor_class["MainMenuPlayer"].render=function(self)
     Render("image:MainMenuDifficultyHeader",screen.width / 2 + self.canvasX, 400 + MainMenuRef.yOffset + self.canvasY,0,1/2.25 - 0.2,1/2.25 - 0.2,0.5)
     for _=1,4 do
         SetImageState("image:MainMenuPlayerBanners_" .. _,"",Color(self.playerSel[_].alpha,255,255,255))
-        if _ == self.index then
+    end
+    for _=1,4 do
+        if self.index ~= _ then
             Render("image:MainMenuPlayerBanners_" .. self.index,screen.width/2 + 180 + self.canvasX, screen.height/2 - 35 + self.canvasY + MainMenuRef.yOffset,0,(1/2.25 - 0.25) * self.playerSel[_].scaleX,1/2.25 - 0.25,0.5)
         else
-            Render("image:MainMenuPlayerBanners_" .. self.index,screen.width/2 + 180 + self.canvasX, screen.height/2 - 35 + self.canvasY + MainMenuRef.yOffset,0,(1/2.25 - 0.25) * self.playerSel[_].scaleX,1/2.25 - 0.25,0.4)
         end
     end
+    Render("image:MainMenuPlayerBanners_" .. self.index,screen.width/2 + 180 + self.canvasX, screen.height/2 - 35 + self.canvasY + MainMenuRef.yOffset,0,(1/2.25 - 0.25) * self.playerSel[self.index].scaleX,1/2.25 - 0.25,0.5)
     SetViewMode'world'
 end
 _editor_class["MainMenuSelectionsPopup"]=Class(_object)
