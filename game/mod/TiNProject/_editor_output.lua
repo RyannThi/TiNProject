@@ -100,7 +100,7 @@ _LoadImageFromFile('image:'..'MainMenuDifficultyHeader','TITLE\\MainMenuDifficul
 _LoadImageFromFile('image:'..'MainMenuDifficultyShadow','TITLE\\MainMenuDifficultyShadow.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'MainMenuDifficultyHalo','TITLE\\MainMenuDifficultyHalo.png',true,0,0,false,0)
 _LoadImageGroupFromFile('image:'..'MainMenuDifficultyLabels','TITLE\\MainMenuDifficultyLabels.png',true,1,4,0,0,false)
-_LoadImageGroupFromFile('image:'..'MainMenuPlayerBanners_','TITLE\\MainMenuPlayerBanners_.png',false,5,1,0,0,false)
+_LoadImageGroupFromFile('image:'..'MainMenuPlayerBanners_','TITLE\\MainMenuPlayerBanners_.png',true,5,1,0,0,false)
 -- archive space: 
 _editor_class["MainMenuBG"]=Class(_object)
 _editor_class["MainMenuBG"].init=function(self,_x,_y,_)
