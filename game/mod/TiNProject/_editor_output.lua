@@ -7,6 +7,10 @@ _allow_sc_practice = true
 function math.lerp(a,b,x)
 	return a + (b - a) * x
 end
+function GD(e,n,h,l,ex,ph) -- by zino_lath
+	local t = {e,n,h,l,ex or 0,ph or 0}
+	return t[lstg.var.difficulty]
+end
 SetSplash(true)
 -- MenuInputChecker
     function MenuInputChecker(name)
@@ -107,6 +111,11 @@ _LoadImageFromFile('image:'..'MainMenuPortrait_2','TITLE\\MainMenuPortrait_2.png
 _LoadImageFromFile('image:'..'MainMenuPortrait_3','TITLE\\MainMenuPortrait_3.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'MainMenuPortrait_4','TITLE\\MainMenuPortrait_4.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'MainMenuPortrait_5','TITLE\\MainMenuPortrait_5.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'MainMenuPlayerHeader','TITLE\\MainMenuPlayerHeader.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'MainMenuScroller2','TITLE\\MainMenuScroller2.png',true,0,0,false,0)
+do
+    SetImageState("image:MainMenuScroller2","mul+rev",Color(150,255,255,255))
+end
 -- archive space: 
 _editor_class["MainMenuBG"]=Class(_object)
 _editor_class["MainMenuBG"].init=function(self,_x,_y,_)
@@ -526,6 +535,7 @@ _editor_class["MainMenuDifficulty"].frame=function(self)
     	if KeyIsPressed"shoot" and MainMenuRef.interactDelay == 0 then
     		PlaySound("ok00",0.1,self.x/256,false)
     		lstg.var.difficulty = self.index
+    		MainMenuRef.interactDelay = 5
     		MainMenuRef.canvasIndex = 9
     		self.altPos = true
     		New(_editor_class["MainMenuDifficultyPopup"],
@@ -750,12 +760,16 @@ _editor_class["MainMenuPlayer"].init=function(self,_x,_y,_)
     self.tmpScaleX = 0
 end
 _editor_class["MainMenuPlayer"].frame=function(self)
-    if MainMenuRef.canvasIndex == 9 then
+     if MainMenuRef.canvasIndex == 9 then
     	if KeyIsPressed"shoot" and MainMenuRef.interactDelay == 0 then
     		PlaySound("ok00",0.1,self.x/256,false)
+    		PlaySound("boon01",0.1,self.x/256,false)
+    		New(_editor_class["MainMenuTransitioner"],0,0,_)
+    		lstg.var.player_name = "Reimu"
+    		MainMenuRef.interactDelay = 999
     	end
     
-    	if KeyIsPressed"spell" then
+    	if KeyIsPressed"spell" and MainMenuRef.interactDelay == 0 then
     		PlaySound("cancel00",0.1,self.x/256,false)
     		MainMenuRef.canvasIndex = 1
     	end
@@ -814,7 +828,7 @@ _editor_class["MainMenuPlayer"].render=function(self)
     Render("image:MainMenuCharShadow_" .. self.index,screen.width/2 + self.canvasX, screen.height/2 + self.canvasY,0,1/2.25,1/2.25,0.5)
     --[[ -------------------------------------------]]
     
-    Render("image:MainMenuDifficultyHeader",screen.width / 2 + self.canvasX, 400 + MainMenuRef.yOffset + self.canvasY,0,1/2.25 - 0.2,1/2.25 - 0.2,0.5)
+    Render("image:MainMenuPlayerHeader",screen.width / 2 + self.canvasX, 400 + MainMenuRef.yOffset + self.canvasY,0,1/2.25 - 0.2,1/2.25 - 0.2,0.5)
     for _=1,4 do
         SetImageState("image:MainMenuPlayerBanners_" .. _,"",Color(self.playerSel[_].alpha,255,255,255))
     end
@@ -882,7 +896,112 @@ _editor_class["MainMenuSelectionsPopup"].render=function(self)
     self.class.base.render(self)
     SetViewMode'world'
 end
--- Loading Screen
+_editor_class["MainMenuTransitioner"]=Class(_object)
+_editor_class["MainMenuTransitioner"].init=function(self,_x,_y,_)
+    self.x,self.y=_x,_y
+    self.img="img_void"
+    self.layer=LAYER_TOP+99
+    self.group=GROUP_GHOST
+    self.hide=false
+    self.bound=false
+    self.navi=false
+    self.hp=10
+    self.maxhp=10
+    self.colli=false
+    self._servants={}
+    self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
+    self.imgx = screen.width / 2
+    self.imgy = -480 * 2
+    self.faderVal = 0
+    self.sizeDiff = 0.1
+    lasttask=task.New(self,function()
+        do
+            local _beg_siz=0.15 local siz=_beg_siz  local _w_siz=0 local _end_siz=-0.2 local _d_w_siz=90/(60-1)
+            for _=1,60 do
+                self.sizeDiff = siz
+                task._Wait(1)
+                _w_siz=_w_siz+_d_w_siz siz=(_end_siz-_beg_siz)*sin(_w_siz)+(_beg_siz)
+            end
+        end
+    end)
+    lasttask=task.New(self,function()
+        do
+            local _beg_fader=0 local fader=_beg_fader  local _w_fader=0 local _end_fader=255 local _d_w_fader=90/(60-1)
+            for _=1,60 do
+                self.faderVal = fader
+                task._Wait(1)
+                _w_fader=_w_fader+_d_w_fader fader=(_end_fader-_beg_fader)*sin(_w_fader)+(_beg_fader)
+            end
+        end
+        stage.group.Start(stage.groups["GameGroup"], 0)
+    end)
+end
+_editor_class["MainMenuTransitioner"].frame=function(self)
+    self.class.base.frame(self)
+    self.imgx = self.imgx + 0.2
+    self.imgy = self.imgy + 0.2
+end
+_editor_class["MainMenuTransitioner"].render=function(self)
+    SetViewMode'ui'
+    self.class.base.render(self)
+    local w, h = GetTextureSize("image:MainMenuScroller")
+    w, h = w * 0.4, h * 0.4
+    for i = -int((screen.width + 16 + self.imgx) / w + 0.5), int((screen.width + 16 - self.imgx) / w + 0.5) do
+    	for j = -int((screen.height + 16 + self.imgy) / h + 0.5), int((screen.height + 16 - self.imgy) / h + 0.5) do
+    		Render("image:MainMenuScroller2", self.imgx + i * w, self.imgy + j * h + (self.timer * 12) - 480 * 2 - 65, 0, 0.4, 0.4)
+    	end
+    end
+    do
+        local _beg_posx=-60 local posx=_beg_posx local _end_posx=854+60 local _d_posx=(_end_posx-_beg_posx)/(20-1)
+        for _=1,20 do
+            Render("image:MainMenuHarae",posx, (self.timer * 12) - 50,(_ * self.timer) * 0.45,1/2.25 - 0.06 + self.sizeDiff, 1/2.25 - 0.06 + self.sizeDiff,0.5)
+            posx=posx+_d_posx
+        end
+    end
+    SetImageState("white","",Color(self.faderVal,0,0,0))
+    Render("white",screen.width/2, screen.height/2,0,854, 480,0.5)
+    SetImageState("white","",Color(255,255,255,255))
+    SetViewMode'world'
+end
+Reimu=Class(player_class)
+Reimu.init=function(self)
+    player_class.init(self)
+    self.name = "Reimu"
+    --[[ Add Option List Here]]
+    
+    LoadTexture('blank_void','blank_void.png')
+    LoadImageGroup('blank_void','blank_void',0,0,32,48,8,3,0.5,0.5)
+    self.imgs = {}
+    self.A, self.B = 0.5,0.5
+    for i = 1, 24 do self.imgs[i]='blank_void'..i end
+    player.hspeed, player.lspeed = 4,2
+    player.protect = 120
+end
+Reimu.frame=function(self)
+    task.Do(self)    player_class.frame(self)
+end
+Reimu.render=function(self)
+    player_class.render(self)
+        for i = 1, 4 do
+        if self.sp[i] and self.sp[i][3] > 0.5 then
+            Render("leaf", self.supportx + self.sp[i][1], self.supporty + self.sp[i][2], self.timer * 3)
+        end
+    end
+end
+Reimu.shoot=function(self)
+    player.nextshoot = 4
+    PlaySound("plst00",0.3,self.x/1024,false)
+end
+Reimu.spell=function(self)
+    player.nextspell = 120
+    PlaySound("nep00",0.8,self.x/1024,false)
+    New(player_spell_mask,255,255,255,30,60,30)
+end
+Reimu.special=function(self)
+    player.nextsp = 120
+    PlaySound("slash",0.8,self.x/1024,false)
+end
+table.insert(player_list, {'Reimu Hakurei','Reimu','Reimu'})-- Loading Screen
     stage_load = stage.New("load", true, true)
     function stage_load:init()
     end
@@ -917,8 +1036,8 @@ end
     end
 
 stage.group.New('menu',{},"GameGroup",{lifeleft=7,power=400,faith=50000,bomb=3},true,1)
-stage.group.AddStage('GameGroup','SpellCard@GameGroup',{lifeleft=7,power=400,faith=50000,bomb=3},true)
-stage.group.DefStageFunc('SpellCard@GameGroup','init',function(self)
+stage.group.AddStage('GameGroup','1@GameGroup',{lifeleft=7,power=400,faith=50000,bomb=3},true)
+stage.group.DefStageFunc('1@GameGroup','init',function(self)
     _init_item(self)
     difficulty=self.group.difficulty
     New(mask_fader,'open')
@@ -927,13 +1046,7 @@ stage.group.DefStageFunc('SpellCard@GameGroup','init',function(self)
         LoadMusic('spellcard','THlib\\music\\spellcard.ogg',75,0xc36e80/44100/4)
         New(_editor_class["temple_background"] or temple_background)
         task._Wait(60)
-        LoadMusicRecord("spellcard")
-        _play_music("spellcard")
-        local _boss_wait=true
-        local _ref=New(_editor_class["Boss"],_editor_class["Boss"].cards)
-        last=_ref
-        if _boss_wait then while IsValid(_ref) do task.Wait() end end
-        task._Wait(180)
+        task._Wait(18099)
     end)
     task.New(self,function()
         while coroutine.status(self.task[1])~='dead' do task.Wait() end
