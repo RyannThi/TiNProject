@@ -77,12 +77,19 @@ SetSplash(true)
 
 -- Format Score
     function FormatScore(num)
-        local str = string.format('%012d', num)
-        return string.format('%s,%s,%s,%s',
-                str:sub(1,3), str:sub(4,6),str:sub(7,9),str:sub(10,12))
+        local str = string.format('%09d', num)
+        return string.format('%s,%s,%s',
+                str:sub(1,3), str:sub(4,6),str:sub(7,9))
     end
 
 Include'Vector.lua'
+lstg.LoadFont('font:'..'TTKP','font\\TTKP.fnt',true)
+--- Load Font Image "TTKP"
+-- archive space: SHADER\
+LoadFX('fx:'..'alpha_mask','SHADER\\alpha_mask.fx')
+CreateRenderTarget("RenderTarget")
+CreateRenderTarget("Mask")
+-- archive space: 
 -- archive space: TITLE\
 _LoadImageFromFile('image:'..'MainMenuBackground','TITLE\\MainMenuBackground.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'MainMenuLogo','TITLE\\MainMenuLogo.png',true,0,0,false,0)
@@ -116,6 +123,31 @@ _LoadImageFromFile('image:'..'MainMenuScroller2','TITLE\\MainMenuScroller2.png',
 do
     SetImageState("image:MainMenuScroller2","mul+rev",Color(150,255,255,255))
 end
+_LoadImageFromFile('image:'..'MainMenuBlackHole_1','TITLE\\MainMenuBlackHole_1.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'MainMenuBlackHole_2','TITLE\\MainMenuBlackHole_2.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'MainMenuScroller3','TITLE\\MainMenuScroller3.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'HUDBorder','TITLE\\HUDBorder.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'HUDLabelInfo','TITLE\\HUDLabelInfo.png',true,0,0,false,0)
+_LoadImageGroupFromFile('image:'..'HUDDifficultyLabels','TITLE\\HUDDifficultyLabels.png',true,1,6,0,0,false)
+-- archive space: 
+-- archive space: PLAYER\
+-- archive space: PLAYER\REIMU\
+_LoadImageFromFile('image:'..'r_arml','PLAYER\\REIMU\\r_arml.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'r_armr','PLAYER\\REIMU\\r_armr.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'r_broom','PLAYER\\REIMU\\r_broom.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'r_hair','PLAYER\\REIMU\\r_hair.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'r_hat','PLAYER\\REIMU\\r_hat.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'r_hattop','PLAYER\\REIMU\\r_hattop.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'r_legl','PLAYER\\REIMU\\r_legl.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'r_legr','PLAYER\\REIMU\\r_legr.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'r_skirt','PLAYER\\REIMU\\r_skirt.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'r_torso','PLAYER\\REIMU\\r_torso.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'r_waist_ribbon','PLAYER\\REIMU\\r_waist_ribbon.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'Hakkero','PLAYER\\REIMU\\Hakkero.png',true,0,0,false,0)
+ReimuWigNode=(64)
+_LoadImageGroupFromFile('image:'..'r_wig','PLAYER\\REIMU\\r_wig.png',true,1,ReimuWigNode,0,0,false)
+SetTextureSamplerState("image:r_wig", "linear+wrap")
+-- archive space: 
 -- archive space: 
 _editor_class["MainMenuBG"]=Class(_object)
 _editor_class["MainMenuBG"].init=function(self,_x,_y,_)
@@ -341,6 +373,9 @@ _editor_class["MainMenuMain"].frame=function(self)
     	self.canvasX = LerpDecel(self.canvasX, 0, 0.05)
     	self.canvasY = LerpDecel(self.canvasY, 480, 0.05)
     elseif self.canvasIndex == 9 then
+    	self.canvasX = LerpDecel(self.canvasX, -854, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
+    elseif self.canvasIndex == 99 then
     	self.canvasX = LerpDecel(self.canvasX, -854, 0.05)
     	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
     else
@@ -766,7 +801,9 @@ _editor_class["MainMenuPlayer"].frame=function(self)
     		PlaySound("boon01",0.1,self.x/256,false)
     		New(_editor_class["MainMenuTransitioner"],0,0,_)
     		lstg.var.player_name = "Reimu"
-    		MainMenuRef.interactDelay = 999
+    		MainMenuRef.interactDelay = 9999
+    		MainMenuRef.canvasIndex = 99
+    		New(_editor_class["MainMenuBlackHole"],0,0,_)
     	end
     
     	if KeyIsPressed"spell" and MainMenuRef.interactDelay == 0 then
@@ -774,12 +811,12 @@ _editor_class["MainMenuPlayer"].frame=function(self)
     		MainMenuRef.canvasIndex = 1
     	end
     	
-    	if is_up_held or is_left_held then
+    	if is_up_held or is_left_held and MainMenuRef.interactDelay == 0 then
     		self.index = Wrap(self.index - 1, 1, 5)
     		PlaySound("select00",0.1,0,false)
     	end
     	
-    	if is_down_held or is_right_held then
+    	if is_down_held or is_right_held and MainMenuRef.interactDelay == 0 then
     		self.index = Wrap(self.index + 1, 1, 5)
     		PlaySound("select00",0.1,0,false)
     	end
@@ -790,6 +827,9 @@ _editor_class["MainMenuPlayer"].frame=function(self)
     	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
     elseif MainMenuRef.canvasIndex == 1 then
     	self.canvasX = LerpDecel(self.canvasX, 854, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
+    elseif MainMenuRef.canvasIndex == 99 then
+    	self.canvasX = LerpDecel(self.canvasX, -854, 0.05)
     	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
     else
     	self.canvasX = LerpDecel(self.canvasX, 854*2, 0.05)
@@ -914,6 +954,7 @@ _editor_class["MainMenuTransitioner"].init=function(self,_x,_y,_)
     self.imgy = -480 * 2
     self.faderVal = 0
     self.sizeDiff = 0.1
+    self.haraeAlpha = 0
     lasttask=task.New(self,function()
         do
             local _beg_siz=0.15 local siz=_beg_siz  local _w_siz=0 local _end_siz=-0.2 local _d_w_siz=90/(60-1)
@@ -933,7 +974,26 @@ _editor_class["MainMenuTransitioner"].init=function(self,_x,_y,_)
                 _w_fader=_w_fader+_d_w_fader fader=(_end_fader-_beg_fader)*sin(_w_fader)+(_beg_fader)
             end
         end
+        task._Wait(60)
         stage.group.Start(stage.groups["GameGroup"], 0)
+    end)
+    lasttask=task.New(self,function()
+        do
+            local _beg_alpha=0 local alpha=_beg_alpha  local _w_alpha=0 local _end_alpha=255 local _d_w_alpha=90/(30-1)
+            for _=1,30 do
+                self.haraeAlpha = alpha
+                task._Wait(1)
+                _w_alpha=_w_alpha+_d_w_alpha alpha=(_end_alpha-_beg_alpha)*sin(_w_alpha)+(_beg_alpha)
+            end
+        end
+        do
+            local _beg_alpha=255 local alpha=_beg_alpha  local _w_alpha=0 local _end_alpha=0 local _d_w_alpha=90/(20-1)
+            for _=1,20 do
+                self.haraeAlpha = alpha
+                task._Wait(1)
+                _w_alpha=_w_alpha+_d_w_alpha alpha=(_end_alpha-_beg_alpha)*sin(_w_alpha)+(_beg_alpha)
+            end
+        end
     end)
 end
 _editor_class["MainMenuTransitioner"].frame=function(self)
@@ -944,16 +1004,20 @@ end
 _editor_class["MainMenuTransitioner"].render=function(self)
     SetViewMode'ui'
     self.class.base.render(self)
-    local w, h = GetTextureSize("image:MainMenuScroller")
+    SetImageState("image:MainMenuScroller2","mul+rev",Color(self.haraeAlpha - 150,255,255,255))
+    local w, h = GetTextureSize("image:MainMenuScroller2")
     w, h = w * 0.4, h * 0.4
     for i = -int((screen.width + 16 + self.imgx) / w + 0.5), int((screen.width + 16 - self.imgx) / w + 0.5) do
     	for j = -int((screen.height + 16 + self.imgy) / h + 0.5), int((screen.height + 16 - self.imgy) / h + 0.5) do
     		Render("image:MainMenuScroller2", self.imgx + i * w, self.imgy + j * h + (self.timer * 12) - 480 * 2 - 65, 0, 0.4, 0.4)
     	end
     end
+    SetImageState("image:MainMenuHarae","mul+rev",Color(self.haraeAlpha,255,255,255))
     do
         local _beg_posx=-60 local posx=_beg_posx local _end_posx=854+60 local _d_posx=(_end_posx-_beg_posx)/(20-1)
         for _=1,20 do
+            Render("image:MainMenuHarae",posx, (self.timer * 12) - 50 - 120,(_ * self.timer) * 0.45,1/2.25 - 0.06 + self.sizeDiff - 0.12, 1/2.25 - 0.06 + self.sizeDiff - 0.12,0.5)
+            Render("image:MainMenuHarae",posx, (self.timer * 12) - 50 - 60,(_ * self.timer) * 0.45,1/2.25 - 0.06 + self.sizeDiff - 0.06, 1/2.25 - 0.06 + self.sizeDiff - 0.06,0.5)
             Render("image:MainMenuHarae",posx, (self.timer * 12) - 50,(_ * self.timer) * 0.45,1/2.25 - 0.06 + self.sizeDiff, 1/2.25 - 0.06 + self.sizeDiff,0.5)
             posx=posx+_d_posx
         end
@@ -961,6 +1025,177 @@ _editor_class["MainMenuTransitioner"].render=function(self)
     SetImageState("white","",Color(self.faderVal,0,0,0))
     Render("white",screen.width/2, screen.height/2,0,854, 480,0.5)
     SetImageState("white","",Color(255,255,255,255))
+    SetViewMode'world'
+end
+_editor_class["MainMenuBlackHole"]=Class(_object)
+_editor_class["MainMenuBlackHole"].init=function(self,_x,_y,_)
+    self.x,self.y=_x,_y
+    self.img="img_void"
+    self.layer=LAYER_TOP
+    self.group=GROUP_GHOST
+    self.hide=false
+    self.bound=false
+    self.navi=false
+    self.hp=10
+    self.maxhp=10
+    self.colli=false
+    self._servants={}
+    self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
+    self.canvasX = 854
+    self.canvasY = 0
+    self.bhSize = 0.2
+    self.bhAlpha = 0
+    lasttask=task.New(self,function()
+        do
+            local _beg_alpha=0 local alpha=_beg_alpha  local _w_alpha=0 local _end_alpha=255 local _d_w_alpha=90/(20-1)
+            for _=1,20 do
+                self.bhAlpha = alpha
+                task._Wait(1)
+                _w_alpha=_w_alpha+_d_w_alpha alpha=(_end_alpha-_beg_alpha)*sin(_w_alpha)+(_beg_alpha)
+            end
+        end
+    end)
+    lasttask=task.New(self,function()
+        do
+            local _beg_size=0.2 local size=_beg_size  local _w_size=-90 local _end_size=2 local _d_w_size=90/(30-1)
+            for _=1,30 do
+                self.bhSize = size
+                task._Wait(1)
+                _w_size=_w_size+_d_w_size size=(_end_size-_beg_size)*sin(_w_size)+(_end_size)
+            end
+        end
+    end)
+end
+_editor_class["MainMenuBlackHole"].frame=function(self)
+    if MainMenuRef.canvasIndex == 99 then
+    	self.canvasX = LerpDecel(self.canvasX, 0, 0.04)
+    	self.canvasY = LerpDecel(self.canvasY, 0, 0.04)
+    else
+    	self.canvasX = LerpDecel(self.canvasX, 854, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
+    end
+    self.class.base.frame(self)
+end
+_editor_class["MainMenuBlackHole"].render=function(self)
+    SetViewMode'ui'
+    self.class.base.render(self)
+    SetImageState("image:MainMenuBlackHole_1","mul+rev",Color(self.bhAlpha,255,255,255))
+    SetImageState("image:MainMenuBlackHole_2","mul+rev",Color(self.bhAlpha,255,255,255))
+    Render("image:MainMenuBlackHole_1",screen.width/2 + self.canvasX, screen.height/2 + self.canvasY,self.timer * 6,1/2.25 * self.bhSize, 1/2.25 * self.bhSize,0.5)
+    Render("image:MainMenuBlackHole_2",screen.width/2 + self.canvasX, screen.height/2 + self.canvasY,self.timer * 8 * -1 ,1/2.25 * self.bhSize, 1/2.25 * (self.bhSize * 2.4),0.5)
+    SetViewMode'world'
+end
+_editor_class["HUDScroller"]=Class(_object)
+_editor_class["HUDScroller"].init=function(self,_x,_y,_)
+    self.x,self.y=_x,_y
+    self.img="img_void"
+    self.layer=LAYER_TOP+1
+    self.group=GROUP_GHOST
+    self.hide=false
+    self.bound=false
+    self.navi=false
+    self.hp=10
+    self.maxhp=10
+    self.colli=false
+    self._servants={}
+    self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
+    self.imgx = screen.width / 2
+    self.imgy = screen.height / 2
+end
+_editor_class["HUDScroller"].frame=function(self)
+    self.class.base.frame(self)
+    self.imgx = self.imgx + 0.2
+    self.imgy = self.imgx + 0.2
+end
+_editor_class["HUDScroller"].render=function(self)
+    SetViewMode'ui'
+    PushRenderTarget("RenderTarget")
+    SetImageState("image:MainMenuScroller3","",Color(155,255,255,255))
+    local w, h = GetTextureSize("image:MainMenuScroller3")
+    w, h = w * 0.4, h * 0.4
+    for i = -int((screen.width + 16 + self.imgx) / w + 0.5), int((screen.width + 16 - self.imgx) / w + 0.5) do
+    	for j = -int((screen.height + 16 + self.imgy) / h + 0.5), int((screen.height + 16 - self.imgy) / h + 0.5) do
+    		Render("image:MainMenuScroller3", self.imgx + i * w, self.imgy + j * h, 0, 0.4, 0.4)
+    	end
+    end
+    PopRenderTarget("RenderTarget")
+    SetImageState("image:MainMenuScroller3","",Color(0,255,255,255))
+    self.class.base.render(self)
+    PushRenderTarget("Mask")
+    Render("ui_bg",screen.width/2, screen.height/2,0,1/2.25, 1/2.25,0.5)
+    PopRenderTarget("Mask")
+    lstg.PostEffect(
+        -- 着色器资源名称
+        "fx:alpha_mask",
+        -- 屏幕渲染目标，采样器类型
+        "RenderTarget", 6,
+        -- 混合模式
+        "mul+rev",
+        -- 浮点参数
+        {},
+        -- 纹理与采样器类型参数
+        {
+            { "Mask", 6 },
+        }
+    )
+    Render("image:HUDBorder",screen.width/2, screen.height/2,0,1/2.25, 1/2.25,0.5)
+    SetViewMode'world'
+end
+_editor_class["HUDManager"]=Class(_object)
+_editor_class["HUDManager"].init=function(self,_x,_y,_)
+    self.x,self.y=_x,_y
+    self.img="img_void"
+    self.layer=LAYER_TOP+5
+    self.group=GROUP_GHOST
+    self.hide=false
+    self.bound=false
+    self.navi=false
+    self.hp=10
+    self.maxhp=10
+    self.colli=false
+    self._servants={}
+    self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
+    self.yOffset = 0
+    self.yPos = 480
+    last=New(_editor_class["HUDScroller"],self.x,self.y,_)
+    lasttask=task.New(self,function()
+        do
+            local _beg_yPos=480 local yPos=_beg_yPos  local _w_yPos=-90 local _end_yPos=340 local _d_w_yPos=180/(45-1)
+            for _=1,45 do
+                self.yPos = yPos
+                task._Wait(1)
+                _w_yPos=_w_yPos+_d_w_yPos yPos=(_end_yPos-_beg_yPos)/2*sin(_w_yPos)+((_end_yPos+_beg_yPos)/2)
+            end
+        end
+    end)
+    lasttask=task.New(self,function()
+        do
+            local _h_yOffset=(5-(-5))/2 local _t_yOffset=(5+(-5))/2 local yOffset=_h_yOffset*sin(0)+_t_yOffset local _w_yOffset=0 local _d_w_yOffset=1.5
+            for _=1,_infinite do
+                self.yOffset = yOffset
+                task._Wait(3)
+                _w_yOffset=_w_yOffset+_d_w_yOffset yOffset=_h_yOffset*sin(_w_yOffset)+_t_yOffset
+            end
+        end
+    end)
+end
+_editor_class["HUDManager"].render=function(self)
+    SetViewMode'ui'
+    lstg.var.score = lstg.var.score + 1
+    self.class.base.render(self)
+    Render("image:HUDDifficultyLabels" .. lstg.var.difficulty,753, self.yPos + 115 + self.yOffset,0,1/2.25, 1/2.25,0.5)
+    Render("image:HUDLabelInfo",700, self.yPos + self.yOffset,0,1/2.25, 1/2.25,0.5)
+    SetFontState("font:TTKP","",Color(255,225,225,225))
+    lstg.RenderText("font:TTKP",FormatScore(max(lstg.tmpvar.hiscore or 0, lstg.var.score or 0)),843, self.yPos + 88.5 + self.yOffset,0.2,6)
+    SetFontState("font:TTKP","",Color(255,255,255,255))
+    lstg.RenderText("font:TTKP",FormatScore(lstg.var.score or 0),843, self.yPos + 89.5 + self.yOffset - 22,0.2,6)
+    SetFontState("font:TTKP","",Color(255,255,139,139))
+    lstg.RenderText("font:TTKP",string.format("%d,  /4,  ", math.floor(lstg.var.power / 100)),843, self.yPos - 47 + self.yOffset,0.2,6)
+    lstg.RenderText("font:TTKP",string.format("%d%d    00", math.floor((lstg.var.power % 100) / 10), lstg.var.power % 10),839, self.yPos - 47 + self.yOffset,0.15,6)
+    SetFontState("font:TTKP","",Color(255,139,158,255))
+    lstg.RenderText("font:TTKP",lstg.var.pointrate,843, self.yPos - 68 + self.yOffset,0.2,6)
+    SetFontState("font:TTKP","",Color(255,226,226,226))
+    lstg.RenderText("font:TTKP",lstg.var.graze,843, self.yPos - 89 + self.yOffset,0.2,6)
     SetViewMode'world'
 end
 Reimu=Class(player_class)
@@ -976,12 +1211,226 @@ Reimu.init=function(self)
     for i = 1, 24 do self.imgs[i]='blank_void'..i end
     player.hspeed, player.lspeed = 4,2
     player.protect = 120
+    self.hscale, self.vscale = 1/8, 1/8
+    self.armllerp = 0
+    self.armrlerp = 0
+    self.legllerp = 0
+    self.legrlerp = 0
+    self.hairlerp = 0
+    self.hatlerp = 0
+    self.hattoplerp = 0
+    self.skirtlerp = 0
+    self.broomlerp = 0
+    self.torsolerp = 0
+    self.wiglerp = 0
+    self.optionPosition = {
+    	{-30, 0, -15, 30},
+    	{30, 0, 15, 30}
+    }
+    self.optionCurrentPosition = {
+    	{0, 0},
+    	{0, 0}
+    }
+    self.metalTimer = 0
+    function self:optionFire(x, y, shrubIndex)
+        if shrubIndex == 1 then
+            do local speed,_d_speed=(10),(16) for _=1,2 do
+                last=New(_editor_class["Earth_Shot"],x, y,speed)
+            speed=speed+_d_speed end end
+        elseif shrubIndex == 2 then
+            last=New(_editor_class["Water_Shot"],x, y,10)
+        elseif shrubIndex == 3 then
+            for _=1,6 do
+                last=New(_editor_class["Fire_Shot"],x, y,ran:Float(4, 12))
+            end
+        elseif shrubIndex == 4 then
+            if x > player.x then
+                do local ang,_d_ang=(0),(360/3) for _=1,3 do
+                    last=New(_editor_class["Ice_Shot"],x, y,self.timer + ang)
+                    last=New(_editor_class["Ice_Shot"],x, y,self.timer + ang + (360/3)/2)
+                ang=ang+_d_ang end end
+            else
+                do local ang,_d_ang=(0),(360/3) for _=1,3 do
+                    last=New(_editor_class["Ice_Shot"],x, y,-self.timer + ang + (360/3)/2)
+                    last=New(_editor_class["Ice_Shot"],x, y,-self.timer + ang + (360/3)/2 + (360/3)/2)
+                ang=ang+_d_ang end end
+            end
+        elseif shrubIndex == 5 then
+            if x > player.x then
+                do local ang,_d_ang=(0),(360/5) for _=1,5 do
+                    last=New(_editor_class["Poison_Shot"],x, y,self.timer + ang)
+                    last=New(_editor_class["Poison_Shot"],x, y,self.timer + ang + (360/3)/2)
+                ang=ang+_d_ang end end
+            else
+                do local ang,_d_ang=(0),(360/5) for _=1,5 do
+                    last=New(_editor_class["Poison_Shot"],x, y,-self.timer + ang + (360/3)/2)
+                    last=New(_editor_class["Poison_Shot"],x, y,-self.timer + ang + (360/3)/2 + (360/3)/2)
+                ang=ang+_d_ang end end
+            end
+        elseif shrubIndex == 6 then
+            last=New(_editor_class["Lightning_Shot"],x, y,90)
+            last=New(_editor_class["Lightning_Shot"],x, y,-90)
+        elseif shrubIndex == 7 then
+            do local a,_d_a=(90 - 15 * 3.5),(15) for _=1,8 do
+                last=New(_editor_class["Wind_Shot"],x, y,a)
+            a=a+_d_a end end
+        elseif shrubIndex == 8 then
+            if player.metalTimer == 0 then
+                last=New(_editor_class["Metal_Shot"],x, y,_)
+                player.metalTimer = 10
+            else
+                player.metalTimer = player.metalTimer - 1
+            end
+        else
+        end
+    end
+    player.nextspell = 999999999
 end
 Reimu.frame=function(self)
     task.Do(self)    player_class.frame(self)
+    if (KeyIsDown"left" and KeyIsDown"right") or not (KeyIsDown"left" or KeyIsDown"right") then
+    	self.armllerp = LerpDecel(self.armllerp, 0, 0.1)
+    	self.armrlerp = LerpDecel(self.armllerp, 0, 0.1)
+    	self.legllerp = LerpDecel(self.legllerp, 0, 0.1)
+    	self.legrlerp = LerpDecel(self.legrlerp, 0, 0.1)
+    	self.hairlerp = LerpDecel(self.hairlerp, 0, 0.1)
+    	self.wiglerp = LerpDecel(self.wiglerp, 0, 0.1)
+    	self.hatlerp = LerpDecel(self.hatlerp, 0, 0.1)
+    	self.hattoplerp = LerpDecel(self.hattoplerp, 0, 0.1)
+    	self.skirtlerp = LerpDecel(self.skirtlerp, 0, 0.1)
+    	self.broomlerp = LerpDecel(self.broomlerp, 0, 0.1)
+    	self.torsolerp = LerpDecel(self.torsolerp, 0, 0.1)
+    elseif KeyIsDown"left" then
+    	self.armllerp = LerpDecel(self.armllerp, 15, 0.1)
+    	self.armrlerp = LerpDecel(self.armrlerp, 15, 0.1)
+    	self.legllerp = LerpDecel(self.legllerp, 20, 0.1)
+    	self.legrlerp = LerpDecel(self.legrlerp, 20, 0.1)
+    	self.hairlerp = LerpDecel(self.hairlerp, 20, 0.1)
+    	self.wiglerp = LerpDecel(self.wiglerp, 1, 0.1)
+    	self.hatlerp = LerpDecel(self.hatlerp, 15, 0.1)
+    	self.hattoplerp = LerpDecel(self.hattoplerp, 20, 0.1)
+    	self.skirtlerp = LerpDecel(self.skirtlerp, 30, 0.1)
+    	self.broomlerp = LerpDecel(self.broomlerp, 15, 0.1)
+    	self.torsolerp = LerpDecel(self.torsolerp, 15, 0.1)
+    elseif KeyIsDown"right" then
+    	self.armllerp = LerpDecel(self.armllerp, -15, 0.1)
+    	self.armrlerp = LerpDecel(self.armrlerp, -15, 0.1)
+    	self.legllerp = LerpDecel(self.legllerp, -20, 0.1)
+    	self.legrlerp = LerpDecel(self.legrlerp, -20, 0.1)
+    	self.hairlerp = LerpDecel(self.hairlerp, -20, 0.1)
+    	self.wiglerp = LerpDecel(self.wiglerp, -1, 0.1)
+    	self.hatlerp = LerpDecel(self.hatlerp, -15, 0.1)
+    	self.hattoplerp = LerpDecel(self.hattoplerp, -20, 0.1)
+    	self.skirtlerp = LerpDecel(self.skirtlerp, -30, 0.1)
+    	self.broomlerp = LerpDecel(self.broomlerp, -15, 0.1)
+    	self.torsolerp = LerpDecel(self.torsolerp, -15, 0.1)
+    end
+    if KeyIsDown"slow" == false then
+    	self.optionCurrentPosition[1][1] = LerpDecel(self.optionCurrentPosition[1][1], self.optionPosition[1][1], 0.1)
+    	self.optionCurrentPosition[1][2] = LerpDecel(self.optionCurrentPosition[1][2], self.optionPosition[1][2], 0.1)
+    	
+    	self.optionCurrentPosition[2][1] = LerpDecel(self.optionCurrentPosition[2][1], self.optionPosition[2][1], 0.1)
+    	self.optionCurrentPosition[2][2] = LerpDecel(self.optionCurrentPosition[2][2], self.optionPosition[2][2], 0.1)
+    else
+    	self.optionCurrentPosition[1][1] = LerpDecel(self.optionCurrentPosition[1][1], self.optionPosition[1][3], 0.1)
+    	self.optionCurrentPosition[1][2] = LerpDecel(self.optionCurrentPosition[1][2], self.optionPosition[1][4], 0.1)
+    	
+    	self.optionCurrentPosition[2][1] = LerpDecel(self.optionCurrentPosition[2][1], self.optionPosition[2][3], 0.1)
+    	self.optionCurrentPosition[2][2] = LerpDecel(self.optionCurrentPosition[2][2], self.optionPosition[2][4], 0.1)
+    end
 end
 Reimu.render=function(self)
     player_class.render(self)
+    SetImageState("image:Hakkero", "mul+add", Color(255, 255, 255, 255))
+    Render("image:Hakkero", self.x + self.optionCurrentPosition[1][1], self.y + self.optionCurrentPosition[1][2], self.timer * -1, 1/2.6, 1/2.6)
+    
+    Render("image:Hakkero", self.x + self.optionCurrentPosition[1][1], self.y + self.optionCurrentPosition[1][2], self.timer * -1, 1/3.75, 1/3.75)
+    
+    SetImageState("image:Hakkero", "mul+add", Color(255, 255, 255, 255))
+    Render("image:Hakkero", self.x + self.optionCurrentPosition[2][1], self.y + self.optionCurrentPosition[2][2], self.timer * 1, 1/2.6, 1/2.6)
+    
+    Render("image:Hakkero", self.x + self.optionCurrentPosition[2][1], self.y + self.optionCurrentPosition[2][2], self.timer * 1, 1/3.75, 1/3.75)
+    
+    local colorNormal = Color(255,255,255,255)
+    local colorProtect = Color(255,50,50,255)
+    local wigcolor = colorNormal
+    
+    if self.protect % 4 == 0 then
+    	SetImageState("image:r_legl", "", colorNormal)
+    	SetImageState("image:r_legr", "", colorNormal)
+    	SetImageState("image:r_broom", "", colorNormal)
+    	SetImageState("image:r_torso", "", colorNormal)
+    	SetImageState("image:r_arml", "", colorNormal)
+    	SetImageState("image:r_armr", "", colorNormal)
+    	SetImageState("image:r_skirt", "", colorNormal)
+    	SetImageState("image:r_hair", "", colorNormal)
+    	SetImageState("image:r_hat", "", colorNormal)
+    	SetImageState("image:r_hattop", "", colorNormal)
+    	wigcolor = colorNormal
+    else
+    	SetImageState("image:r_legl", "", colorProtect)
+    	SetImageState("image:r_legr", "", colorProtect)
+    	SetImageState("image:r_broom", "", colorProtect)
+    	SetImageState("image:r_torso", "", colorProtect)
+    	SetImageState("image:r_arml", "", colorProtect)
+    	SetImageState("image:r_armr", "", colorProtect)
+    	SetImageState("image:r_skirt", "", colorProtect)
+    	SetImageState("image:r_hair", "", colorProtect)
+    	SetImageState("image:r_hat", "", colorProtect)
+    	SetImageState("image:r_hattop", "", colorProtect)
+    	wigcolor = colorProtect
+    end
+    
+    
+    --
+    Render("image:r_legl", self.x - 2, self.y - 4, 0 - (sin(self.timer) * 6) + self.legllerp, self.hscale, self.vscale)
+    Render("image:r_legr", self.x + 2, self.y - 4, 0 + (sin(self.timer) * 6) + self.legrlerp, self.hscale, self.vscale)
+    Render("image:r_broom", self.x, self.y - 2, 0 + self.broomlerp, self.hscale, self.vscale)
+    Render("image:r_torso", self.x, self.y + 2, 0 + self.torsolerp, self.hscale, self.vscale)
+    Render("image:r_arml", self.x - 3, self.y + 4, 0 + self.armllerp, self.hscale, self.vscale)
+    Render("image:r_armr", self.x + 3, self.y + 4, 0 + self.armrlerp, self.hscale, self.vscale)
+    Render("image:r_skirt", self.x, self.y - 2, 0 + (sin(self.timer * 3) * 8) + self.skirtlerp, self.hscale, self.vscale)
+    --Render("image:hair", self.x, self.y + 12, 0 + (sin(self.timer * 6) * 6) + self.hairlerp, self.hscale, self.vscale)
+    
+    local n = ReimuWigNode
+    local wigsizew, wigsizeh = 72 * self.hscale * 1.1, 168 * self.vscale * 1.1 
+    local anchor = Vector(0,18) + Vector.fromAngle(-90+self.hairlerp) * 29 * self.hscale
+    local wigflow, wigspeed, wigstrength, wigstrengthmove, wigmove = 40, 5, 60, 16, 2
+    local pos = Vector(0,0)
+    local prevpos = Vector(0,0)
+    local prevnormal = Vector(-1,0)
+    local prevang = -90 - 5 * self.wiglerp
+    local ang = 0
+    for i=1,n do
+    	local t = i/n
+    	local fxt = 1-math.pow(1-t,2)
+    	local wigstr = LerpDecel(wigstrength/n,wigstrengthmove/n,math.abs(self.wiglerp))
+    	ang = prevang + fxt * wigstr * sin(fxt * wigflow + self.timer * wigspeed)
+    	ang = ang + wigmove * self.wiglerp * fxt
+    	local pos = prevpos + wigsizeh/n * Vector.fromAngle(ang)
+    	local off = (pos-prevpos).normalized
+    	local normal = off:perpendicular()
+    	local finalpos = Vector(player.x,player.y) + anchor + pos
+    	local finalprev = Vector(player.x,player.y) + anchor + prevpos
+    	
+    	local vlt = finalprev - prevnormal * wigsizew
+    	local vrt = finalprev + prevnormal * wigsizew
+    	local vrb = finalpos  + normal * wigsizew
+    	local vlb = finalpos  - normal * wigsizew
+    	SetImageState("image:r_wig"..i, "", wigcolor)
+    	Render4V("image:r_wig"..i,
+    			vlt.x, vlt.y,0,
+    			vrt.x, vrt.y,0,
+    			vrb.x, vrb.y,0,
+    			vlb.x, vlb.y,0)
+    	
+    	prevpos = pos
+    	prevnormal = normal
+    	prevang = ang
+    end
+    
+    Render("image:r_hat", self.x, self.y + 14, 0 + self.hatlerp, self.hscale, self.vscale)
+    Render("image:r_hattop", self.x, self.y + 21, 0 + (sin(self.timer) * 10) + self.hattoplerp, self.hscale, self.vscale)
         for i = 1, 4 do
         if self.sp[i] and self.sp[i][3] > 0.5 then
             Render("leaf", self.supportx + self.sp[i][1], self.supporty + self.sp[i][2], self.timer * 3)
@@ -990,16 +1439,11 @@ Reimu.render=function(self)
 end
 Reimu.shoot=function(self)
     player.nextshoot = 4
-    PlaySound("plst00",0.3,self.x/1024,false)
+    PlaySound("plst00",0.3,self.x,false)
 end
 Reimu.spell=function(self)
-    player.nextspell = 120
-    PlaySound("nep00",0.8,self.x/1024,false)
-    New(player_spell_mask,255,255,255,30,60,30)
 end
 Reimu.special=function(self)
-    player.nextsp = 120
-    PlaySound("slash",0.8,self.x/1024,false)
 end
 table.insert(player_list, {'Reimu Hakurei','Reimu','Reimu'})-- Loading Screen
     stage_load = stage.New("load", true, true)
@@ -1044,7 +1488,10 @@ stage.group.DefStageFunc('1@GameGroup','init',function(self)
     if jstg then jstg.CreatePlayers() else New(_G[lstg.var.player_name]) end
     lasttask=task.New(self,function()
         LoadMusic('spellcard','THlib\\music\\spellcard.ogg',75,0xc36e80/44100/4)
+        SetWorldUEX(screen.width/2, screen.height/2, 448, 448, 32, 32)
         New(_editor_class["temple_background"] or temple_background)
+        task._Wait(1)
+        last=New(_editor_class["HUDManager"],self.x,self.y,_)
         task._Wait(60)
         task._Wait(18099)
     end)
