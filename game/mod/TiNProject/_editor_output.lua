@@ -129,6 +129,7 @@ _LoadImageFromFile('image:'..'MainMenuScroller3','TITLE\\MainMenuScroller3.png',
 _LoadImageFromFile('image:'..'HUDBorder','TITLE\\HUDBorder.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'HUDLabelInfo','TITLE\\HUDLabelInfo.png',true,0,0,false,0)
 _LoadImageGroupFromFile('image:'..'HUDDifficultyLabels','TITLE\\HUDDifficultyLabels.png',true,1,6,0,0,false)
+_LoadImageFromFile('image:'..'HUDTint','TITLE\\HUDTint.png',true,0,0,false,0)
 -- archive space: 
 -- archive space: PLAYER\
 -- archive space: PLAYER\REIMU\
@@ -147,6 +148,16 @@ _LoadImageFromFile('image:'..'Hakkero','PLAYER\\REIMU\\Hakkero.png',true,0,0,fal
 ReimuWigNode=(64)
 _LoadImageGroupFromFile('image:'..'r_wig','PLAYER\\REIMU\\r_wig.png',true,1,ReimuWigNode,0,0,false)
 SetTextureSamplerState("image:r_wig", "linear+wrap")
+_LoadImageFromFile('image:'..'r_shot','PLAYER\\REIMU\\r_shot.png',true,0,0,false,0)
+do
+    SetImageState("image:r_shot","mul+add",Color(200,255,255,255))
+end
+_LoadImageFromFile('image:'..'r_shot2','PLAYER\\REIMU\\r_shot2.png',true,0,0,false,0)
+do
+    SetImageState("image:r_shot2","mul+add",Color(125,255,255,255))
+end
+_LoadImageFromFile('image:'..'r_shot2ef','PLAYER\\REIMU\\r_shot2ef.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'r_shotef','PLAYER\\REIMU\\r_shotef.png',true,0,0,false,0)
 -- archive space: 
 -- archive space: 
 _editor_class["MainMenuBG"]=Class(_object)
@@ -1157,6 +1168,15 @@ _editor_class["HUDManager"].init=function(self,_x,_y,_)
     self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
     self.yOffset = 0
     self.yPos = 480
+    self.shadowCol = {255, 255, 255, 255}
+    self.shadowColTarget = {
+    	{ 255, 21, 61, 36 },
+    	{ 255, 21, 35, 61 },
+    	{ 255, 61, 24, 21 },
+    	{ 255, 55, 21, 61 },
+    	{ 255, 142, 123, 87 },
+    	{ 255, 100, 86, 140 }
+    }
     last=New(_editor_class["HUDScroller"],self.x,self.y,_)
     lasttask=task.New(self,function()
         do
@@ -1179,6 +1199,12 @@ _editor_class["HUDManager"].init=function(self,_x,_y,_)
         end
     end)
 end
+_editor_class["HUDManager"].frame=function(self)
+    for i = 1, 4 do
+    	self.shadowCol[i] = LerpDecel(self.shadowCol[i], self.shadowColTarget[lstg.var.difficulty][i], 0.1)
+    end
+    self.class.base.frame(self)
+end
 _editor_class["HUDManager"].render=function(self)
     SetViewMode'ui'
     lstg.var.score = lstg.var.score + 1
@@ -1190,13 +1216,169 @@ _editor_class["HUDManager"].render=function(self)
     SetFontState("font:TTKP","",Color(255,255,255,255))
     lstg.RenderText("font:TTKP",FormatScore(lstg.var.score or 0),843, self.yPos + 89.5 + self.yOffset - 22,0.2,6)
     SetFontState("font:TTKP","",Color(255,255,139,139))
-    lstg.RenderText("font:TTKP",string.format("%d,  /4,  ", math.floor(lstg.var.power / 100)),843, self.yPos - 47 + self.yOffset,0.2,6)
+    lstg.RenderText("font:TTKP",string.format("%d,  /4,  ", math.floor(lstg.var.power / 100)),844, self.yPos - 47 + self.yOffset,0.2,6)
     lstg.RenderText("font:TTKP",string.format("%d%d    00", math.floor((lstg.var.power % 100) / 10), lstg.var.power % 10),839, self.yPos - 47 + self.yOffset,0.15,6)
     SetFontState("font:TTKP","",Color(255,139,158,255))
     lstg.RenderText("font:TTKP",lstg.var.pointrate,843, self.yPos - 68 + self.yOffset,0.2,6)
     SetFontState("font:TTKP","",Color(255,226,226,226))
     lstg.RenderText("font:TTKP",lstg.var.graze,843, self.yPos - 89 + self.yOffset,0.2,6)
+    SetImageState("image:HUDTint","",Color(self.shadowCol[1],self.shadowCol[2],self.shadowCol[3],self.shadowCol[4]))
+    Render("image:HUDTint",screen.width/2, screen.height/2,0,1/2.25, 1/2.25,0.5)
+    Render("image:HUDTint",screen.width/2, screen.height/2,0,1/2.25, 1/2.25,0.5)
     SetViewMode'world'
+end
+_editor_class["DebugENM"]=Class(enemy)
+_editor_class["DebugENM"].init=function(self,_x,_y,_)
+    enemy.init(self,9,10000,false,true,false)
+    self.x,self.y=_x,_y
+    self.drop={0,0,0}
+    task.New(self,function() self.protect=true task.Wait(1) self.protect=false end)
+    self.x, self.y = 0, 144
+    self.layer = LAYER_TOP + 999
+    self.hp = 10000
+    self.damage_frames = {}
+    for i=1, 60 do
+        self.damage_frames[i] = 0
+    end
+end
+_editor_class["DebugENM"].frame=function(self)
+    local damage_frame = 10000 - self.hp
+    for i=59, 1, -1 do
+         self.damage_frames[i+1] = self.damage_frames[i]
+    end
+    self.damage_frames[1] = damage_frame
+    local average_damage = 0
+    for i=1, 60 do
+        average_damage = average_damage + self.damage_frames[i]
+    end
+    self.average_damage = average_damage
+    self.class.base.frame(self)
+    self.hp = 10000
+end
+_editor_class["DebugENM"].render=function(self)
+    SetViewMode'ui'
+    lstg.RenderText('menu', 'AVG DMG = ' .. self.average_damage ..  ' \n', 445, 160, 0.425, 0)
+    SetViewMode'world'
+    self.class.base.render(self)
+end
+_editor_class["ShotEf"]=Class(_object)
+_editor_class["ShotEf"].init=function(self,_x,_y,angle,speed,img,scale)
+    self.x,self.y=_x,_y
+    self.img=img
+    self.layer=LAYER_PLAYER_BULLET+5
+    self.group=GROUP_GHOST
+    self.hide=false
+    self.bound=false
+    self.navi=false
+    self.hp=10
+    self.maxhp=10
+    self.colli=false
+    self._servants={}
+    self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
+    self.hscale, self.vscale = scale, scale
+    SetV2(self,speed,angle,true,false)
+    _object.set_color(self,"mul+add",255,255,255,255)
+    lasttask=task.New(self,function()
+        do
+            local _beg_spd=speed local spd=_beg_spd  local _w_spd=0 local _end_spd=0 local _d_w_spd=90/(8-1)
+            local _beg_alpha=255 local alpha=_beg_alpha  local _w_alpha=0 local _end_alpha=0 local _d_w_alpha=90/(8-1)
+            for _=1,8 do
+                SetV2(self,spd,angle,true,false)
+                _object.set_color(self,"mul+add",alpha,255,255,255)
+                task._Wait(1)
+                _w_spd=_w_spd+_d_w_spd spd=(_end_spd-_beg_spd)*sin(_w_spd)+(_beg_spd)
+                _w_alpha=_w_alpha+_d_w_alpha alpha=(_end_alpha-_beg_alpha)*sin(_w_alpha)+(_beg_alpha)
+            end
+        end
+        _del(self,true)
+    end)
+end
+_editor_class["ReimuBaseShot"]=Class(_object)
+_editor_class["ReimuBaseShot"].init=function(self,_x,_y,_)
+    player_bullet_straight.init(self,"image:r_shot",_x,_y,15,90,2)
+    self.hp = 10
+    self._blend, self._a, self._r, self._g, self._b = "", 255, 255, 255, 255
+    self._servants = {}
+    self.trail=250
+    self.hscale, self.vscale = 0.6, 0.6
+    _object.set_color(self,"mul+add",100,255,255,255)
+    self.a, self.b, self.rect = 16, 8,false
+end
+_editor_class["ReimuBaseShot"].frame=function(self)
+    task.Do(self)
+    player_bullet_straight.frame(self)
+    self.class.base.frame(self)
+    player_class.findtarget(self)
+    if IsValid(self.target) and self.target.colli then
+    	local a = math.mod(Angle(self, self.target) - self.rot + 720, 360)
+    	if a > 180 then
+    		a = a - 360
+    	end
+    	local da = self.trail / (Dist(self, self.target) + 1)
+    	if da>=abs(a) then
+    		self.rot = Angle(self, self.target)
+    	else
+    		self.rot = self.rot + sign(a) * da
+    	end
+    end
+    self.vx = 15 * cos(self.rot)
+    self.vy = 15 * sin(self.rot)
+end
+_editor_class["ReimuBaseShot"].render=function(self)
+    player_bullet_straight.render(self)
+    self.class.base.render(self)
+end
+_editor_class["ReimuBaseShot"].colli=function(self)
+    self.class.base.colli(self)
+end
+_editor_class["ReimuBaseShot"].kill=function(self)
+    last=New(_editor_class["ShotEf"],self.x,self.y,self.rot, 15, "image:r_shotef", self.hscale)
+end
+_editor_class["ReimuBaseShot"].del=function(self)
+    self.class.base.del(self)
+end
+_editor_class["ReimuNeedleShot"]=Class(_object)
+_editor_class["ReimuNeedleShot"].init=function(self,_x,_y,_)
+    player_bullet_straight.init(self,"image:r_shot2",_x,_y,15,90,2)
+    self.hp = 10
+    self._blend, self._a, self._r, self._g, self._b = "", 255, 255, 255, 255
+    self._servants = {}
+    self.trail=20
+    _object.set_color(self,"mul+add",40,255,255,255)
+    self.a, self.b, self.rect = 28, 8,false
+end
+_editor_class["ReimuNeedleShot"].frame=function(self)
+    task.Do(self)
+    player_bullet_straight.frame(self)
+    self.class.base.frame(self)
+    player_class.findtarget(self)
+    if IsValid(self.target) and self.target.colli then
+    	local a = math.mod(Angle(self, self.target) - self.rot + 720, 360)
+    	if a > 180 then
+    		a = a - 360
+    	end
+    	local da = self.trail / (Dist(self, self.target) + 1)
+    	if da>=abs(a) then
+    		self.rot = Angle(self, self.target)
+    	else
+    		self.rot = self.rot + sign(a) * da
+    	end
+    end
+    self.vx = 15 * cos(self.rot)
+    self.vy = 15 * sin(self.rot)
+end
+_editor_class["ReimuNeedleShot"].render=function(self)
+    player_bullet_straight.render(self)
+    self.class.base.render(self)
+end
+_editor_class["ReimuNeedleShot"].colli=function(self)
+    self.class.base.colli(self)
+end
+_editor_class["ReimuNeedleShot"].kill=function(self)
+    last=New(_editor_class["ShotEf"],self.x,self.y,self.rot, 15, "image:r_shot2ef", self.hscale)
+end
+_editor_class["ReimuNeedleShot"].del=function(self)
+    self.class.base.del(self)
 end
 Reimu=Class(player_class)
 Reimu.init=function(self)
@@ -1223,15 +1405,39 @@ Reimu.init=function(self)
     self.broomlerp = 0
     self.torsolerp = 0
     self.wiglerp = 0
-    self.optionPosition = {
+    self.optionPosition = {}
+    self.optionPosition[1] = {
+    	{0, 30, 0, 20},
+    	{0, 0, 0, 0},
+    	{0, 0, 0, 0},
+    	{0, 0, 0, 0},
+    }
+    self.optionPosition[2] = {
     	{-30, 0, -15, 30},
-    	{30, 0, 15, 30}
+    	{30, 0, 15, 30},
+    	{0, 0, 0, 0},
+    	{0, 0, 0, 0},
+    }
+    self.optionPosition[3] = {
+    	{-30, 0, -15, 30},
+    	{30, 0, 15, 30},
+    	{0, 30, 0, 20},
+    	{0, 0, 0, 0},
+    }
+    self.optionPosition[4] = {
+    	{-30, 0, -15, 30},
+    	{30, 0, 15, 30},
+    	{-15, 30, -10, 20},
+    	{15, 30, 10, 20},
     }
     self.optionCurrentPosition = {
+    	{0, 0},
+    	{0, 0},
     	{0, 0},
     	{0, 0}
     }
     self.metalTimer = 0
+    lstg.var.power = 400
     function self:optionFire(x, y, shrubIndex)
         if shrubIndex == 1 then
             do local speed,_d_speed=(10),(16) for _=1,2 do
@@ -1326,30 +1532,47 @@ Reimu.frame=function(self)
     	self.torsolerp = LerpDecel(self.torsolerp, -15, 0.1)
     end
     if KeyIsDown"slow" == false then
-    	self.optionCurrentPosition[1][1] = LerpDecel(self.optionCurrentPosition[1][1], self.optionPosition[1][1], 0.1)
-    	self.optionCurrentPosition[1][2] = LerpDecel(self.optionCurrentPosition[1][2], self.optionPosition[1][2], 0.1)
-    	
-    	self.optionCurrentPosition[2][1] = LerpDecel(self.optionCurrentPosition[2][1], self.optionPosition[2][1], 0.1)
-    	self.optionCurrentPosition[2][2] = LerpDecel(self.optionCurrentPosition[2][2], self.optionPosition[2][2], 0.1)
+    	for i = 1, 4 do
+    		self.optionCurrentPosition[i][1] = LerpDecel(self.optionCurrentPosition[i][1], self.optionPosition[math.floor(lstg.var.power / 100)][i][1], 0.1)
+    		self.optionCurrentPosition[i][2] = LerpDecel(self.optionCurrentPosition[i][2], self.optionPosition[math.floor(lstg.var.power / 100)][i][2], 0.1)
+    	end
     else
-    	self.optionCurrentPosition[1][1] = LerpDecel(self.optionCurrentPosition[1][1], self.optionPosition[1][3], 0.1)
-    	self.optionCurrentPosition[1][2] = LerpDecel(self.optionCurrentPosition[1][2], self.optionPosition[1][4], 0.1)
-    	
-    	self.optionCurrentPosition[2][1] = LerpDecel(self.optionCurrentPosition[2][1], self.optionPosition[2][3], 0.1)
-    	self.optionCurrentPosition[2][2] = LerpDecel(self.optionCurrentPosition[2][2], self.optionPosition[2][4], 0.1)
+    	for i = 1, 4 do
+    		self.optionCurrentPosition[i][1] = LerpDecel(self.optionCurrentPosition[i][1], self.optionPosition[math.floor(lstg.var.power / 100)][i][3], 0.1)
+    		self.optionCurrentPosition[i][2] = LerpDecel(self.optionCurrentPosition[i][2], self.optionPosition[math.floor(lstg.var.power / 100)][i][4], 0.1)
+    	end
     end
 end
 Reimu.render=function(self)
     player_class.render(self)
-    SetImageState("image:Hakkero", "mul+add", Color(255, 255, 255, 255))
-    Render("image:Hakkero", self.x + self.optionCurrentPosition[1][1], self.y + self.optionCurrentPosition[1][2], self.timer * -1, 1/2.6, 1/2.6)
+    if KeyIsDown"shoot" then
+    	SetImageState("image:Hakkero", "mul+add", Color(255, 255, 255, 255))
+    else
+    	SetImageState("image:Hakkero", "mul+add", Color(150, 255, 255, 255))
+    end
+    --[[
+    if lstg.var.power < 200 then
+    	Render("image:Hakkero", self.x + self.optionCurrentPosition[1][1], self.y + self.optionCurrentPosition[1][2], self.timer * -1, 1/2.6, 1/2.6)
+    	Render("image:Hakkero", self.x + self.optionCurrentPosition[1][1], self.y + self.optionCurrentPosition[1][2], self.timer * -1, 1/3.75, 1/3.75)
+    elseif lstg.var.power >= 200 and lstg.var.power < 300 then
+    	Render("image:Hakkero", self.x + self.optionCurrentPosition[1][1], self.y + self.optionCurrentPosition[1][2], self.timer * -1, 1/2.6, 1/2.6)
+    	Render("image:Hakkero", self.x + self.optionCurrentPosition[1][1], self.y + self.optionCurrentPosition[1][2], self.timer * -1, 1/3.75, 1/3.75)
     
-    Render("image:Hakkero", self.x + self.optionCurrentPosition[1][1], self.y + self.optionCurrentPosition[1][2], self.timer * -1, 1/3.75, 1/3.75)
+    	Render("image:Hakkero", self.x + self.optionCurrentPosition[2][1], self.y + self.optionCurrentPosition[2][2], self.timer * 1, 1/2.6, 1/2.6)
+    	Render("image:Hakkero", self.x + self.optionCurrentPosition[2][1], self.y + self.optionCurrentPosition[2][2], self.timer * 1, 1/3.75, 1/3.75)
+    end
+    --]]
+    for i = 1, 4 do
+    	print("i = " .. i .. " aaaaaaaaaaaaaa" .. self.optionPosition[math.floor(lstg.var.power / 100)][i][1])
+    	print("i = " .. i .. " bbbbbbbbbbbbbb" .. self.optionPosition[math.floor(lstg.var.power / 100)][i][2])
+    	if self.optionPosition[math.floor(lstg.var.power / 100)][i][1] ~= 0 or self.optionPosition[math.floor(lstg.var.power / 100)][i][2] ~= 0 then
+    		print("ALKSJRLAKJSLRAJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJASDASDA")
+    		Render("image:Hakkero", self.x + self.optionCurrentPosition[i][1], self.y + self.optionCurrentPosition[i][2], self.timer * -1, 1/2.6, 1/2.6)
+    		Render("image:Hakkero", self.x + self.optionCurrentPosition[i][1], self.y + self.optionCurrentPosition[i][2], self.timer * -1, 1/3.75, 1/3.75)
+    	end
+    end
     
-    SetImageState("image:Hakkero", "mul+add", Color(255, 255, 255, 255))
-    Render("image:Hakkero", self.x + self.optionCurrentPosition[2][1], self.y + self.optionCurrentPosition[2][2], self.timer * 1, 1/2.6, 1/2.6)
     
-    Render("image:Hakkero", self.x + self.optionCurrentPosition[2][1], self.y + self.optionCurrentPosition[2][2], self.timer * 1, 1/3.75, 1/3.75)
     
     local colorNormal = Color(255,255,255,255)
     local colorProtect = Color(255,50,50,255)
@@ -1385,7 +1608,7 @@ Reimu.render=function(self)
     --
     Render("image:r_legl", self.x - 2, self.y - 4, 0 - (sin(self.timer) * 6) + self.legllerp, self.hscale, self.vscale)
     Render("image:r_legr", self.x + 2, self.y - 4, 0 + (sin(self.timer) * 6) + self.legrlerp, self.hscale, self.vscale)
-    Render("image:r_broom", self.x, self.y - 2, 0 + self.broomlerp, self.hscale, self.vscale)
+    Render("image:r_broom", self.x, self.y - 2, 0 + (sin(self.timer) * 3) + self.broomlerp, self.hscale, self.vscale)
     Render("image:r_torso", self.x, self.y + 2, 0 + self.torsolerp, self.hscale, self.vscale)
     Render("image:r_arml", self.x - 3, self.y + 4, 0 + self.armllerp, self.hscale, self.vscale)
     Render("image:r_armr", self.x + 3, self.y + 4, 0 + self.armrlerp, self.hscale, self.vscale)
@@ -1430,7 +1653,7 @@ Reimu.render=function(self)
     end
     
     Render("image:r_hat", self.x, self.y + 14, 0 + self.hatlerp, self.hscale, self.vscale)
-    Render("image:r_hattop", self.x, self.y + 21, 0 + (sin(self.timer) * 10) + self.hattoplerp, self.hscale, self.vscale)
+    Render("image:r_hattop", self.x, self.y + 17.5, 0 + (sin(self.timer) * 10) + self.hattoplerp, self.hscale, self.vscale)
         for i = 1, 4 do
         if self.sp[i] and self.sp[i][3] > 0.5 then
             Render("leaf", self.supportx + self.sp[i][1], self.supporty + self.sp[i][2], self.timer * 3)
@@ -1440,6 +1663,17 @@ end
 Reimu.shoot=function(self)
     player.nextshoot = 4
     PlaySound("plst00",0.3,self.x,false)
+    last=New(_editor_class["ReimuBaseShot"],self.x + 10,self.y,_)
+    last=New(_editor_class["ReimuBaseShot"],self.x - 10,self.y,_)
+    --[[ ]]
+    
+    for _=1,4 do
+        if self.optionPosition[math.floor(lstg.var.power / 100)][_][1] ~= 0 or self.optionPosition[math.floor(lstg.var.power / 100)][_][2] ~= 0 then
+            last=New(_editor_class["ReimuNeedleShot"],player.x + self.optionCurrentPosition[_][1] + 6,player.y + self.optionCurrentPosition[_][2],_)
+            last=New(_editor_class["ReimuNeedleShot"],player.x + self.optionCurrentPosition[_][1] - 6,player.y + self.optionCurrentPosition[_][2],_)
+        else
+        end
+    end
 end
 Reimu.spell=function(self)
 end
@@ -1493,6 +1727,18 @@ stage.group.DefStageFunc('1@GameGroup','init',function(self)
         task._Wait(1)
         last=New(_editor_class["HUDManager"],self.x,self.y,_)
         task._Wait(60)
+        last=New(EnemySimple,26,99999,0, 120,{0,0,0},1,false,true,false,function(self)
+            task.New(self,function()
+                do
+                    local _h_posx=(100-(-100))/2 local _t_posx=(100+(-100))/2 local posx=_h_posx*sin(0)+_t_posx local _w_posx=0 local _d_w_posx=1.5
+                    for _=1,_infinite do
+                        self.x,self.y=posx,120
+                        task._Wait(1)
+                        _w_posx=_w_posx+_d_w_posx posx=_h_posx*sin(_w_posx)+_t_posx
+                    end
+                end
+            end)
+        end)
         task._Wait(18099)
     end)
     task.New(self,function()
