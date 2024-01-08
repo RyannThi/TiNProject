@@ -89,6 +89,7 @@ lstg.LoadFont('font:'..'TTKP','font\\TTKP.fnt',true)
 LoadFX('fx:'..'alpha_mask','SHADER\\alpha_mask.fx')
 CreateRenderTarget("RenderTarget")
 CreateRenderTarget("Mask")
+CreateRenderTarget("BombEf")
 -- archive space: 
 -- archive space: TITLE\
 _LoadImageFromFile('image:'..'MainMenuBackground','TITLE\\MainMenuBackground.png',true,0,0,false,0)
@@ -158,7 +159,10 @@ do
 end
 _LoadImageFromFile('image:'..'r_shot2ef','PLAYER\\REIMU\\r_shot2ef.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'r_shotef','PLAYER\\REIMU\\r_shotef.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'r_border','PLAYER\\REIMU\\r_border.png',false,0,0,false,0)
+_LoadImageFromFile('image:'..'r_amulet','PLAYER\\REIMU\\r_amulet.png',true,0,0,false,0)
 -- archive space: 
+_LoadImageFromFile('image:'..'BombCutin','BombCutin.png',true,0,0,false,0)
 -- archive space: 
 _editor_class["MainMenuBG"]=Class(_object)
 _editor_class["MainMenuBG"].init=function(self,_x,_y,_)
@@ -1293,6 +1297,88 @@ _editor_class["ShotEf"].init=function(self,_x,_y,angle,speed,img,scale)
         _del(self,true)
     end)
 end
+_editor_class["BombEf"]=Class(_object)
+_editor_class["BombEf"].init=function(self,_x,_y,positionx, positiony, col)
+    self.x,self.y=_x,_y
+    self.img="img_void"
+    self.layer=LAYER_TOP+999
+    self.group=GROUP_GHOST
+    self.hide=false
+    self.bound=false
+    self.navi=false
+    self.hp=10
+    self.maxhp=10
+    self.colli=false
+    self._servants={}
+    self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
+    self.posx, self.posy = WorldToUI(positionx, positiony)
+    self.altposx, self.altposy = positionx, positiony
+    self.alpha = 0
+    self.col = col
+    self.scale = 0
+    lasttask=task.New(self,function()
+        do
+            local _beg_alpha=0 local alpha=_beg_alpha  local _w_alpha=-90 local _end_alpha=255 local _d_w_alpha=180/(10-1)
+            for _=1,10 do
+                self.alpha = alpha
+                task._Wait(1)
+                _w_alpha=_w_alpha+_d_w_alpha alpha=(_end_alpha-_beg_alpha)/2*sin(_w_alpha)+((_end_alpha+_beg_alpha)/2)
+            end
+        end
+        do
+            local _beg_alpha=255 local alpha=_beg_alpha  local _w_alpha=-90 local _end_alpha=0 local _d_w_alpha=180/(90-1)
+            for _=1,90 do
+                self.alpha = alpha
+                task._Wait(1)
+                _w_alpha=_w_alpha+_d_w_alpha alpha=(_end_alpha-_beg_alpha)/2*sin(_w_alpha)+((_end_alpha+_beg_alpha)/2)
+            end
+        end
+        _del(self,true)
+    end)
+    lasttask=task.New(self,function()
+        do
+            local _beg_scale=0 local scale=_beg_scale  local _w_scale=-90 local _end_scale=3 local _d_w_scale=180/(100-1)
+            for _=1,100 do
+                self.scale = scale
+                task._Wait(1)
+                _w_scale=_w_scale+_d_w_scale scale=(_end_scale-_beg_scale)/2*sin(_w_scale)+((_end_scale+_beg_scale)/2)
+            end
+        end
+    end)
+end
+_editor_class["BombEf"].render=function(self)
+    Render("image:BombCutin",self.altposx, self.altposy,self.timer,self.scale, self.scale,0.5)
+    Render("image:BombCutin",self.altposx, self.altposy,self.timer*-1,self.scale, self.scale,0.5)
+    SetViewMode'ui'
+    SetImageState("image:BombCutin","mul+add",Color(self.alpha,self.col[1],self.col[2],self.col[3]))
+    PushRenderTarget("BombEf")
+    Render("image:BombCutin",self.posx, self.posy,self.timer,self.scale, self.scale,0.5)
+    Render("image:BombCutin",self.posx, self.posy,self.timer,self.scale, self.scale,0.5)
+    Render("image:BombCutin",self.posx, self.posy,self.timer,self.scale, self.scale,0.5)
+    Render("image:BombCutin",self.posx, self.posy,self.timer*-1,self.scale, self.scale,0.5)
+    Render("image:BombCutin",self.posx, self.posy,self.timer*-1,self.scale, self.scale,0.5)
+    Render("image:BombCutin",self.posx, self.posy,self.timer*-1,self.scale, self.scale,0.5)
+    PopRenderTarget("BombEf")
+    self.class.base.render(self)
+    lstg.PostEffect(
+        -- 着色器资源名称
+        "fx:alpha_mask",
+        -- 屏幕渲染目标，采样器类型
+        "BombEf", 6,
+        -- 混合模式
+        "mul+add",
+        -- 浮点参数
+        {},
+        -- 纹理与采样器类型参数
+        {
+            { "Mask", 6 },
+        }
+    )
+    PushRenderTarget("BombEf")
+    RenderClear(Color(0,0,0,0))
+    PopRenderTarget("BombEf")
+    SetViewMode'world'
+end
 _editor_class["ReimuBaseShot"]=Class(_object)
 _editor_class["ReimuBaseShot"].init=function(self,_x,_y,_)
     player_bullet_straight.init(self,"image:r_shot",_x,_y,15,90,2)
@@ -1379,6 +1465,114 @@ _editor_class["ReimuNeedleShot"].kill=function(self)
 end
 _editor_class["ReimuNeedleShot"].del=function(self)
     self.class.base.del(self)
+end
+_editor_class["Reimu_Barrier"]=Class(_object)
+_editor_class["Reimu_Barrier"].init=function(self,_x,_y,_)
+    self.x,self.y=_x,_y
+    self.img="img_void"
+    self.layer=LAYER_PLAYER_BULLET
+    self.group=GROUP_PLAYER_BULLET
+    self.hide=false
+    self.bound=false
+    self.navi=false
+    self.hp=10
+    self.maxhp=10
+    self.colli=true
+    self._servants={}
+    self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
+    self.x,self.y=0,0
+    self.killflag = true
+    self.distance = 0
+    self.alpha = 0
+    self.dmg = 1.3
+    self.amuletspd = 3
+    self.a, self.b, self.rect = 96, 96,true
+    lasttask=task.New(self,function()
+        do
+            local _beg_alpha=0 local alpha=_beg_alpha  local _w_alpha=0 local _end_alpha=255 local _d_w_alpha=90/(20-1)
+            for _=1,20 do
+                self.alpha = alpha
+                task._Wait(1)
+                _w_alpha=_w_alpha+_d_w_alpha alpha=(_end_alpha-_beg_alpha)*sin(_w_alpha)+(_beg_alpha)
+            end
+        end
+        task._Wait(100)
+        do
+            local _beg_alpha=255 local alpha=_beg_alpha  local _w_alpha=-90 local _end_alpha=0 local _d_w_alpha=90/(30-1)
+            for _=1,30 do
+                self.alpha = alpha
+                task._Wait(1)
+                _w_alpha=_w_alpha+_d_w_alpha alpha=(_end_alpha-_beg_alpha)*sin(_w_alpha)+(_end_alpha)
+            end
+        end
+        _del(self,true)
+    end)
+    lasttask=task.New(self,function()
+        do
+            local _beg_ds=-30 local ds=_beg_ds  local _w_ds=0 local _end_ds=0 local _d_w_ds=90/(20-1)
+            for _=1,20 do
+                self.distance = ds
+                self.a, self.b, self.rect = 96 + ds, 96 + ds,true
+                task._Wait(1)
+                _w_ds=_w_ds+_d_w_ds ds=(_end_ds-_beg_ds)*sin(_w_ds)+(_beg_ds)
+            end
+        end
+        task._Wait(40)
+        misc.ShakeScreen(60,3)
+        do
+            local _beg_ds=0 local ds=_beg_ds  local _w_ds=0 local _end_ds=192 local _d_w_ds=90/(60-1)
+            for _=1,60 do
+                self.distance = ds
+                self.a, self.b, self.rect = 96 + ds, 96 + ds,true
+                task._Wait(1)
+                _w_ds=_w_ds+_d_w_ds ds=(_end_ds-_beg_ds)*sin(_w_ds)+(_beg_ds)
+            end
+        end
+    end)
+    lasttask=task.New(self,function()
+        do
+            local _beg_spd=3 local spd=_beg_spd  local _w_spd=0 local _end_spd=1 local _d_w_spd=90/(20-1)
+            for _=1,20 do
+                self.amuletspd = spd
+                task._Wait(1)
+                _w_spd=_w_spd+_d_w_spd spd=(_end_spd-_beg_spd)*sin(_w_spd)+(_beg_spd)
+            end
+        end
+        task._Wait(40)
+        do
+            local _beg_spd=1 local spd=_beg_spd  local _w_spd=-90 local _end_spd=4 local _d_w_spd=90/(90-1)
+            for _=1,90 do
+                self.amuletspd = spd
+                task._Wait(1)
+                _w_spd=_w_spd+_d_w_spd spd=(_end_spd-_beg_spd)*sin(_w_spd)+(_end_spd)
+            end
+        end
+    end)
+end
+_editor_class["Reimu_Barrier"].render=function(self)
+    SetImageState("image:r_border","mul+add",Color(self.alpha,255,100,100))
+    do local posy,_d_posy=(224),(-32*3) for _=1,32 do
+        Render("image:r_border",self.distance,posy,180,1/6 * 3, 1/6 *3,0.5)
+        Render("image:r_border",-self.distance,posy,0,1/6 * 3, 1/6 *3,0.5)
+    posy=posy+_d_posy end end
+    SetImageState("image:r_border","mul+add",Color(self.alpha,100,100,255))
+    do local posx,_d_posx=(-224),(32*3) for _=1,32 do
+        Render("image:r_border",posx, self.distance,-90,1/6 * 3, 1/6 *3,0.5)
+        Render("image:r_border",posx, -self.distance,90,1/6 * 3, 1/6 *3,0.5)
+    posx=posx+_d_posx end end
+    do local posy,_d_posy=(224),(-45) for _=1,120 do
+        do
+            local _beg_posx=-220 local posx=_beg_posx local _end_posx=220 local _d_posx=(_end_posx-_beg_posx)/(8-1)
+            for _=1,8 do
+                SetImageState("image:r_amulet","mul+add",Color(self.alpha,255,100,100))
+                Render("image:r_amulet",posx, posy - (self.timer * self.amuletspd) + 480,-90,1/4, 1/4,0.5)
+                SetImageState("image:r_amulet","mul+add",Color(self.alpha,100,100,255))
+                Render("image:r_amulet",posx + 32, posy - 80 + (self.timer * self.amuletspd),90,1/4, 1/4,0.5)
+                posx=posx+_d_posx
+            end
+        end
+    posy=posy+_d_posy end end
+    self.class.base.render(self)
 end
 Reimu=Class(player_class)
 Reimu.init=function(self)
@@ -1490,7 +1684,6 @@ Reimu.init=function(self)
         else
         end
     end
-    player.nextspell = 999999999
 end
 Reimu.frame=function(self)
     task.Do(self)    player_class.frame(self)
@@ -1676,6 +1869,19 @@ Reimu.shoot=function(self)
     end
 end
 Reimu.spell=function(self)
+    last=New(_editor_class["Reimu_Barrier"],self.x,self.y,_)
+    player.protect = 30+70+45+60*2
+    player.nextspell = 30+70+45+60*2
+    PlaySound("old_cat00",0.8,self.x/1024,false)
+    PlaySound("old_power1",1,self.x/256,false)
+    misc.ShakeScreen(20,3)
+    New(bullet_cleaner,player.x,player.y,512,30,60*2,false,false,0)
+    player.collect_line = player.collect_line - 300
+    last=New(_editor_class["BombEf"],self.x,self.y,self.x, self.y, {255, 100, 100})
+    New(tasker, function()
+        task._Wait(60*2)
+        player.collect_line = player.collect_line + 300
+    end)
 end
 Reimu.special=function(self)
 end
@@ -1706,10 +1912,6 @@ table.insert(player_list, {'Reimu Hakurei','Reimu','Reimu'})-- Loading Screen
         _, is_left_held = coroutine.resume(checker_left, "left")
         _, is_right_held = coroutine.resume(checker_right, "right")
         _, is_c_held = coroutine.resume(checker_c, "special")
-        if is_debug then
-        	if GetKeyState(KEY.U) then scoredata.tutoriallock = false end
-        	if GetKeyState(KEY.L) then scoredata.tutoriallock = true end
-        end
         task.Do(self)
     end
 
@@ -1723,22 +1925,13 @@ stage.group.DefStageFunc('1@GameGroup','init',function(self)
     lasttask=task.New(self,function()
         LoadMusic('spellcard','THlib\\music\\spellcard.ogg',75,0xc36e80/44100/4)
         SetWorldUEX(screen.width/2, screen.height/2, 448, 448, 32, 32)
+        lstg.var.bomb = 7
+        lstg.var.spell = 7
         New(_editor_class["temple_background"] or temple_background)
         task._Wait(1)
         last=New(_editor_class["HUDManager"],self.x,self.y,_)
         task._Wait(60)
-        last=New(EnemySimple,26,99999,0, 120,{0,0,0},1,false,true,false,function(self)
-            task.New(self,function()
-                do
-                    local _h_posx=(100-(-100))/2 local _t_posx=(100+(-100))/2 local posx=_h_posx*sin(0)+_t_posx local _w_posx=0 local _d_w_posx=1.5
-                    for _=1,_infinite do
-                        self.x,self.y=posx,120
-                        task._Wait(1)
-                        _w_posx=_w_posx+_d_w_posx posx=_h_posx*sin(_w_posx)+_t_posx
-                    end
-                end
-            end)
-        end)
+        last=New(_editor_class["DebugENM"],self.x,self.y,_)
         task._Wait(18099)
     end)
     task.New(self,function()
