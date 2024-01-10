@@ -85,6 +85,8 @@ SetSplash(true)
 Include'Vector.lua'
 lstg.LoadFont('font:'..'TTKP','font\\TTKP.fnt',true)
 --- Load Font Image "TTKP"
+lstg.LoadFont('font:'..'LTCarpet','font\\LTCarpet.fnt',false)
+--- Load Font Image "LTCarpet"
 -- archive space: SHADER\
 LoadFX('fx:'..'alpha_mask','SHADER\\alpha_mask.fx')
 CreateRenderTarget("RenderTarget")
@@ -234,6 +236,7 @@ _editor_class["MainMenuMain"].init=function(self,_x,_y,_)
     last=New(_editor_class["MainMenuDifficulty"],self.x,self.y,_)
     last=New(_editor_class["MainMenuPlayer"],self.x,self.y,_)
     last=New(_editor_class["MainMenuHaraeAnim"],self.x,self.y,_)
+    last=New(_editor_class["MainMenuOptions"],self.x,self.y,_)
     lasttask=task.New(self,function()
         do
             local _beg_logoScale=0.2 local logoScale=_beg_logoScale  local _w_logoScale=0 local _end_logoScale=1 local _d_w_logoScale=90/(60*2.5-1)
@@ -1098,6 +1101,176 @@ _editor_class["MainMenuBlackHole"].render=function(self)
     SetImageState("image:MainMenuBlackHole_2","mul+rev",Color(self.bhAlpha,255,255,255))
     Render("image:MainMenuBlackHole_1",screen.width/2 + self.canvasX, screen.height/2 + self.canvasY,self.timer * 6,1/2.25 * self.bhSize, 1/2.25 * self.bhSize,0.5)
     Render("image:MainMenuBlackHole_2",screen.width/2 + self.canvasX, screen.height/2 + self.canvasY,self.timer * 8 * -1 ,1/2.25 * self.bhSize, 1/2.25 * (self.bhSize * 2.4),0.5)
+    SetViewMode'world'
+end
+_editor_class["MainMenuOptions"]=Class(_object)
+_editor_class["MainMenuOptions"].init=function(self,_x,_y,_)
+    self.x,self.y=_x,_y
+    self.img="img_void"
+    self.layer=LAYER_TOP
+    self.group=GROUP_GHOST
+    self.hide=false
+    self.bound=false
+    self.navi=false
+    self.hp=10
+    self.maxhp=10
+    self.colli=false
+    self._servants={}
+    self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
+    self.canvasX = 854
+    self.canvasY = 0
+    self.index = 1
+    self.resIndex = scoredata.resolutionIndex or 1
+    self.windowed = scoredata.windowed or false
+    self.vsync = scoredata.vsync or false
+    self.bgmVol = scoredata.bgmVolume or 0.8
+    self.seVol = scoredata.seVol or 0.8
+    
+    self.resolutionValues = {
+    	{640, 360},
+    	{854, 480},
+    	{960, 540},
+    	{1280, 720},
+    	{1366, 768},
+    	{1600, 900},
+    	{1920, 1080},
+    	{2560, 1440}
+    }
+    
+    self.text = {
+    	"Resolution: " .. self.resolutionValues[self.resIndex][1] .. "x" .. self.resolutionValues[self.resIndex][2],
+    	"Fullscreen: " .. tostring(self.windowed),
+    	"Vsync: " .. tostring(self.vsync),
+    	"BGM Volume: " .. self.bgmVol * 100 .. "%",
+    	"SE Volume: " .. self.seVol * 100 .. "%",
+    	"Save and Return"
+    }
+    
+end
+_editor_class["MainMenuOptions"].frame=function(self)
+    if MainMenuRef.canvasIndex == 7 then
+    	self.canvasX = LerpDecel(self.canvasX, 0, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
+    else
+    	self.canvasX = LerpDecel(self.canvasX, 854, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
+    end
+    
+    if MainMenuRef.canvasIndex == 7 then
+    	if KeyIsPressed"shoot" and MainMenuRef.interactDelay == 0 then
+    		PlaySound("ok00",0.1,self.x/256,false)
+    		MainMenuRef.interactDelay = 5
+    		if self.index == 1 then
+    			self.resIndex = Wrap(self.resIndex + 1, 1, 9)
+    		elseif self.index == 2 then
+    			self.windowed = not self.windowed
+    		elseif self.index == 3 then
+    			self.vsync = not self.vsync
+    		elseif self.index == 4 then
+    			self.bgmVol = Wrap(self.bgmVol + 0.1, 0, 1.1)
+    			SetBGMVolume(self.bgmVol)
+    		elseif self.index == 5 then
+    			self.seVol = Wrap(self.seVol + 0.1, 0, 1.1)
+    			SetSEVolume(self.seVol)
+    		elseif self.index == 6 then
+    			scoredata.resolutionIndex = self.resIndex
+    			scoredata.windowed = self.windowed
+    			scoredata.vsync = self.vsync
+    			scoredata.bgmVolume = self.bgmVol
+    			scoredata.seVolume = self.seVol
+    			setting.resx = self.resolutionValues[self.resIndex][1]
+    			setting.resy = self.resolutionValues[self.resIndex][2]
+    			setting.windowed = self.windowed
+    			setting.vsync = self.vsync
+    			setting.bgmvolume = self.bgmVol
+    			setting.sevolume = self.seVol
+    			saveConfigure()
+    			ChangeVideoMode(self.resolutionValues[self.resIndex][1], self.resolutionValues[self.resIndex][2], self.windowed, self.vsync)
+    			ResetScreen()
+    			SetBGMVolume(self.bgmVol)
+    			--SetBGMVolume("bgm:BGM_Title", setting.bgmvolume/100)
+    			SetSEVolume(self.seVol)
+    			MainMenuRef.canvasIndex = 0
+    		end
+    	end
+    
+    	if KeyIsPressed"spell" then
+    		PlaySound("cancel00",0.1,self.x/256,false)
+    		MainMenuRef.canvasIndex = 0
+    	end
+    	
+    	if is_up_held then
+    		self.index = Wrap(self.index - 1, 1, 7)
+    		PlaySound("select00",0.1,0,false)
+    	end
+    	
+    	if is_right_held then
+    		if self.index == 1 then
+    			self.resIndex = Wrap(self.resIndex + 1, 1, 9)
+    		elseif self.index == 2 then
+    			self.windowed = not self.windowed
+    		elseif self.index == 3 then
+    			self.vsync = not self.vsync
+    		elseif self.index == 4 then
+    			self.bgmVol = Wrap(self.bgmVol + 0.1, 0, 1.1)
+    			SetBGMVolume(self.bgmVol)
+    		elseif self.index == 5 then
+    			self.seVol = Wrap(self.seVol + 0.1, 0, 1.1)
+    			SetSEVolume(self.seVol)
+    		end
+    		PlaySound("select00",0.1,0,false)
+    	end
+    	
+    	if is_left_held then
+    		if self.index == 1 then
+    			self.resIndex = Wrap(self.resIndex - 1, 1, 9)
+    		elseif self.index == 2 then
+    			self.windowed = not self.windowed
+    		elseif self.index == 3 then
+    			self.vsync = not self.vsync
+    		elseif self.index == 4 then
+    			self.bgmVol = Wrap(self.bgmVol - 0.1, 0, 1.1)
+    			SetBGMVolume(self.bgmVol)
+    		elseif self.index == 5 then
+    			self.seVol = Wrap(self.seVol - 0.1, 0, 1.1)
+    			SetSEVolume(self.seVol)
+    		end
+    		PlaySound("select00",0.1,0,false)
+    	end
+    	
+    	if is_down_held then
+    		self.index = Wrap(self.index + 1, 1, 7)
+    		PlaySound("select00",0.1,0,false)
+    	end
+    end
+    
+    self.text = {
+    	"Resolution: " .. self.resolutionValues[self.resIndex][1] .. "x" .. self.resolutionValues[self.resIndex][2],
+    	"Windowed: " .. tostring(self.windowed),
+    	"Vsync: " .. tostring(self.vsync),
+    	"BGM Volume: " .. self.bgmVol * 100 .. "%",
+    	"SE Volume: " .. self.seVol * 100 .. "%",
+    	"Save and Return"
+    }
+    self.class.base.frame(self)
+end
+_editor_class["MainMenuOptions"].render=function(self)
+    SetViewMode'ui'
+    self.class.base.render(self)
+    SetFontState("font:LTCarpet","",Color(100,255,255,255))
+    lstg.RenderText("font:LTCarpet","Resolution: " .. self.resolutionValues[self.resIndex][1] .. "x" .. self.resolutionValues[self.resIndex][2] .. "\n" ..
+"Windowed: " .. tostring(self.windowed) .. "\n" ..
+"Vsync: " .. tostring(self.vsync) .. "\n" ..
+"BGM Volume: " .. self.bgmVol * 100 .. "%" .. "\n" ..
+"SE Volume: " .. self.seVol * 100 .. "%" .. "\n" ..
+"Save and Return",screen.width / 2 + self.canvasX + 325, 300 + MainMenuRef.yOffset + self.canvasY,0.3,2)
+    SetFontState("font:LTCarpet","",Color(255,255,255,255))
+    for _=1,6 do
+        if _ == self.index then
+            lstg.RenderText("font:LTCarpet",string.rep("\n", _ - 1) .. self.text[_],screen.width / 2 + self.canvasX + 325, 300 + MainMenuRef.yOffset + self.canvasY,0.3,2)
+        else
+        end
+    end
     SetViewMode'world'
 end
 _editor_class["HUDScroller"]=Class(_object)

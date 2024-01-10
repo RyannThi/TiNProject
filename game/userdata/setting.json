@@ -17,14 +17,10 @@
 		"retry": 82
 	},
 	"username": "User",
-	"locale": "zh_cn",
-	"timezone": 8,
 	"windowed": true,
-	"resx": 640,
-	"resy": 480,
+	"resx": 1280,
+	"resy": 720,
 	"vsync": false,
-	"sevolume": 100,
-	"bgmvolume": 100,
 	"keys": {
 		"up": 38,
 		"down": 40,
@@ -34,5 +30,12 @@
 		"shoot": 90,
 		"spell": 88,
 		"special": 67
-	}
+	},
+	"bgmvolume": 0.7,
+	"mod": "TiNProject",
+	"locale": "zh_cn",
+	"nosplash": true,
+	"timezone": 8,
+	"last_mod": "TiNProject",
+	"sevolume": 0.6
 }

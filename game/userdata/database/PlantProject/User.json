@@ -1,0 +1,46 @@
+{
+	"ownedCards": [
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0
+	],
+	"prevSeedAmount": 1000,
+	"clearCount": [
+		[
+			0,
+			0
+		],
+		[
+			0,
+			0
+		],
+		[
+			0,
+			0
+		]
+	],
+	"seedAmount": 1000,
+	"hiscore": {
+		
+	},
+	"shrubLevelUp": [
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1
+	],
+	"attemptCount": [
+		0,
+		0,
+		0
+	]
+}
