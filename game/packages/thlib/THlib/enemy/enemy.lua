@@ -143,6 +143,7 @@ end
 
 function enemy:render()
     self._wisys:render(self.dmgt, self.dmgmaxt)--by OLC and ETC，新行走图系统
+	-- change wisys
 end
 
 function enemy:take_damage(dmg)
