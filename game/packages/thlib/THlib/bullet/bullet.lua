@@ -1,6 +1,17 @@
+LoadTexture("bulletNew1", 'THlib/bullet/bulletNew1.png', true)
+
+-- SCALE ===============================================================================
+
+LoadImageGroup('arrow_big', 'bulletNew1', 0, 0, 129, 132, 1, 16, 2.5, 2.5)
+for i = 1, 16 do
+    SetImageScale('arrow_big' .. i, 1/8.25)
+end
+
+-- OLD =================================================================================
+
 LoadTexture('bullet1', 'THlib/bullet/bullet1.png', true)
 LoadImageGroup('preimg', 'bullet1', 80, 0, 32, 32, 1, 8)
-LoadImageGroup('arrow_big', 'bullet1', 0, 0, 16, 16, 1, 16, 2.5, 2.5)
+--LoadImageGroup('arrow_big', 'bullet1', 0, 0, 16, 16, 1, 16, 2.5, 2.5)
 LoadImageGroup('gun_bullet', 'bullet1', 24, 0, 16, 16, 1, 16, 2.5, 2.5)
 LoadImageGroup('gun_bullet_void', 'bullet1', 56, 0, 16, 16, 1, 16, 2.5, 2.5)
 LoadImageGroup('butterfly', 'bullet1', 112, 0, 32, 32, 1, 8, 4, 4)
@@ -8,6 +19,7 @@ LoadImageGroup('square', 'bullet1', 152, 0, 16, 16, 1, 16, 3, 3)
 LoadImageGroup('ball_mid', 'bullet1', 176, 0, 32, 32, 1, 8, 4, 4)
 LoadImageGroup('mildew', 'bullet1', 208, 0, 16, 16, 1, 16, 2, 2)
 LoadImageGroup('ellipse', 'bullet1', 224, 0, 32, 32, 1, 8, 4.5, 4.5)
+
 
 LoadTexture('bullet2', 'THlib/bullet/bullet2.png')
 LoadImageGroup('star_small', 'bullet2', 96, 0, 16, 16, 1, 16, 3, 3)
@@ -193,7 +205,8 @@ function bullet:render()
     if self._blend and self._a and self._r and self._g and self._b then
         SetImgState(self, self._blend, self._a, self._r, self._g, self._b)
     end
-    DefaultRenderFunc(self)
+    --DefaultRenderFunc(self)
+    Render(self.img, self.x, self.y, self.rot, self.hscale, self.vscale, 0.5)
     if self._blend and self._a and self._r and self._g and self._b then
         SetImgState(self, '', 255, 255, 255, 255)
     end

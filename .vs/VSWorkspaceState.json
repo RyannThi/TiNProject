@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\game",
+    "\\game\\packages",
+    "\\game\\packages\\thlib",
+    "\\game\\packages\\thlib\\lib",
+    "\\game\\packages\\thlib\\THlib",
+    "\\game\\packages\\thlib\\THlib\\bullet"
+  ],
+  "SelectedNode": "\\game\\packages\\thlib\\lib\\Lobject.lua",
+  "PreviewInSolutionExplorer": false
+}

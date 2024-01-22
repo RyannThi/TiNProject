@@ -1417,6 +1417,15 @@ _editor_class["DebugENM"].init=function(self,_x,_y,_)
     for i=1, 60 do
         self.damage_frames[i] = 0
     end
+    lasttask=task.New(self,function()
+        for _=1,_infinite do
+            do local ang,_d_ang=(0),(360/16) for _=1,16 do
+                last=New(_straight,arrow_big,_,self.x,self.y,3,ang,false,0,true,true,0,false,0,0,0,false)
+            ang=ang+_d_ang end end
+            PlaySound("tan00",0.1,self.x/256,false)
+            task._Wait(16)
+        end
+    end)
 end
 _editor_class["DebugENM"].frame=function(self)
     local damage_frame = 10000 - self.hp
