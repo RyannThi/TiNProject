@@ -1,6 +1,5 @@
 {
-	"locale": "zh_cn",
-	"timezone": 8,
+	"vsync": false,
 	"keys": {
 		"slow": 16,
 		"shoot": 90,
@@ -12,13 +11,6 @@
 		"right": 39
 	},
 	"mod": "TiNProject",
-	"windowed": true,
-	"resx": 1280,
-	"resy": 720,
-	"vsync": false,
-	"sevolume": 0.6,
-	"bgmvolume": 0.7,
-	"nosplash": true,
 	"keys2": {
 		"slow": 65,
 		"shoot": 83,
@@ -37,5 +29,13 @@
 		"repslow": 16
 	},
 	"username": "User",
-	"last_mod": "TiNProject"
+	"windowed": true,
+	"locale": "zh_cn",
+	"resy": 720,
+	"timezone": 8,
+	"sevolume": 0.6,
+	"last_mod": "TiNProject",
+	"nosplash": true,
+	"bgmvolume": 0.7,
+	"resx": 1280
 }

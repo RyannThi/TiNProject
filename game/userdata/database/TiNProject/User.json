@@ -1,10 +1,10 @@
 {
-	"vsync": false,
+	"resolutionIndex": 4,
+	"bgmVolume": 0.7,
+	"windowed": true,
 	"seVolume": 0.6,
 	"hiscore": {
 		"1@GameGroup@Reimu": 116395
 	},
-	"windowed": true,
-	"resolutionIndex": 4,
-	"bgmVolume": 0.7
+	"vsync": false
 }

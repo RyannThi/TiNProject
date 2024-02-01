@@ -166,6 +166,9 @@ _LoadImageFromFile('image:'..'r_amulet','PLAYER\\REIMU\\r_amulet.png',true,0,0,f
 -- archive space: 
 _LoadImageFromFile('image:'..'BombCutin','BombCutin.png',true,0,0,false,0)
 -- archive space: 
+-- archive space: ENEMY\
+_LoadImageFromFile('image:'..'BulletShadow','ENEMY\\BulletShadow.png',true,0,0,false,0)
+-- archive space: 
 _editor_class["MainMenuBG"]=Class(_object)
 _editor_class["MainMenuBG"].init=function(self,_x,_y,_)
     self.x,self.y=_x,_y
@@ -1410,7 +1413,7 @@ _editor_class["DebugENM"].init=function(self,_x,_y,_)
     self.x,self.y=_x,_y
     self.drop={0,0,0}
     task.New(self,function() self.protect=true task.Wait(1) self.protect=false end)
-    self.x, self.y = 0, 144
+    self.x, self.y = 0, 40
     self.layer = LAYER_TOP + 999
     self.hp = 10000
     self.damage_frames = {}
@@ -1419,10 +1422,21 @@ _editor_class["DebugENM"].init=function(self,_x,_y,_)
     end
     lasttask=task.New(self,function()
         for _=1,_infinite do
-            do local ang,_d_ang=(0),(360/16) for _=1,16 do
-                last=New(_straight,arrow_big,_,self.x,self.y,3,ang,false,0,true,true,0,false,0,0,0,false)
-            ang=ang+_d_ang end end
-            PlaySound("tan00",0.1,self.x/256,false)
+            self.bulnames = { arrow_big, arrow_mid, arrow_small, gun_bullet, butterfly, square,
+                ball_small, ball_mid, ball_mid_c, ball_big, ball_huge, ball_light,
+                star_small, star_big, grain_a, grain_b, grain_c, kite, knife, knife_b,
+                water_drop, mildew, ellipse, heart, money, music, silence,
+                water_drop_dark, ball_huge_dark, ball_light_dark
+            }
+            do local bulindex,_d_bulindex=(1),(1) for _=1,30 do
+                for _=1,8 do
+                    do local ang,_d_ang=(180),(360/16) for _=1,16 do
+                        last=New(_straight,self.bulnames[bulindex],_,self.x,self.y,4,ang,false,0,true,true,0,false,0,0,0,false)
+                    ang=ang+_d_ang end end
+                    PlaySound("tan00",0.1,self.x/256,false)
+                    task._Wait(25)
+                end
+            bulindex=bulindex+_d_bulindex end end
             task._Wait(16)
         end
     end)
@@ -1445,6 +1459,28 @@ _editor_class["DebugENM"].render=function(self)
     SetViewMode'ui'
     lstg.RenderText('menu', 'AVG DMG = ' .. self.average_damage ..  ' \n', 445, 160, 0.425, 0)
     SetViewMode'world'
+    self.class.base.render(self)
+end
+_editor_class["ShotShadows"]=Class(_object)
+_editor_class["ShotShadows"].init=function(self,_x,_y,_)
+    self.x,self.y=_x,_y
+    self.img="leaf"
+    self.layer=LAYER_PLAYER_BULLET-5
+    self.group=GROUP_ENEMY_BULLET
+    self.hide=false
+    self.bound=true
+    self.navi=false
+    self.hp=10
+    self.maxhp=10
+    self.colli=true
+    self._servants={}
+    self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
+    SetImageState("image:BulletShadow","",Color(100,255,255,255))
+end
+_editor_class["ShotShadows"].render=function(self)
+    for _,unit in ObjList(GROUP_ENEMY_BULLET) do
+        Render("image:BulletShadow",unit.x, unit.y,0,((1 * unit.hscale)/2.25) * 0.25,((1 * unit.vscale)/2.25) * 0.25,0.5)
+    end
     self.class.base.render(self)
 end
 _editor_class["ShotEf"]=Class(_object)
@@ -2112,6 +2148,7 @@ stage.group.DefStageFunc('1@GameGroup','init',function(self)
         New(_editor_class["temple_background"] or temple_background)
         task._Wait(1)
         last=New(_editor_class["HUDManager"],self.x,self.y,_)
+        last=New(_editor_class["ShotShadows"],self.x,self.y,_)
         task._Wait(60)
         last=New(_editor_class["DebugENM"],self.x,self.y,_)
         task._Wait(18099)
