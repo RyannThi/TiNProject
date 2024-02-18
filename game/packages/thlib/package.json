@@ -1,5 +1,8 @@
 {
-    "name": "thlib",
-    "version": "0.8.21",
+    "name": "thlib-scripts",
+    "version": "0.8.22",
+    "dependencies": {
+        "thlib-resources": "latest"
+    },
     "description": "THlib 核心脚本包"
 }

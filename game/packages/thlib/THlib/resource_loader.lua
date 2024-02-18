@@ -4,6 +4,9 @@
 -- LuaSTG Sub only
 -- (if you ask me to backport this i will End you and then tell you to do it yourself)
 
+-- Requires THlib aex+ v0.8.22
+-- (https://github.com/Legacy-LuaSTG-Engine/Bundle-After-Ex-Plus)
+
 -- Installation Instructions:
 -- 1. make THlib/THlib.lua look like this:
 --[[
@@ -20,6 +23,7 @@ Include 'THlib/UI/menu.lua'
 Include 'THlib/editor.lua'
 
 TexResLoad_BufferCall('_LoadImageFromFile') -- place immediately after editor.lua
+TexResLoad_BufferCall('_LoadImageGroupFromFile') -- place immediately after editor.lua
 
 Include 'THlib/UI/UI.lua'
 Include 'sp/sp.lua'
@@ -29,7 +33,7 @@ Include 'sp/sp.lua'
 --[[ SceneManager.setNext("GameScene") ]]
 -- to
 --[[ SceneManager.setNext("LoadScene") ]]
--- (if you plan on using scdebugger, change this in THlib/ext/ext.lua as well)
+-- (if you plan on skipping launcher, change this in THlib/ext/ext.lua as well)
 --
 -- 3. put this line in THlib/laser/laser.lua, after function LoadLaserTexture definition
 --[[ LoadLaserTex_BufferCall() ]]
@@ -158,7 +162,7 @@ local buf_done = false
 function Task_LoadRes(list, loaderfunc)
     return function()
         buf_done = false
-        local interval = 1 / 55
+        local interval = 1 / 50
         local stopwatch = StopWatch()
         for n, p in pairs(list) do
             loaderfunc(n, p)
@@ -219,7 +223,7 @@ function Task_CallBuffer(fname)
         buf_done = false
         _G[fname] = _G['OLD_' .. fname]
         _G['OLD_' .. fname] = nil
-        local interval = 1 / 55
+        local interval = 1 / 50
         local stopwatch = StopWatch()
         for _, v in ipairs(call_buffer[fname]) do
             _G[fname](unpack(v))
@@ -241,13 +245,15 @@ ResLoad_BufferCall('SetImageScale')
 ResLoad_BufferCall('LoadAnimation')
 ResLoad_BufferCall('SetAnimationState')
 ResLoad_BufferCall('SetAnimationScale')
+ResLoad_BufferCall('SetTextureSamplerState')
 
 -- hall of double shame
 TexResLoad_BufferCall('LoadImageFromFile')
 TexResLoad_BufferCall('LoadAniFromFile')
 TexResLoad_BufferCall('LoadImageGroupFromFile')
 -- fuck you in particular
--- TexResLoad_BufferCall('_LoadImageFromFile') -- in THlib/THlib.lua
+-- TexResLoad_BufferCall('_LoadImageFromFile') -- in THlib/editor.lua
+-- TexResLoad_BufferCall('_LoadImageGroupFromFile') -- in THlib/editor.lua
 
 -- congrats! you win the biggest asshole award.
 -- LoadLaserTex_BufferCall('LoadLaserTexture') -- in THlib/laser/laser.lua
@@ -268,7 +274,9 @@ function LoadScene:onCreate()
         '_LoadImageFromFile',
         'LoadAniFromFile',
         'LoadImageGroupFromFile',
+        '_LoadImageGroupFromFile',
         'LoadLaserTexture',
+        'SetTextureSamplerState',
         { fnt_list, OLD_LoadFont },
         { fnt_mip_list, FntLoaderMip },
 
@@ -307,12 +315,12 @@ function LoadScene:onCreate()
             _G[v] = _G['OLD_' .. v]
         end
 
-        task.Wait(30)
-
-        assert(CheckRes('fnt', 'menu') ~= nil, 'bruh')
+        --task.Wait(10)
 
         SceneManager.setNext("GameScene")
     end)
+    OLD_LoadTexture("testgirl", "THlib/octostar.png", true)
+    OLD_LoadImage("testimg", "testgirl",0,0, GetTextureSize("testgirl"))
 end
 
 function LoadScene:onDestroy()
@@ -327,7 +335,10 @@ end
 
 function LoadScene:onRender()
     BeforeRender()
-    RenderClear(Color(255, sin(timer * 2) * 255, sin(timer * 1.5) * 255, sin(timer) * 255))
+    --RenderClear(Color(255, sin(timer * 2) * 160, sin(timer) * 160, sin(timer / 2) * 160))
+    SetViewMode("ui")
+    Render("testimg", 300, 300, 0, 4, 4)
+    SetViewMode("world")
     AfterRender()
 end
 

@@ -21,13 +21,15 @@ lstg.DoFile("lib/Linput.lua")--按键状态更新
 lstg.DoFile("lib/Ltask.lua")--task
 lstg.DoFile("lib/Lstage.lua")--stage关卡系统
 lstg.DoFile("lib/Ltext.lua")--文字渲染
-lstg.DoFile("lib/Lscoredata.lua")--玩家存档
+require("foundation.legacy.scoredata")
 lstg.DoFile("lib/Lplugin.lua")--用户插件
-
 require("lib.debug.AllView")
+require("foundation.MainLoop")
 
-----------------------------------------
----用户定义的一些函数
+local SceneManager = require("foundation.SceneManager")
+
+--------------------------------------------------------------------------------
+--- 默认的主场景
 
 --- 加载 THlib 后，会被重载以适应 replay 系统
 --- 逻辑帧更新，不和 FrameFunc 一一对应
@@ -63,55 +65,48 @@ end
 function AfterRender()
 end
 
-function GameExit()
-end
+---@class game.DefaultScene : foundation.Scene
+local DefaultScene = SceneManager.add("DefaultScene")
 
-----------------------------------------
----全局回调函数，底层调用
+DefaultScene.initialized = false
 
-local Ldebug = require("lib.Ldebug")
+function DefaultScene:onCreate()
+    if DefaultScene.initialized then
+        return -- 只初始化一次
+    end
 
-function GameInit()
-    --加载mod包
+    -- 加载mod包
     if setting.mod ~= 'launcher' then
         Include 'root.lua'
         lstg.plugin.DispatchEvent("afterMod")
     else
         Include 'launcher.lua'
     end
-    --最后的准备
+    -- 最后的准备
     lstg.RegisterAllGameObjectClass() -- 对所有class的回调函数进行整理，给底层调用
-    InitScoreData()--装载玩家存档
+    InitScoreData() -- 装载玩家存档
 
     SetViewMode("world")
-    if stage.next_stage == nil then
-        error('Entrance stage not set.')
-    end
+    --if stage.next_stage == nil then
+    --    error('Entrance stage not set.')
+    --end
     SetResourceStatus("stage")
+
+    DefaultScene.initialized = true
 end
 
-function FrameFunc()
-    Ldebug.update()
-    DoFrame(true, true)
-    Ldebug.layout()
-    return stage.QuitFlagExist()
+function DefaultScene:onDestroy()
 end
 
-function RenderFunc()
-    if stage.current_stage.timer >= 0 and stage.next_stage == nil then
-        BeginScene()
-        UpdateScreenResources()
-        BeforeRender()
-        stage.current_stage:render()
-        ObjRender()
-        AfterRender()
-        Ldebug.draw()
-        EndScene()
-    end
+function DefaultScene:onUpdate()
+    --DoFrame()
 end
 
-function FocusLoseFunc()
-end
+--[[function DefaultScene:onRender()
+    BeforeRender()
+    stage.current_stage:render()
+    ObjRender()
+    AfterRender()
+end--]]
 
-function FocusGainFunc()
-end
+SceneManager.setNext("DefaultScene")

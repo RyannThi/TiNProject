@@ -434,7 +434,7 @@ function EnemyWalkImageSystem:UpdateImage()
     else
         self.img = self.imgs[int((abs(self.lr) - 2) / 4) + 5]
     end
-    --self.hscale = sign(self.lr) * abs(self.hscale)
+    self.hscale = sign(self.lr) * abs(self.hscale)
 end
 
 PlayerWalkImageSystem = plus.Class()

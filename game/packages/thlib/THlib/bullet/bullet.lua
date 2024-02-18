@@ -1,236 +1,35 @@
-LoadTexture("bulletNew1", 'THlib/bullet/bulletNew1.png', true)
-LoadTexture("bulletNew2", 'THlib/bullet/bulletNew2.png', true)
-LoadTexture("bulletNew3", 'THlib/bullet/bulletNew3.png', true)
-LoadTexture("bulletNew4", 'THlib/bullet/bulletNew4.png', true)
-LoadTexture("bulletNew5", 'THlib/bullet/bulletNew5.png', true)
-LoadTexture("bulletNew6", 'THlib/bullet/bulletNew6.png', true)
-LoadTexture("bulletNew7", 'THlib/bullet/bulletNew7.png', true)
-LoadTexture("bulletNew8", 'THlib/bullet/bulletNew8.png', true)
-LoadTexture("bulletNew9", 'THlib/bullet/bulletNew9.png', true)
-
--- BULLETNEW1 ===============================================================================
-
-LoadImageGroup('arrow_big', 'bulletNew1', 0, 0, 129, 132, 1, 16, 2.5, 2.5)
-for i = 1, 16 do
-    SetImageScale('arrow_big' .. i, 1/8.25)
-end
-
-LoadImageGroup('gun_bullet', 'bulletNew1', 129, 0, 123, 65, 1, 16, 2.5, 2.5)
-for i = 1, 16 do
-    SetImageScale('gun_bullet' .. i, 1/7.69)
-end
-
-LoadImageGroup('butterfly', 'bulletNew1', 252, 0, 250, 300, 1, 8, 4, 4)
-for i = 1, 8 do
-    SetImageScale('butterfly' .. i, 1/9.38)
-end
-
-LoadImageGroup('square', 'bulletNew1', 502, 0, 179, 156, 1, 16, 3, 3)
-for i = 1, 16 do
-    SetImageScale('square' .. i, 1/11.19)
-end
-
-LoadImageGroup('ball_mid', 'bulletNew1', 681, 0, 206, 206, 1, 8, 4, 4)
-for i = 1, 8 do
-    SetImageScale('ball_mid' .. i, 1/6.44)
-end
-
-LoadImageGroup('mildew', 'bulletNew1', 1075, 0, 192, 192, 1, 16, 2, 2)
-for i = 1, 16 do
-    SetImageScale('mildew' .. i, 1/12)
-end
-
-LoadImageGroup('ellipse', 'bulletNew1', 887, 0, 188, 114, 1, 8, 4.5, 4.5)
-for i = 1, 8 do
-    SetImageScale('ellipse' .. i, 1/5.88)
-end
-
--- BULLETNEW3 ===============================================================================
-
-LoadImageGroup('star_small', 'bulletNew3', 300, 0, 172, 173, 1, 16, 3, 3)
-for i = 1, 16 do
-    SetImageScale('star_small' .. i, 1/10.75)
-end
-
-LoadImageGroup('star_big', 'bulletNew3', 472, 0, 177, 180, 1, 8, 5.5, 5.5)
-for i = 1, 8 do
-    SetImageScale('star_big' .. i, 1/5.53)
-end
-
-LoadImageGroup('ball_big', 'bulletNew3', 1213, 0, 211, 211, 1, 8, 8, 8)
-for i = 1, 8 do
-    SetImageScale('ball_big' .. i, 1/6.59)
-end
-
-LoadImageGroup('ball_small', 'bulletNew3', 1012, 0, 201, 201, 1, 16, 2, 2)
-for i = 1, 16 do
-    SetImageScale('ball_small' .. i, 1/12.56)
-end
-
-LoadImageGroup('grain_a', 'bulletNew3', 832, 0, 180, 99, 1, 16, 2.5, 2.5)
-for i = 1, 16 do
-    SetImageScale('grain_a' .. i, 1/11.25)
-end
-
-LoadImageGroup('grain_b', 'bulletNew3', 649, 0, 183, 84, 1, 16, 2.5, 2.5)
-for i = 1, 16 do
-    SetImageScale('grain_b' .. i, 1/11.44)
-end
-
--- BULLETNEW4 ===============================================================================
-
-LoadImageGroup('knife', 'bulletNew4', 0, 0, 233, 135, 1, 8, 4, 4)
-for i = 1, 8 do
-    SetImageScale('knife' .. i, 1/6)
-end
-
-LoadImageGroup('grain_c', 'bulletNew4', 233, 0, 223, 126, 1, 16, 2.5, 2.5)
-for i = 1, 16 do
-    SetImageScale('grain_c' .. i, 1/13.94)
-end
-
-LoadImageGroup('arrow_small', 'bulletNew4', 456, 0, 142, 74, 1, 16, 2.5, 2.5)
-for i = 1, 16 do
-    SetImageScale('arrow_small' .. i, 1/8)
-end
-
-LoadImageGroup('kite', 'bulletNew4', 598, 0, 187, 119, 1, 16, 2.5, 2.5)
-for i = 1, 16 do
-    SetImageScale('kite' .. i, 1/11.69)
-end
-
--- BULLETNEW5 ===============================================================================
-
-LoadImageGroup('star_big_b', 'bulletNew5', 0, 0, 146, 146, 1, 8, 6, 6)
-for i = 1, 8 do
-    SetImageScale('star_big_b' .. i, 1/4.56)
-end
-
-LoadImageGroup('ball_mid_b', 'bulletNew5', 146, 0, 188, 188, 1, 8, 4, 4)
-for i = 1, 8 do
-    SetImageScale('ball_mid_b' .. i, 1/5.88)
-    SetImageState('ball_mid_b' .. i, 'mul+add', Color(200, 200, 200, 200))
-end
-
-LoadImageGroup('arrow_mid', 'bulletNew5', 334, 0, 154, 60, 1, 8, 3.5, 3.5)
-for i = 1, 8 do
-    SetImageScale('arrow_mid' .. i, 1/4.81)
-end
-
-LoadImageGroup('heart', 'bulletNew5', 488, 0, 158, 158, 1, 8, 9, 9)
-for i = 1, 8 do
-    SetImageScale('heart' .. i, 1/4.94)
-end
-
-LoadImageGroup('knife_b', 'bulletNew5', 877, 0, 233, 135, 1, 8, 3.5, 3.5)
-for i = 1, 8 do
-    SetImageScale('knife_b' .. i, 1/6)
-end
-
-LoadImageGroup('ball_mid_c', 'bulletNew5', 1110, 0, 141, 141, 1, 8, 4, 4)
-for i = 1, 8 do
-    SetImageScale('ball_mid_c' .. i, 1/8.81)
-end
-
-LoadImageGroup('money', 'bulletNew5', 646, 0, 145, 145, 1, 8, 4, 4)
-for i = 1, 8 do
-    SetImageScale('money' .. i, 1/9.06)
-end
-
-LoadImageGroup('ball_mid_d', 'bulletNew5', 791, 0, 86, 86, 1, 8, 3, 3)
-for i = 1, 8 do
-    SetImageScale('ball_mid_d' .. i, 1/5.38)
-    SetImageState('ball_mid_d' .. i, 'mul+add')
-end
-
--- BULLETNEW6 ===============================================================================
-
-LoadImageGroup('ball_light', 'bulletNew6', 0, 0, 228, 228, 4, 2, 11.5, 11.5)
-LoadImageGroup('fade_ball_light', 'bulletNew6', 0, 0, 228, 228, 4, 2, 11.5, 11.5)
-LoadImageGroup('ball_light_dark', 'bulletNew6', 0, 0, 228, 228, 4, 2, 11.5, 11.5)
-LoadImageGroup('fade_ball_light_dark', 'bulletNew6', 0, 0, 228, 228, 4, 2, 11.5, 11.5)
-for i = 1, 8 do
-    SetImageScale('ball_light' .. i, 1/3.56)
-    SetImageScale('fade_ball_light' .. i, 1/3.56)
-    SetImageScale('ball_light_dark' .. i, 1/3.56)
-    SetImageScale('fade_ball_light_dark' .. i, 1/3.56)
-    SetImageState('ball_light' .. i, 'mul+add')
-end
-
--- BULLETNEW2 ===============================================================================
-
-LoadImageGroup('ball_huge', 'bulletNew2', 0, 0, 300, 300, 4, 2, 13.5, 13.5)
-LoadImageGroup('fade_ball_huge', 'bulletNew2', 0, 0, 300, 300, 4, 2, 13.5, 13.5)
-LoadImageGroup('ball_huge_dark', 'bulletNew2', 0, 0, 300, 300, 4, 2, 13.5, 13.5)
-LoadImageGroup('fade_ball_huge_dark', 'bulletNew2', 0, 0, 300, 300, 4, 2, 13.5, 13.5)
-for i = 1, 8 do
-    SetImageScale('ball_huge' .. i, 1/4.69)
-    SetImageScale('fade_ball_huge' .. i, 1/4.69)
-    SetImageScale('ball_huge_dark' .. i, 1/4.69)
-    SetImageScale('fade_ball_huge_dark' .. i, 1/4.69)
-    SetImageState('ball_huge' .. i, 'mul+add')
-end
-
--- BULLETNEW9 ===============================================================================
-
-for i = 1, 8 do
-    LoadAnimation('water_drop' .. i, 'bulletNew9', 300 * (i - 1), 0, 300, 300, 1, 4, 4, 4, 4)
-    SetAnimationScale('water_drop' .. i, 1/6.25)
-    SetAnimationState('water_drop' .. i, 'mul+add')
-
-    LoadAnimation('water_drop_dark' .. i, 'bulletNew9', 300 * (i - 1), 0, 300, 300, 1, 4, 4, 4, 4)
-    SetAnimationScale('water_drop_dark' .. i, 1/6.25)
-end
-
--- BULLETNEW8 ===============================================================================
-
-for i = 1, 8 do
-    LoadAnimation('music' .. i, 'bulletNew8', 157 * (i - 1), 0, 157, 157, 1, 3, 8, 4, 4)
-    SetAnimationScale('music' .. i, 1/4.91)
-end
-
--- BULLETNEW7 ===============================================================================
-
-LoadImageGroup('silence', 'bulletNew7', 0, 0, 126, 55, 1, 8, 4.5, 4.5)
-for i = 1, 8 do
-    SetImageScale('silence' .. i, 1/3.94)
-end
-
--- OLD =================================================================================
-
 LoadTexture('bullet1', 'THlib/bullet/bullet1.png', true)
 LoadImageGroup('preimg', 'bullet1', 80, 0, 32, 32, 1, 8)
---LoadImageGroup('arrow_big', 'bullet1', 0, 0, 16, 16, 1, 16, 2.5, 2.5)
---LoadImageGroup('gun_bullet', 'bullet1', 24, 0, 16, 16, 1, 16, 2.5, 2.5)
+LoadImageGroup('arrow_big', 'bullet1', 0, 0, 16, 16, 1, 16, 2.5, 2.5)
+LoadImageGroup('gun_bullet', 'bullet1', 24, 0, 16, 16, 1, 16, 2.5, 2.5)
 LoadImageGroup('gun_bullet_void', 'bullet1', 56, 0, 16, 16, 1, 16, 2.5, 2.5)
---LoadImageGroup('butterfly', 'bullet1', 112, 0, 32, 32, 1, 8, 4, 4)
---LoadImageGroup('square', 'bullet1', 152, 0, 16, 16, 1, 16, 3, 3)
---LoadImageGroup('ball_mid', 'bullet1', 176, 0, 32, 32, 1, 8, 4, 4)
---LoadImageGroup('mildew', 'bullet1', 208, 0, 16, 16, 1, 16, 2, 2)
---LoadImageGroup('ellipse', 'bullet1', 224, 0, 32, 32, 1, 8, 4.5, 4.5)
-
+LoadImageGroup('butterfly', 'bullet1', 112, 0, 32, 32, 1, 8, 4, 4)
+LoadImageGroup('square', 'bullet1', 152, 0, 16, 16, 1, 16, 3, 3)
+LoadImageGroup('ball_mid', 'bullet1', 176, 0, 32, 32, 1, 8, 4, 4)
+LoadImageGroup('mildew', 'bullet1', 208, 0, 16, 16, 1, 16, 2, 2)
+LoadImageGroup('ellipse', 'bullet1', 224, 0, 32, 32, 1, 8, 4.5, 4.5)
 
 LoadTexture('bullet2', 'THlib/bullet/bullet2.png')
---LoadImageGroup('star_small', 'bullet2', 96, 0, 16, 16, 1, 16, 3, 3)
---LoadImageGroup('star_big', 'bullet2', 224, 0, 32, 32, 1, 8, 5.5, 5.5)
---for i = 1, 8 do
---    SetImageCenter('star_big' .. i, 15.5, 16)
---end
+LoadImageGroup('star_small', 'bullet2', 96, 0, 16, 16, 1, 16, 3, 3)
+LoadImageGroup('star_big', 'bullet2', 224, 0, 32, 32, 1, 8, 5.5, 5.5)
+for i = 1, 8 do
+    SetImageCenter('star_big' .. i, 15.5, 16)
+end
 --LoadImageGroup('ball_huge','bullet2',0,0,64,64,1,4,16,16)
 --LoadImageGroup('fade_ball_huge','bullet2',0,0,64,64,1,4,16,16)
---LoadImageGroup('ball_big', 'bullet2', 192, 0, 32, 32, 1, 8, 8, 8)
---for i = 1, 8 do
---    SetImageCenter('ball_big' .. i, 16, 16.5)
---end
---LoadImageGroup('ball_small', 'bullet2', 176, 0, 16, 16, 1, 16, 2, 2)
---LoadImageGroup('grain_a', 'bullet2', 160, 0, 16, 16, 1, 16, 2.5, 2.5)
---LoadImageGroup('grain_b', 'bullet2', 128, 0, 16, 16, 1, 16, 2.5, 2.5)
+LoadImageGroup('ball_big', 'bullet2', 192, 0, 32, 32, 1, 8, 8, 8)
+for i = 1, 8 do
+    SetImageCenter('ball_big' .. i, 16, 16.5)
+end
+LoadImageGroup('ball_small', 'bullet2', 176, 0, 16, 16, 1, 16, 2, 2)
+LoadImageGroup('grain_a', 'bullet2', 160, 0, 16, 16, 1, 16, 2.5, 2.5)
+LoadImageGroup('grain_b', 'bullet2', 128, 0, 16, 16, 1, 16, 2.5, 2.5)
 
 LoadTexture('bullet3', 'THlib/bullet/bullet3.png')
---LoadImageGroup('knife', 'bullet3', 0, 0, 32, 32, 1, 8, 4, 4)
---LoadImageGroup('grain_c', 'bullet3', 48, 0, 16, 16, 1, 16, 2.5, 2.5)
---LoadImageGroup('arrow_small', 'bullet3', 80, 0, 16, 16, 1, 16, 2.5, 2.5)
---LoadImageGroup('kite', 'bullet3', 112, 0, 16, 16, 1, 16, 2.5, 2.5)
+LoadImageGroup('knife', 'bullet3', 0, 0, 32, 32, 1, 8, 4, 4)
+LoadImageGroup('grain_c', 'bullet3', 48, 0, 16, 16, 1, 16, 2.5, 2.5)
+LoadImageGroup('arrow_small', 'bullet3', 80, 0, 16, 16, 1, 16, 2.5, 2.5)
+LoadImageGroup('kite', 'bullet3', 112, 0, 16, 16, 1, 16, 2.5, 2.5)
 LoadImageGroup('fake_laser', 'bullet3', 144, 0, 14, 16, 1, 16, 5, 5, true)
 for i = 1, 16 do
     SetImageState('fake_laser' .. i, 'mul+add')
@@ -238,63 +37,63 @@ for i = 1, 16 do
 end
 
 LoadTexture('bullet4', 'THlib/bullet/bullet4.png')
---LoadImageGroup('star_big_b', 'bullet4', 32, 0, 32, 32, 1, 8, 6, 6)
---LoadImageGroup('ball_mid_b', 'bullet4', 64, 0, 32, 32, 1, 8, 4, 4)
---for i = 1, 8 do
---    SetImageState('ball_mid_b' .. i, 'mul+add', Color(200, 200, 200, 200))
---end
---LoadImageGroup('arrow_mid', 'bullet4', 96, 0, 32, 32, 1, 8, 3.5, 3.5)
---for i = 1, 8 do
---    SetImageCenter('arrow_mid' .. i, 24, 16)
---end
---LoadImageGroup('heart', 'bullet4', 128, 0, 32, 32, 1, 8, 9, 9)
---LoadImageGroup('knife_b', 'bullet4', 192, 0, 32, 32, 1, 8, 3.5, 3.5)
---for i = 1, 8 do
---    LoadImage('ball_mid_c' .. i, 'bullet4', 232, i * 32 - 24, 16, 16, 4, 4)
---end
---LoadImageGroup('money', 'bullet4', 168, 0, 16, 16, 1, 8, 4, 4)
---LoadImageGroup('ball_mid_d', 'bullet4', 168, 128, 16, 16, 1, 8, 3, 3)
---for i = 1, 8 do
---    SetImageState('ball_mid_d' .. i, 'mul+add')
---end
+LoadImageGroup('star_big_b', 'bullet4', 32, 0, 32, 32, 1, 8, 6, 6)
+LoadImageGroup('ball_mid_b', 'bullet4', 64, 0, 32, 32, 1, 8, 4, 4)
+for i = 1, 8 do
+    SetImageState('ball_mid_b' .. i, 'mul+add', Color(200, 200, 200, 200))
+end
+LoadImageGroup('arrow_mid', 'bullet4', 96, 0, 32, 32, 1, 8, 3.5, 3.5)
+for i = 1, 8 do
+    SetImageCenter('arrow_mid' .. i, 24, 16)
+end
+LoadImageGroup('heart', 'bullet4', 128, 0, 32, 32, 1, 8, 9, 9)
+LoadImageGroup('knife_b', 'bullet4', 192, 0, 32, 32, 1, 8, 3.5, 3.5)
+for i = 1, 8 do
+    LoadImage('ball_mid_c' .. i, 'bullet4', 232, i * 32 - 24, 16, 16, 4, 4)
+end
+LoadImageGroup('money', 'bullet4', 168, 0, 16, 16, 1, 8, 4, 4)
+LoadImageGroup('ball_mid_d', 'bullet4', 168, 128, 16, 16, 1, 8, 3, 3)
+for i = 1, 8 do
+    SetImageState('ball_mid_d' .. i, 'mul+add')
+end
 --------ball_light--------
 LoadTexture('bullet5', 'THlib/bullet/bullet5.png')
---LoadImageGroup('ball_light', 'bullet5', 0, 0, 64, 64, 4, 2, 11.5, 11.5)
---LoadImageGroup('fade_ball_light', 'bullet5', 0, 0, 64, 64, 4, 2, 11.5, 11.5)
---LoadImageGroup('ball_light_dark', 'bullet5', 0, 0, 64, 64, 4, 2, 11.5, 11.5)
---LoadImageGroup('fade_ball_light_dark', 'bullet5', 0, 0, 64, 64, 4, 2, 11.5, 11.5)
---for i = 1, 8 do
---    SetImageState('ball_light' .. i, 'mul+add')
---end
+LoadImageGroup('ball_light', 'bullet5', 0, 0, 64, 64, 4, 2, 11.5, 11.5)
+LoadImageGroup('fade_ball_light', 'bullet5', 0, 0, 64, 64, 4, 2, 11.5, 11.5)
+LoadImageGroup('ball_light_dark', 'bullet5', 0, 0, 64, 64, 4, 2, 11.5, 11.5)
+LoadImageGroup('fade_ball_light_dark', 'bullet5', 0, 0, 64, 64, 4, 2, 11.5, 11.5)
+for i = 1, 8 do
+    SetImageState('ball_light' .. i, 'mul+add')
+end
 --------------------------
 --------ball_huge---------
 LoadTexture('bullet_ball_huge', 'THlib/bullet/bullet_ball_huge.png')
---LoadImageGroup('ball_huge', 'bullet_ball_huge', 0, 0, 64, 64, 4, 2, 13.5, 13.5)
---LoadImageGroup('fade_ball_huge', 'bullet_ball_huge', 0, 0, 64, 64, 4, 2, 13.5, 13.5)
---LoadImageGroup('ball_huge_dark', 'bullet_ball_huge', 0, 0, 64, 64, 4, 2, 13.5, 13.5)
---LoadImageGroup('fade_ball_huge_dark', 'bullet_ball_huge', 0, 0, 64, 64, 4, 2, 13.5, 13.5)
---for i = 1, 8 do
---    SetImageState('ball_huge' .. i, 'mul+add')
---end
+LoadImageGroup('ball_huge', 'bullet_ball_huge', 0, 0, 64, 64, 4, 2, 13.5, 13.5)
+LoadImageGroup('fade_ball_huge', 'bullet_ball_huge', 0, 0, 64, 64, 4, 2, 13.5, 13.5)
+LoadImageGroup('ball_huge_dark', 'bullet_ball_huge', 0, 0, 64, 64, 4, 2, 13.5, 13.5)
+LoadImageGroup('fade_ball_huge_dark', 'bullet_ball_huge', 0, 0, 64, 64, 4, 2, 13.5, 13.5)
+for i = 1, 8 do
+    SetImageState('ball_huge' .. i, 'mul+add')
+end
 --------------------------
 --------water_drop--------
 LoadTexture('bullet_water_drop', 'THlib/bullet/bullet_water_drop.png')
---for i = 1, 8 do
---    LoadAnimation('water_drop' .. i, 'bullet_water_drop', 48 * (i - 1), 0, 48, 32, 1, 4, 4, 4, 4)
---    SetAnimationState('water_drop' .. i, 'mul+add')
---end
---for i = 1, 8 do
---    LoadAnimation('water_drop_dark' .. i, 'bullet_water_drop', 48 * (i - 1), 0, 48, 32, 1, 4, 4, 4, 4)
---end
+for i = 1, 8 do
+    LoadAnimation('water_drop' .. i, 'bullet_water_drop', 48 * (i - 1), 0, 48, 32, 1, 4, 4, 4, 4)
+    SetAnimationState('water_drop' .. i, 'mul+add')
+end
+for i = 1, 8 do
+    LoadAnimation('water_drop_dark' .. i, 'bullet_water_drop', 48 * (i - 1), 0, 48, 32, 1, 4, 4, 4, 4)
+end
 --------------------------
 --------music-------------
 LoadTexture('bullet_music', 'THlib/bullet/bullet_music.png')
---for i = 1, 8 do
---    LoadAnimation('music' .. i, 'bullet_music', 60 * (i - 1), 0, 60, 32, 1, 3, 8, 4, 4)
---end
+for i = 1, 8 do
+    LoadAnimation('music' .. i, 'bullet_music', 60 * (i - 1), 0, 60, 32, 1, 3, 8, 4, 4)
+end
 ------silence-------------
 LoadTexture('bullet6', 'THlib/bullet/bullet6.png')
---LoadImageGroup('silence', 'bullet6', 192, 0, 32, 32, 1, 8, 4.5, 4.5)
+LoadImageGroup('silence', 'bullet6', 192, 0, 32, 32, 1, 8, 4.5, 4.5)
 --------------------------
 ------bullet_break--------
 --牺牲内存优化运行性能
@@ -344,8 +143,8 @@ end
 
 --------------------------
 
-
 bullet = Class(object)
+
 function bullet:init(imgclass, index, stay, destroyable)
     self.logclass = self.class
     self.imgclass = imgclass
@@ -380,6 +179,7 @@ function bullet:kill()
         self.imgclass.del(self)
     end
 end
+
 function bullet:del()
     --	self.imgclass.del(self)
     local w = lstg.world
@@ -390,6 +190,7 @@ function bullet:del()
         New(BulletBreak, self.x, self.y, self._index)
     end
 end
+
 function bullet:render()
     if self._blend and self._a and self._r and self._g and self._b then
         SetImgState(self, self._blend, self._a, self._r, self._g, self._b)
@@ -399,6 +200,15 @@ function bullet:render()
         SetImgState(self, '', 255, 255, 255, 255)
     end
 end
+
+--- 快速跳过淡入效果（或者叫雾化效果）  
+--- 原理是立即切换到子弹逻辑，并根据子弹“尺寸”应用图层  
+--- 用法：bullet.skip_fade_in(some_object)  
+function bullet:skip_fade_in()
+    self.class = self.logclass
+    self.layer = LAYER_ENEMY_BULLET - self.imgclass.size * 0.001 + self._index * 0.00001
+end
+
 ----------------------------------------------------------------
 img_class = Class(object)
 function img_class:frame()

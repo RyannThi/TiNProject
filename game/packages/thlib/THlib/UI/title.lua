@@ -4,11 +4,20 @@ function stage_init:init()
 end
 function stage_init:frame()
     if self.timer >= 30 then
-        stage.Set('loadscreen', 'none')
+        stage.Set('menu', 'none')
     end
 end
 function stage_init:render()
     ui.DrawMenuBG()
+end
+
+local stage_quit = stage.New("stage.quit", false, true)
+function stage_quit:init()
+    -- 添加一个单独的关卡，退出游戏时会切换到这个关卡
+    -- 这是为了触发切换关卡时自动存档
+    stage.QuitGame()
+end
+function stage_quit:render()
 end
 
 MusicRecord("menu", 'THlib/music/luastg 0.08.540 - 1.27.800.ogg', 87.8, 79.26)
@@ -35,8 +44,12 @@ function stage_menu:init()
         end)
         task.New(stage_menu, function()
             menu.FlyOut(menu_title, 'right')
-            task.Wait(60)
-            stage.QuitGame()
+            task.Wait(30)
+            New(mask_fader, 'close')
+            task.Wait(29)
+            self.no_bg = true
+            task.Wait(1)
+            stage.Set("stage.quit")
         end)
     end
     --
@@ -119,7 +132,7 @@ function stage_menu:init()
                     stage.IsSCpractice = true--判定进入符卡练习的flag add by OLC
                     stage.group.PracticeStart('Spell Practice@Spell Practice')
                 else
-                    stage.group.Start(stage.groups[last_menu.group_name])
+                    stage.group.Start(last_menu.group_name)
                 end
             end)
         end })
@@ -260,5 +273,7 @@ function stage_menu:init()
     menu_list = { menu_title, menu_player_select, menu_difficulty_select, menu_replay_loader, menu_replay_saver, menu_items, menu_sc_pr, menu_network, menu_player_select2, menu_player_select1, menu_playercount }--设置菜单对象表
 end
 function stage_menu:render()
-    ui.DrawMenuBG()
+    if not self.no_bg then
+        ui.DrawMenuBG()
+    end
 end

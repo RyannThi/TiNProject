@@ -327,23 +327,23 @@ function lstg_ui:drawFrame1()
     local w = lstg.world
     local x = (w.scrr - w.scrl) / 2 + w.scrl
     local y = (w.scrt - w.scrb) / 2 + w.scrb
-    local hs = (w.scrr - w.scrl) / 448
+    local hs = (w.scrr - w.scrl) / 384
     local vs = (w.scrt - w.scrb) / 448
     x = x + 96 * hs
     if CheckRes("img", "image:UI_img") then
-        --Render("image:UI_img", x, y, 0, 1/2.25, 1/2.25)
+        Render("image:UI_img", x, y, 0, hs, vs)
     else
-        Render("ui_bg", screen.width/2, y, 0, 1/2.25, 1/2.25)
+        Render("ui_bg", x, y, 0, hs, vs)
     end
     if CheckRes("img", "image:LOGO_img") then
-        --Render("image:LOGO_img", -16 + w.scrr, 150, 0, 0.5, 0.5)
+        Render("image:LOGO_img", -16 + w.scrr, 150, 0, 0.5, 0.5)
     else
-        --Render("logo", -16 + w.scrr, 150, 0, 0.5, 0.5)
+        Render("logo", -16 + w.scrr, 150, 0, 0.5, 0.5)
     end
     SetFontState("menu", "", Color(0xFFFFFFFF))
     RenderText("menu",
             string.format("%.1ffps", GetFPS()),
-            210 + w.scrr, 1, 0.25, "right", "bottom")
+            220 + w.scrr, 1, 0.25, "right", "bottom")
     SetViewMode "world"
 end
 function lstg_ui:drawFrame2()
@@ -418,7 +418,7 @@ function lstg_ui:drawDifficulty()
     local diff = string.match(stage.current_stage.name, "[%w_][%w_ ]*$")
     local diffimg = CheckRes("img", "image:diff_" .. diff)
     if diffimg then
-        --Render("image:diff_" .. diff, 112 + w.scrr, 448)
+        Render("image:diff_" .. diff, 112 + w.scrr, 448)
     else
         --by OLC，难度显示加入符卡练习
         if ext.sc_pr and diff == "Spell Practice" and lstg.var.sc_index then
@@ -456,10 +456,10 @@ function lstg_ui:drawDifficulty()
         end
         if diff == "Easy" or diff == "Normal" or diff == "Hard" or diff == "Lunatic" or diff == "Extra" then
             SetImageState("rank_" .. diff, "", Color(a, 255, 255, 255))
-            --Render("rank_" .. diff, x, y, 0, 0.5, t * 0.5)
+            Render("rank_" .. diff, x, y, 0, 0.5, t * 0.5)
         else
             SetFontState("menu", "", Color(a, 255, 255, 255))
-            --RenderText("menu", diff, x, y + dy, 0.5, "center")
+            RenderText("menu", diff, x, y + dy, 0.5, "center")
         end
     end
 end
@@ -501,79 +501,79 @@ function lstg_ui:drawInfo1()
                 dw = alpha / 255
             end
             SetImageState(p1, "", Color(alpha, 255, 255, 255))
-            --Render(p1, p2, p3, p4, p5 * dw, p6)
+            Render(p1, p2, p3, p4, p5 * dw, p6)
         end
         alplat = min(dyt * alphatrate, 255)
     else
         for i = 1, #RenderImgList do
             local p1, p2, p3, p4, p5, p6 = unpack(RenderImgList[i])
             SetImageState(p1, "", Color(255, 255, 255, 255))
-            --Render(p1, p2, p3, p4, p5, p6)
+            Render(p1, p2, p3, p4, p5, p6)
         end
         alplat = 255
     end
     SetFontState("score3", "", Color(alplat, 173, 173, 173))
-    --RenderScore("score3", max(lstg.tmpvar.hiscore or 0, self.score or 0), 216 + w.scrr, 436, 0.43, "right")
+    RenderScore("score3", max(lstg.tmpvar.hiscore or 0, self.score or 0), 216 + w.scrr, 436, 0.43, "right")
     SetFontState("score3", "", Color(alplat, 255, 255, 255))
-    --RenderScore("score3", self.score or 0, 216 + w.scrr, 414, 0.43, "right")
-    --RenderText("score3", string.format("%d/5", lstg.var.chip), 214 + w.scrr, 361, 0.35, "right")
-    --RenderText("score3", string.format("%d/5", lstg.var.bombchip), 214 + w.scrr, 323, 0.35, "right")
+    RenderScore("score3", self.score or 0, 216 + w.scrr, 414, 0.43, "right")
+    RenderText("score3", string.format("%d/5", lstg.var.chip), 214 + w.scrr, 361, 0.35, "right")
+    RenderText("score3", string.format("%d/5", lstg.var.bombchip), 214 + w.scrr, 323, 0.35, "right")
     SetFontState("score1", "", Color(alplat, 205, 102, 0))
     SetFontState("score2", "", Color(alplat, 34, 216, 221))
-    --RenderText("score1", string.format("%d.    /4.    ", math.floor(lstg.var.power / 100)), 204 + w.scrr, 262, 0.4, "right")
-    --RenderText("score1", string.format("      %d%d        00", math.floor((lstg.var.power % 100) / 10), lstg.var.power % 10), 205 + w.scrr, 258.5, 0.3, "right")
-    --RenderScore("score2", lstg.var.pointrate, 204 + w.scrr, 239, 0.4, "right")
+    RenderText("score1", string.format("%d.    /4.    ", math.floor(lstg.var.power / 100)), 204 + w.scrr, 262, 0.4, "right")
+    RenderText("score1", string.format("      %d%d        00", math.floor((lstg.var.power % 100) / 10), lstg.var.power % 10), 205 + w.scrr, 258.5, 0.3, "right")
+    RenderScore("score2", lstg.var.pointrate, 204 + w.scrr, 239, 0.4, "right")
     SetFontState("score3", "", Color(alplat, 173, 173, 173))
-    --RenderText("score3", string.format("%d", lstg.var.graze), 204 + w.scrr, 216, 0.4, "right")
+    RenderText("score3", string.format("%d", lstg.var.graze), 204 + w.scrr, 216, 0.4, "right")
     SetImageState("hint.life", "", Color(alplat, 255, 255, 255))
     for i = 1, 8 do
-        --Render("hint.life", 89 + w.scrr + 13 * i, 371, 0, 1, 1)
+        Render("hint.life", 89 + w.scrr + 13 * i, 371, 0, 1, 1)
     end
     SetImageState("hint.lifeleft", "", Color(alplat, 255, 255, 255))
     for i = 1, lstg.var.lifeleft do
-        --Render("hint.lifeleft", 89 + w.scrr + 13 * i, 371, 0, 1, 1)
+        Render("hint.lifeleft", 89 + w.scrr + 13 * i, 371, 0, 1, 1)
     end
     SetImageState("hint.bomb", "", Color(alplat, 255, 255, 255))
     for i = 1, 8 do
-        --Render("hint.bomb", 89 + w.scrr + 13 * i, 334, 0, 1, 1)
+        Render("hint.bomb", 89 + w.scrr + 13 * i, 334, 0, 1, 1)
     end
     SetImageState("hint.bombleft", "", Color(alplat, 255, 255, 255))
     for i = 1, lstg.var.bomb do
-        --Render("hint.bombleft", 89 + w.scrr + 13 * i, 334, 0, 1, 1)
+        Render("hint.bombleft", 89 + w.scrr + 13 * i, 334, 0, 1, 1)
     end
     local Lchip = lstg.var.chip
     if Lchip > 0 and Lchip < 5 and lstg.var.lifeleft < 8 then
         SetImageState("lifechip" .. Lchip, "", Color(alplat, 255, 255, 255))
-        --Render("lifechip" .. Lchip, 89 + w.scrr + 13 * (lstg.var.lifeleft + 1), 371, 0, 1, 1)
+        Render("lifechip" .. Lchip, 89 + w.scrr + 13 * (lstg.var.lifeleft + 1), 371, 0, 1, 1)
     end
     local Bchip = lstg.var.bombchip
     if Bchip > 0 and Bchip < 5 and lstg.var.bomb < 8 then
         SetImageState("bombchip" .. Bchip, "", Color(alplat, 255, 255, 255))
-        --Render("bombchip" .. Bchip, 89 + w.scrr + 13 * (lstg.var.bomb + 1), 334, 0, 1, 1)
+        Render("bombchip" .. Bchip, 89 + w.scrr + 13 * (lstg.var.bomb + 1), 334, 0, 1, 1)
     end
     SetFontState("score3", "", Color(alplat, 173, 173, 173))
-    --RenderScore("score3", max(lstg.tmpvar.hiscore or 0, self.score or 0), 216 + w.scrr, 436, 0.43, "right")
+    RenderScore("score3", max(lstg.tmpvar.hiscore or 0, self.score or 0), 216 + w.scrr, 436, 0.43, "right")
     SetFontState("score3", "", Color(alplat, 255, 255, 255))
-    --RenderScore("score3", self.score or 0, 216 + w.scrr, 414, 0.43, "right")
-    --RenderText("score3", string.format("%d/5", lstg.var.chip), 214 + w.scrr, 361, 0.35, "right")
-    --RenderText("score3", string.format("%d/5", lstg.var.bombchip), 214 + w.scrr, 323, 0.35, "right")
+    RenderScore("score3", self.score or 0, 216 + w.scrr, 414, 0.43, "right")
+    RenderText("score3", string.format("%d/5", lstg.var.chip), 214 + w.scrr, 361, 0.35, "right")
+    RenderText("score3", string.format("%d/5", lstg.var.bombchip), 214 + w.scrr, 323, 0.35, "right")
     SetFontState("score1", "", Color(alplat, 205, 102, 0))
     SetFontState("score2", "", Color(alplat, 34, 216, 221))
-    --RenderText("score1", string.format("%d.    /4.    ", math.floor(lstg.var.power / 100)), 204 + w.scrr, 262, 0.4, "right")
-    --RenderText("score1", string.format("      %d%d        00", math.floor((lstg.var.power % 100) / 10), lstg.var.power % 10), 205 + w.scrr, 258.5, 0.3, "right")
-    --RenderScore("score2", lstg.var.pointrate, 204 + w.scrr, 239, 0.4, "right")
+    RenderText("score1", string.format("%d.    /4.    ", math.floor(lstg.var.power / 100)), 204 + w.scrr, 262, 0.4, "right")
+    RenderText("score1", string.format("      %d%d        00", math.floor((lstg.var.power % 100) / 10), lstg.var.power % 10), 205 + w.scrr, 258.5, 0.3, "right")
+    RenderScore("score2", lstg.var.pointrate, 204 + w.scrr, 239, 0.4, "right")
     SetFontState("score3", "", Color(alplat, 255, 255, 255))
-    --RenderText("score3", string.format("%d", lstg.var.graze), 204 + w.scrr, 216, 0.4, "right")
+    RenderText("score3", string.format("%d", lstg.var.graze), 204 + w.scrr, 216, 0.4, "right")
 end
 function lstg_ui:drawInfo2()
-    --RenderText("score", "HiScore", 8, 520, 0.5, "left", "top")
-    --RenderText("score",
-     --       string.format("%d", max(lstg.tmpvar.hiscore or 0, lstg.var.score)),
-    --        190, 520, 0.5, "right", "top")
-    --RenderText("score", "Score", 206, 520, 0.5, "left", "top")
-    --RenderText("score",
-    --        string.format("%d", lstg.var.score),
-    --        388, 520, 0.5, "right", "top")
+    RenderText("score", "HiScore", 8, 520, 0.5, "left", "top")
+    RenderText("score",
+            string.format("%d", max(lstg.tmpvar.hiscore or 0, lstg.var.score)),
+            190, 520, 0.5, "right", "top")
+    RenderText("score", "Score", 206, 520, 0.5, "left", "top")
+    RenderText("score",
+            string.format("%d", lstg.var.score),
+            388, 520, 0.5, "right", "top")
     SetFontState("score", "", Color(0xFFFF4040))
     RenderText("score",
             string.format("%1.2f", lstg.var.power / 100),

@@ -2176,7 +2176,7 @@ end
 Reimu.special=function(self)
 end
 table.insert(player_list, {'Reimu Hakurei','Reimu','Reimu'})-- Loading Screen
-    stage_load = stage.New("loadscreen", true, true)
+    stage_load = stage.New("loadscreen", false, true)
     function stage_load:init()
         last=New(_editor_class["LoadManager"],0,0,_)
     end
@@ -2185,7 +2185,7 @@ table.insert(player_list, {'Reimu Hakurei','Reimu','Reimu'})-- Loading Screen
     end
 
 -- Title Screen
-    stage_init = stage.New("menu", false, true)
+    stage_init = stage.New("menu", true, true)
     function stage_init:init()
         checker_up = coroutine.create(MenuInputChecker)
         checker_down = coroutine.create(MenuInputChecker)

@@ -2,6 +2,8 @@
 ---luastg replay
 ---======================================
 
+local LocalFileStorage = require("foundation.LocalFileStorage")
+
 ----------------------------------------
 ---replay
 
@@ -76,7 +78,7 @@ function ext.replay.SaveReplay(stageNames, slot, playerName, finish)
 end
 
 function ext.reload()
-    replayManager = plus.ReplayManager(lstg.LocalUserData.GetReplayDirectory() .. "/" .. setting.mod)
+    replayManager = plus.ReplayManager(LocalFileStorage.getReplayDirectory() .. "/" .. setting.mod)
 end
 
 ext.reload()--加载一次replay管理器
@@ -142,11 +144,25 @@ function stage.Set(stageName, mode, path)
 
     -- 刷新最高分
     if (not stage.current_stage.is_menu) and (not ext.replay.IsReplay()) then
-        local str = stage.current_stage.stage_name .. '@' .. tostring(lstg.var.player_name)
+        local str
+        if stage.current_stage.sc_pr_stage then
+            local sc_index
+            if lstg.var.sc_pr then
+                sc_index = lstg.var.sc_pr.index
+            else
+                sc_index = lstg.var.sc_index
+            end
+            str = "SpellCard Practice" .. '@' .. tostring(sc_index) .. '@' .. tostring(lstg.var.player_name)
+        elseif lstg.var.is_practice then
+            str = stage.current_stage.name .. '@' .. tostring(lstg.var.player_name)
+        else
+            str = stage.current_stage.group.name .. '@' .. tostring(lstg.var.player_name)
+        end
         if scoredata.hiscore[str] == nil then
             scoredata.hiscore[str] = 0
         end
         scoredata.hiscore[str] = max(scoredata.hiscore[str], lstg.var.score)
+        SaveScoreData()
     end
 
     -- 转场

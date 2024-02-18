@@ -30,7 +30,7 @@
 3,{"$type":".Render.CreateRenderTarget, ","Attributes":[{"attrCap":"Name","attrInput":"\"BombEf\"","EditWindow":""}],"AttributeCount":1}
 3,{"$type":".Advanced.ArchiveSpaceIndicator, LuaSTGEditorSharp","Attributes":[{"attrCap":"Name","attrInput":"","EditWindow":""}],"AttributeCount":1}
 2,{"$type":".General.FolderYellow, LuaSTGEditorSharp","Attributes":[{"attrCap":"Name","attrInput":"Images","EditWindow":""}],"AttributeCount":1}
-3,{"$type":".General.Folder, LuaSTGEditorSharp","Attributes":[{"attrCap":"Name","attrInput":"TItle","EditWindow":""}],"IsExpanded":false,"AttributeCount":1}
+3,{"$type":".General.Folder, LuaSTGEditorSharp","Attributes":[{"attrCap":"Name","attrInput":"TItle","EditWindow":""}],"AttributeCount":1}
 4,{"$type":".Advanced.ArchiveSpaceIndicator, LuaSTGEditorSharp","Attributes":[{"attrCap":"Name","attrInput":"TITLE\\","EditWindow":""}],"AttributeCount":1}
 4,{"$type":".Graphics.LoadImage, ","Attributes":[{"$type":".DependencyAttrItem, ","attrCap":"Path","attrInput":"Images\\Menu\\MainMenuBackground.png","EditWindow":"imageFile"},{"attrCap":"Resource name","attrInput":"MainMenuBackground","EditWindow":""},{"attrCap":"Mipmap","attrInput":"true","EditWindow":"bool"},{"attrCap":"Collision size","attrInput":"0,0","EditWindow":"size"},{"attrCap":"Rectangle collision","attrInput":"false","EditWindow":"bool"},{"attrCap":"Cut edge","attrInput":"0","EditWindow":""}],"AttributeCount":6}
 4,{"$type":".Graphics.LoadImage, ","Attributes":[{"$type":".DependencyAttrItem, ","attrCap":"Path","attrInput":"Images\\Menu\\MainMenuLogo.png","EditWindow":"imageFile"},{"attrCap":"Resource name","attrInput":"MainMenuLogo","EditWindow":""},{"attrCap":"Mipmap","attrInput":"true","EditWindow":"bool"},{"attrCap":"Collision size","attrInput":"0,0","EditWindow":"size"},{"attrCap":"Rectangle collision","attrInput":"false","EditWindow":"bool"},{"attrCap":"Cut edge","attrInput":"0","EditWindow":""}],"AttributeCount":6}
@@ -71,7 +71,7 @@
 4,{"$type":".Advanced.ArchiveSpaceIndicator, LuaSTGEditorSharp","Attributes":[{"attrCap":"Name","attrInput":"","EditWindow":""}],"AttributeCount":1}
 3,{"$type":".General.Folder, LuaSTGEditorSharp","Attributes":[{"attrCap":"Name","attrInput":"Player","EditWindow":""}],"IsExpanded":false,"AttributeCount":1}
 4,{"$type":".Advanced.ArchiveSpaceIndicator, LuaSTGEditorSharp","Attributes":[{"attrCap":"Name","attrInput":"PLAYER\\","EditWindow":""}],"AttributeCount":1}
-4,{"$type":".General.Folder, LuaSTGEditorSharp","Attributes":[{"attrCap":"Name","attrInput":"Reimu","EditWindow":""}],"IsExpanded":false,"AttributeCount":1}
+4,{"$type":".General.Folder, LuaSTGEditorSharp","Attributes":[{"attrCap":"Name","attrInput":"Reimu","EditWindow":""}],"AttributeCount":1}
 5,{"$type":".Advanced.ArchiveSpaceIndicator, LuaSTGEditorSharp","Attributes":[{"attrCap":"Name","attrInput":"PLAYER\\REIMU\\","EditWindow":""}],"AttributeCount":1}
 5,{"$type":".Graphics.LoadImage, ","Attributes":[{"$type":".DependencyAttrItem, ","attrCap":"Path","attrInput":"Images\\Player\\Reimu\\r_arml.png","EditWindow":"imageFile"},{"attrCap":"Resource name","attrInput":"r_arml","EditWindow":""},{"attrCap":"Mipmap","attrInput":"true","EditWindow":"bool"},{"attrCap":"Collision size","attrInput":"0,0","EditWindow":"size"},{"attrCap":"Rectangle collision","attrInput":"false","EditWindow":"bool"},{"attrCap":"Cut edge","attrInput":"0","EditWindow":""}],"AttributeCount":6}
 5,{"$type":".Graphics.LoadImage, ","Attributes":[{"$type":".DependencyAttrItem, ","attrCap":"Path","attrInput":"Images\\Player\\Reimu\\r_armr.png","EditWindow":"imageFile"},{"attrCap":"Resource name","attrInput":"r_armr","EditWindow":""},{"attrCap":"Mipmap","attrInput":"true","EditWindow":"bool"},{"attrCap":"Collision size","attrInput":"0,0","EditWindow":"size"},{"attrCap":"Rectangle collision","attrInput":"false","EditWindow":"bool"},{"attrCap":"Cut edge","attrInput":"0","EditWindow":""}],"AttributeCount":6}
@@ -823,17 +823,17 @@
 6,{"$type":".Task.TaskWait, ","Attributes":[{"attrCap":"Time","attrInput":"60*2","EditWindow":"yield"}],"AttributeCount":1}
 6,{"$type":".General.Code, LuaSTGEditorSharp","Attributes":[{"attrCap":"Code","attrInput":"player.collect_line = player.collect_line + 300","EditWindow":"code"}],"AttributeCount":1}
 4,{"$type":".Object.PlayerSpecial, ","Attributes":[]}
-2,{"$type":".General.CodeSegment, LuaSTGEditorSharp","Attributes":[{"attrCap":"Head","attrInput":"-- Loading Screen","EditWindow":"code"},{"attrCap":"Tail","attrInput":"","EditWindow":"code"}],"AttributeCount":2}
-3,{"$type":".General.Code, LuaSTGEditorSharp","Attributes":[{"attrCap":"Code","attrInput":"stage_load = stage.New(\"loadscreen\", true, true)","EditWindow":"code"}],"AttributeCount":1}
+2,{"$type":".General.CodeSegment, LuaSTGEditorSharp","Attributes":[{"attrCap":"Head","attrInput":"-- Loading Screen","EditWindow":"code"},{"attrCap":"Tail","attrInput":"","EditWindow":"code"}],"IsExpanded":false,"AttributeCount":2}
+3,{"$type":".General.Code, LuaSTGEditorSharp","Attributes":[{"attrCap":"Code","attrInput":"stage_load = stage.New(\"loadscreen\", false, true)","EditWindow":"code"}],"AttributeCount":1}
 3,{"$type":".General.CodeSegment, LuaSTGEditorSharp","Attributes":[{"attrCap":"Head","attrInput":"function stage_load:init()","EditWindow":"code"},{"attrCap":"Tail","attrInput":"end","EditWindow":"code"}],"AttributeCount":2}
 4,{"$type":".General.Folder, LuaSTGEditorSharp","Attributes":[{"attrCap":"Name","attrInput":"Initialize","EditWindow":""}],"AttributeCount":1}
 5,{"$type":".Object.CreateObject, ","Attributes":[{"attrCap":"Name","attrInput":"\"LoadManager\"","EditWindow":"objectDef"},{"attrCap":"Position","attrInput":"0,0","EditWindow":"position"},{"attrCap":"Parameters","attrInput":"","EditWindow":"objectParam"}],"AttributeCount":3}
 3,{"$type":".General.CodeSegment, LuaSTGEditorSharp","Attributes":[{"attrCap":"Head","attrInput":"function stage_load:frame()","EditWindow":"code"},{"attrCap":"Tail","attrInput":"end","EditWindow":"code"}],"AttributeCount":2}
 4,{"$type":".General.Code, LuaSTGEditorSharp","Attributes":[{"attrCap":"Code","attrInput":"task.Do(self)","EditWindow":"code"}],"AttributeCount":1}
-2,{"$type":".General.CodeSegment, LuaSTGEditorSharp","Attributes":[{"attrCap":"Head","attrInput":"-- Title Screen","EditWindow":"code"},{"attrCap":"Tail","attrInput":"","EditWindow":"code"}],"AttributeCount":2}
-3,{"$type":".General.Code, LuaSTGEditorSharp","Attributes":[{"attrCap":"Code","attrInput":"stage_init = stage.New(\"menu\", false, true)","EditWindow":"code"}],"AttributeCount":1}
+2,{"$type":".General.CodeSegment, LuaSTGEditorSharp","Attributes":[{"attrCap":"Head","attrInput":"-- Title Screen","EditWindow":"code"},{"attrCap":"Tail","attrInput":"","EditWindow":"code"}],"IsSelected":true,"AttributeCount":2}
+3,{"$type":".General.Code, LuaSTGEditorSharp","Attributes":[{"attrCap":"Code","attrInput":"stage_init = stage.New(\"menu\", true, true)","EditWindow":"code"}],"AttributeCount":1}
 3,{"$type":".General.CodeSegment, LuaSTGEditorSharp","Attributes":[{"attrCap":"Head","attrInput":"function stage_init:init()","EditWindow":"code"},{"attrCap":"Tail","attrInput":"end","EditWindow":"code"}],"AttributeCount":2}
-4,{"$type":".General.IfNode, LuaSTGEditorSharp","Attributes":[{"attrCap":"Condition","attrInput":"lstg.var.loadComplete == true","EditWindow":""}],"IsExpanded":false,"IsSelected":true,"IsBanned":true,"AttributeCount":1}
+4,{"$type":".General.IfNode, LuaSTGEditorSharp","Attributes":[{"attrCap":"Condition","attrInput":"lstg.var.loadComplete == true","EditWindow":""}],"IsExpanded":false,"IsBanned":true,"AttributeCount":1}
 5,{"$type":".General.IfThen, LuaSTGEditorSharp","Attributes":[]}
 5,{"$type":".General.IfElse, LuaSTGEditorSharp","Attributes":[]}
 6,{"$type":".General.Code, LuaSTGEditorSharp","Attributes":[{"attrCap":"Code","attrInput":"stage.Set('loadscreen', 'none')","EditWindow":"code"}],"AttributeCount":1}

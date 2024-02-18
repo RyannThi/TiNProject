@@ -3,6 +3,8 @@
 --- rewrite by 璀境石
 ----------------------------------------
 
+local SceneManager = require("foundation.SceneManager")
+
 ---@generic T
 ---@param C T
 ---@return T
@@ -20,7 +22,7 @@ local S = {}
 
 S.stage_name = "__default__"
 
-S.is_menu = false
+S.is_menu = true
 
 function S:init() end
 
@@ -50,6 +52,8 @@ M.preserve_res = false
 ---@param as_entrance boolean
 ---@param is_menu boolean
 ---@return stage.Stage
+---@overload fun(stage_name:string): stage.Stage
+---@overload fun(stage_name:string, as_entrance:boolean): stage.Stage
 function M.New(stage_name, as_entrance, is_menu)
     assert(type(stage_name) == "string")
     ---@type stage.Stage
@@ -123,10 +127,7 @@ end
 
 function M.QuitGame()
     lstg.quit_flag = true
-end
-
-function M.QuitFlagExist()
-    return lstg.quit_flag
+    SceneManager.setExitSignal(true)
 end
 
 ----------------------------------------

@@ -3,6 +3,8 @@
 ---extra game loop
 ---=====================================
 
+local SceneManager = require("foundation.SceneManager")
+
 ----------------------------------------
 ---ext加强库
 
@@ -99,7 +101,7 @@ end
 function GameStateChange()
 end
 
----设置标题
+--- 设置标题
 function ChangeGameTitle()
     local mod = setting.mod and #setting.mod > 0 and setting.mod
     local ext =
@@ -118,7 +120,7 @@ function ChangeGameTitle()
     end
 end
 
----切关处理
+--- 切关处理
 function ChangeGameStage()
     ResetWorld()
     ResetWorldOffset()
@@ -145,11 +147,29 @@ function ChangeGameStage()
         if scoredata.hiscore == nil then
             scoredata.hiscore = {}
         end
-        lstg.tmpvar.hiscore = scoredata.hiscore[stage.next_stage.stage_name .. "@" .. tostring(lstg.var.player_name)]
+        local str
+        if stage.next_stage.sc_pr_stage then
+            local sc_index
+            if lstg.var.sc_pr then
+                sc_index = lstg.var.sc_pr.index
+            else
+                sc_index = lstg.var.sc_index
+            end
+            str = "SpellCard Practice" .. '@' .. tostring(sc_index) .. '@' .. tostring(lstg.var.player_name)
+        elseif lstg.var.is_practice then
+            str = stage.next_stage.name .. '@' .. tostring(lstg.var.player_name)
+        else
+            str = stage.next_stage.group.name .. '@' .. tostring(lstg.var.player_name)
+        end
+        lstg.tmpvar.hiscore = scoredata.hiscore[str]
+        --SaveScoreData() -- 下面固定调用，所以这里可以不重复调用
     end
+
+    --进行一次定期存档
+    SaveScoreData()
 end
 
----获取输入
+--- 获取输入
 function GetInput()
     if stage.next_stage then
         KeyStatePre = {}
@@ -218,7 +238,7 @@ function DoFrame()
     AfterFrame()
 end
 
----缓速和加速
+--- 缓速和加速
 function DoFrameEx()
     if ext.replay.IsReplay() then
         --播放录像时
@@ -235,7 +255,7 @@ function DoFrameEx()
                 ext.pause_menu_order = nil
             end
         else
-            if lstg.var.timeslow then
+            if lstg.var.timeslow and lstg.var.timeslow > 0 and lstg.var.timeslow ~= 1 then
                 local tmp = min(4, max(1, lstg.var.timeslow))
                 if ext.slowTicker % (ext.time_slow_level[tmp]) == 0 then
                     DoFrame(true, false)
@@ -248,7 +268,7 @@ function DoFrameEx()
     else
         --正常游戏时
         ext.slowTicker = ext.slowTicker + 1
-        if lstg.var.timeslow and lstg.var.timeslow > 0 then
+        if lstg.var.timeslow and lstg.var.timeslow > 0 and lstg.var.timeslow ~= 1 then
             local tmp = min(4, max(1, lstg.var.timeslow))
             if ext.slowTicker % (ext.time_slow_level[tmp]) == 0 then
                 DoFrame(true, false)
@@ -261,26 +281,25 @@ function DoFrameEx()
     end
 end
 
-function BeforeRender()
-end
-
 function AfterRender()
-    --暂停菜单渲染
-    local state = 0
+    -- 暂停菜单渲染
     ext.pause_menu:render()
-end
-
-function GameExit()
 end
 
 ----------------------------------------
 ---extra game call-back function
 
-local Ldebug = require("lib.Ldebug")
+---@class game.GameScene : foundation.Scene
+local GameScene = SceneManager.add("GameScene")
 
-function FrameFunc()
-    Ldebug.update()
-    --重设boss ui的槽位（多boss支持）
+function GameScene:onCreate()
+end
+
+function GameScene:onDestroy()
+end
+
+function GameScene:onUpdate()
+    -- 重设boss ui的槽位（多boss支持）
     boss_ui.active_count = 0
     --执行场景逻辑
     if ext.pause_menu:IsKilled() then
@@ -293,37 +312,24 @@ function FrameFunc()
     end
     --暂停菜单更新
     ext.pause_menu:frame()
-    Ldebug.layout()
-    return stage.QuitFlagExist()
 end
 
-function RenderFunc()
-    BeginScene()
-    UpdateScreenResources()
-    SetWorldFlag(1)
+function GameScene:onRender()
     BeforeRender()
-    if
-        stage.current_stage.timer and stage.current_stage.timer >= 0 and
-            (stage.next_stage == nil or stage.next_stage.is_menu)
-     then
-        stage.current_stage:render()
-        ObjRender()
-        SetViewMode("world")
-        DrawCollider()
-        if Collision_Checker then
-            Collision_Checker.render()
-        end
+    stage.current_stage:render()
+    ObjRender()
+    SetViewMode("world")
+    DrawCollider()
+    if Collision_Checker then
+        Collision_Checker.render()
     end
     AfterRender()
-    Ldebug.draw()
-    EndScene()
-    -- 截图
-    if GetLastKey() == setting.keysys.snapshot then
-        lstg.LocalUserData.Snapshot()
-    end
 end
 
-function FocusLoseFunc()
+function GameScene:onActivated()
+end
+
+function GameScene:onDeactivated()
     --[[
     if ext.pause_menu == nil and stage.current_stage then
         if not stage.current_stage.is_menu then
@@ -332,4 +338,5 @@ function FocusLoseFunc()
     end
     --]]
 end
+
 SceneManager.setNext("LoadScene")
