@@ -4,7 +4,7 @@ function stage_init:init()
 end
 function stage_init:frame()
     if self.timer >= 30 then
-        stage.Set('menu', 'none')
+        stage.Set('loadscreen', 'none')
     end
 end
 function stage_init:render()

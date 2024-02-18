@@ -19,7 +19,7 @@ function LoadLaserTexture(text, l1, l2, l3, margin)
     laser_data[n] = { l1, l2, l3, h, margin, h - margin }
     laser_texture_num = n + 1
 end
-
+LoadLaserTex_BufferCall()
 LoadLaserTexture("laser1", 64, 128, 64, 1)
 LoadLaserTexture("laser2", 5, 236, 15, 1)
 LoadLaserTexture("laser3", 127, 1, 128, 1)

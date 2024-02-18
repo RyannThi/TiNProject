@@ -13,6 +13,7 @@ Include 'THlib/DNHRenderObject.lua'
 Include 'THlib/eventListener.lua'
 Include 'THlib/resourcesRedirect.lua'
 Include 'THlib/misc/misc.lua'
+Include 'THlib/resource_loader.lua' -- place immediately after misc.lua
 Include 'THlib/se/se.lua'
 Include 'THlib/item/item.lua'
 Include 'THlib/player/player.lua'
@@ -23,5 +24,6 @@ Include 'THlib/background/background.lua'
 Include 'THlib/ext/ext.lua'
 Include 'THlib/UI/menu.lua'
 Include 'THlib/editor.lua'
+TexResLoad_BufferCall('_LoadImageFromFile')
 Include 'THlib/UI/UI.lua'
 Include 'sp/sp.lua'--OLC神的sp加强库

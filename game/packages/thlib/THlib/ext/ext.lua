@@ -332,3 +332,4 @@ function FocusLoseFunc()
     end
     --]]
 end
+SceneManager.setNext("LoadScene")

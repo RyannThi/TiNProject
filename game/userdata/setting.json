@@ -1,41 +1,41 @@
 {
-	"keysys": {
-		"repfast": 17,
-		"repslow": 16,
-		"menu": 27,
-		"snapshot": 36,
-		"retry": 82
-	},
-	"username": "User",
 	"windowed": true,
 	"resx": 1600,
 	"resy": 900,
-	"vsync": false,
+	"keysys": {
+		"retry": 82,
+		"repfast": 17,
+		"repslow": 16,
+		"menu": 27,
+		"snapshot": 36
+	},
 	"sevolume": 0.8,
-	"last_mod": "TiNProject",
-	"mod": "TiNProject",
+	"bgmvolume": 0.8,
+	"locale": "zh_cn",
+	"timezone": 8,
 	"keys": {
+		"spell": 88,
+		"special": 67,
+		"up": 38,
 		"down": 40,
 		"left": 37,
 		"right": 39,
 		"slow": 16,
-		"shoot": 90,
-		"spell": 88,
-		"special": 67,
-		"up": 38
+		"shoot": 90
 	},
-	"bgmvolume": 0.8,
-	"locale": "zh_cn",
+	"username": "User",
 	"nosplash": true,
-	"timezone": 8,
+	"vsync": false,
+	"last_mod": "TiNProject",
+	"mod": "TiNProject",
 	"keys2": {
+		"spell": 68,
+		"special": 70,
+		"up": 101,
 		"down": 98,
 		"left": 97,
 		"right": 99,
 		"slow": 65,
-		"shoot": 83,
-		"spell": 68,
-		"special": 70,
-		"up": 101
+		"shoot": 83
 	}
 }
