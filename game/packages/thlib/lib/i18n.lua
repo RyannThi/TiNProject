@@ -134,7 +134,7 @@ function M.refresh()
     local lang_path_list = {
         "assets/lang/",
         "data/assets/lang/",
-        "packages/thlib-scripts/assets/lang/",
+        "packages/thlib/assets/lang/",
         "packages/thlib-resources/assets/lang/",
     }
     for _, path in ipairs(lang_path_list) do

@@ -29,18 +29,16 @@ Include 'THlib/UI/UI.lua'
 Include 'sp/sp.lua'
 
 ]]--
--- 2. at the end of launcher.lua, change
+-- 2. at the end of launcher.lua and THlib/ext/ext.lua, change
 --[[ SceneManager.setNext("GameScene") ]]
 -- to
 --[[ SceneManager.setNext("LoadScene") ]]
--- (if you plan on skipping launcher, change this in THlib/ext/ext.lua as well)
 --
 -- 3. put this line in THlib/laser/laser.lua, after function LoadLaserTexture definition
 --[[ LoadLaserTex_BufferCall() ]]
 --
--- optional: if you skip launcher
--- repeat step 2 but on THlib/ext/ext.lua instead
--- then comment out the function definition for DefaultScene:onRender() in core.lua
+-- 4. comment out the function definitions for DefaultScene:onUpdate() and
+--    DefaultScene:onRender() in core.lua
 --
 -- it should work now
 
@@ -154,6 +152,7 @@ local function ImgLoader(n, p)
 end
 
 local buf_done = false
+local current_res = ''
 
 -- list must be in the format { ['resname'] = 'path/to/res' }, unless using BgmLoader (see above)
 -- loaderfunc can be any function that takes a resource name as 1st arg, path as 2nd arg,
@@ -165,6 +164,13 @@ function Task_LoadRes(list, loaderfunc)
         local interval = 1 / 50
         local stopwatch = StopWatch()
         for n, p in pairs(list) do
+            local p2
+            if type(p) == "table" then
+                p2 = p[1]
+            else
+                p2 = p
+            end
+            current_res = n .. ' (' .. p2 .. ')'
             loaderfunc(n, p)
             if stopwatch:GetElapsed() > interval then
                 task.Wait()
@@ -252,8 +258,8 @@ TexResLoad_BufferCall('LoadImageFromFile')
 TexResLoad_BufferCall('LoadAniFromFile')
 TexResLoad_BufferCall('LoadImageGroupFromFile')
 -- fuck you in particular
--- TexResLoad_BufferCall('_LoadImageFromFile') -- in THlib/editor.lua
--- TexResLoad_BufferCall('_LoadImageGroupFromFile') -- in THlib/editor.lua
+-- TexResLoad_BufferCall('_LoadImageFromFile') -- in THlib/THlib.lua
+-- TexResLoad_BufferCall('_LoadImageGroupFromFile') -- in THlib/THlib.lua
 
 -- congrats! you win the biggest asshole award.
 -- LoadLaserTex_BufferCall('LoadLaserTexture') -- in THlib/laser/laser.lua
@@ -263,9 +269,12 @@ local SceneManager = require("foundation.SceneManager")
 
 ---@class game.LoadScene : foundation.Scene
 local LoadScene = SceneManager.add("LoadScene")
+
+-- init local vars
 local timer = 0
 
 function LoadScene:onCreate()
+    -- DON'T TOUCH THIS PART
     local loader_list = {
         { tex_list, OLD_LoadTexture },
         { tex_mip_list, TexLoaderMip },
@@ -315,12 +324,12 @@ function LoadScene:onCreate()
             _G[v] = _G['OLD_' .. v]
         end
 
-        --task.Wait(10)
+        -- task.Wait(10)
 
         SceneManager.setNext("GameScene")
     end)
-    OLD_LoadTexture("testgirl", "THlib/octostar.png", true)
-    OLD_LoadImage("testimg", "testgirl",0,0, GetTextureSize("testgirl"))
+    -- place your code below this --
+    lstg.LoadTTF("loading", "assets/font/SourceHanSansCN-Bold.otf", 0, 36)
 end
 
 function LoadScene:onDestroy()
@@ -329,17 +338,19 @@ function LoadScene:onDestroy()
 end
 
 function LoadScene:onUpdate()
-    task.Do(self)
+    task.Do(self) -- NOT OPTIONAL
     timer = timer + 1
 end
 
 function LoadScene:onRender()
-    BeforeRender()
-    --RenderClear(Color(255, sin(timer * 2) * 160, sin(timer) * 160, sin(timer / 2) * 160))
-    SetViewMode("ui")
-    Render("testimg", 300, 300, 0, 4, 4)
-    SetViewMode("world")
-    AfterRender()
+    BeforeRender() -- NOT OPTIONAL
+
+    -- colors so you know it works
+    SetViewMode('ui')
+    lstg.RenderClear(Color(255, sin(timer * 2) * 80, sin(timer) * 80, sin(timer / 2) * 80))
+    lstg.RenderTTF('loading', current_res, 0, 0, 0, 0, 8, Color(0xFFFFFFFF), 1)
+
+    AfterRender() -- NOT OPTIONAL
 end
 
 function LoadScene:onActivated()

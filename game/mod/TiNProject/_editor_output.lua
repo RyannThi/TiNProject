@@ -2218,6 +2218,13 @@ stage.group.DefStageFunc('1@GameGroup','init',function(self)
         SetWorldUEX(screen.width/2, screen.height/2, 448, 448, 32, 32)
         lstg.var.bomb = 7
         lstg.var.spell = 7
+        for i, m in ipairs(lstg.ListMonitor()) do
+            Print('monitor ' .. i .. ':')
+            for k, v in pairs(m) do
+                Print(k, '=', v)
+            end
+        end
+        ChangeVideoMode(true, lstg.ListMonitor()[1], true)
         New(_editor_class["temple_background"] or temple_background)
         task._Wait(1)
         last=New(_editor_class["HUDManager"],self.x,self.y,_)

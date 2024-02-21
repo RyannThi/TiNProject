@@ -912,6 +912,8 @@ function GameSetting:init(exit_f)
         last_setting_copy.resx = setting.resx
         last_setting_copy.resy = setting.resy
         last_setting_copy.windowed = setting.windowed
+        last_setting_copy.borderless = setting.borderless
+        last_setting_copy.monitor = setting.monitor
         last_setting_copy.vsync = setting.vsync
         last_setting_copy.sevolume = setting.sevolume
         last_setting_copy.bgmvolume = setting.bgmvolume
@@ -919,6 +921,8 @@ function GameSetting:init(exit_f)
         last_setting.resx = setting.resx
         last_setting.resy = setting.resy
         last_setting.windowed = setting.windowed
+        last_setting.borderless = setting.borderless
+        last_setting.monitor = setting.monitor
         last_setting.vsync = setting.vsync
         last_setting.sevolume = setting.sevolume
         last_setting.bgmvolume = setting.bgmvolume
@@ -927,6 +931,8 @@ function GameSetting:init(exit_f)
         setting.resx = last_setting.resx
         setting.resy = last_setting.resy
         setting.windowed = last_setting.windowed
+        setting.borderless = last_setting.borderless
+        setting.monitor = last_setting.monitor
         setting.vsync = last_setting.vsync
         setting.sevolume = last_setting.sevolume
         setting.bgmvolume = last_setting.bgmvolume
@@ -936,6 +942,7 @@ function GameSetting:init(exit_f)
 
     local mode_window = {
         -- legacy
+        --[[
         {  640,  480, 60, 1 },
         {  800,  600, 60, 1 },
         {  960,  720, 60, 1 },
@@ -943,7 +950,6 @@ function GameSetting:init(exit_f)
         { 1280,  960, 60, 1 },
         { 1600, 1200, 60, 1 },
         { 1920, 1440, 60, 1 },
-        --[[
         -- 4:3
         {  640,  480, 60, 1 }, -- 1x
         {  704,  528, 60, 1 },
@@ -996,6 +1002,7 @@ function GameSetting:init(exit_f)
         { 3712, 2784, 60, 1 },
         { 3776, 2832, 60, 1 },
         { 3840, 2880, 60, 1 }, -- 6x
+        --]]
         -- 16:9
         {  640,  360, 60, 1 }, -- 1x
         {  704,  396, 60, 1 },
@@ -1048,7 +1055,6 @@ function GameSetting:init(exit_f)
         { 3712, 2088, 60, 1 },
         { 3776, 2124, 60, 1 },
         { 3840, 2160, 60, 1 }, -- 6x
-        --]]
     }
     local mode_window_index = 1
     local mode_window_name = {}
@@ -1095,17 +1101,66 @@ function GameSetting:init(exit_f)
     end
     table.insert(self._button, w_simpleselector_mode)
 
-    local w_checkbox_fullscreen = subui.widget.CheckBox()
-        :setText("launcher.menu.setting.game.fullscreen")
+    -- local w_checkbox_fullscreen = subui.widget.CheckBox()
+    --     :setText("launcher.menu.setting.game.fullscreen")
+    --     :setRect(0, 0, _width, _w_height)
+    --     :setCallback(function (value)
+    --         updateModeText()
+    --     end, function ()
+    --         return not last_setting.windowed
+    --     end, function (value)
+    --         last_setting.windowed = not value
+    --     end)
+    -- table.insert(self._button, w_checkbox_fullscreen)
+
+    local mode_fullscreen = {
+        { windowed = true, borderless = false },  -- normal windowed
+        { windowed = false, borderless = false }, -- exclusive fullscreen
+        { windowed = false, borderless = true },  -- borderless fullscreen
+    }
+    local mode_fullscreen_name = {
+        i18n_str('launcher.menu.setting.game.fullscreen.off'),
+        i18n_str('launcher.menu.setting.game.fullscreen.exclusive'),
+        i18n_str('launcher.menu.setting.game.fullscreen.borderless'),
+    }
+    local mode_fullscreen_index = 1
+
+    local w_simpleselector_fullscreen = subui.widget.SimpleSelector()
+        :setText("?")
         :setRect(0, 0, _width, _w_height)
         :setCallback(function (value)
-            updateModeText()
+            -- NO OP
         end, function ()
-            return not last_setting.windowed
+            return mode_fullscreen_index
         end, function (value)
-            last_setting.windowed = not value
+            mode_fullscreen_index = value
         end)
-    table.insert(self._button, w_checkbox_fullscreen)
+    local function updateFullscreenText()
+        w_simpleselector_fullscreen._item = mode_fullscreen_name
+    end
+    table.insert(self._button, w_simpleselector_fullscreen)
+
+    local monitor = lstg.ListMonitor()
+    local monitor_index = 1
+    local monitor_name = {}
+    for i, _ in ipairs(monitor) do
+        table.insert(monitor_name, ''..i)
+    end
+
+    local w_simpleselector_monitor = subui.widget.SimpleSelector()
+        :setText("?")
+        :setRect(0, 0, _width, _w_height)
+        :setCallback(function (value)
+            -- NO OP
+        end, function ()
+            return monitor_index
+        end, function (value)
+            monitor_index = value
+        end)
+    local function updateMonitorText()
+        w_simpleselector_monitor._item = monitor_name
+    end
+    table.insert(self._button, w_simpleselector_monitor)
 
     local w_checkbox_vsync = subui.widget.CheckBox()
         :setText("launcher.menu.setting.game.vsync")
@@ -1153,14 +1208,83 @@ function GameSetting:init(exit_f)
     -- 应用
 
     local function applySetting()
+        -- if not lstg.ChangeVideoMode(setting.resx, setting.resy, setting.windowed, setting.vsync) then
+        --     setting.windowed = true
+        --     saveConfigure()
+        --     if not lstg.ChangeVideoMode(setting.resx, setting.resy, setting.windowed, setting.vsync) then
+        --         stage.QuitGame()
+        --         return
+        --     end
+        -- end
+        lstg.Print(setting.borderless, setting.windowed)
+        -- if setting.borderless and not setting.windowed and
+        --    not lstg.ChangeVideoMode(true, lstg.ListMonitor()[setting.monitor], setting.vsync)
+        -- then
+        --     setting.borderless = false
+        --     setting.windowed = true
+        --     lstg.Log(4, 'Borderless Failed!!')
+        --     saveConfigure()
+        -- end
+        -- if not windowed and
+        --    not lstg.ChangeVideoMode(setting.windowed, setting.resx, setting.resy, setting.vsync) then
+        --     setting.windowed = true
+        --     saveConfigure()
+        --     lstg.Log(4, 'Failed to set mode with new style!')
+        --     if not lstg.ChangeVideoMode(setting.resx, setting.resy, setting.windowed, setting.vsync) then
+        --         lstg.Log(5, 'Failed to set mode')
+        --         stage.QuitGame()
+        --         return
+        --     end
+        -- end
+        -- if not lstg.ChangeVideoMode(setting.windowed, setting.resx, setting.resy, setting.vsync, lstg.ListMonitor()[setting.monitor], setting.borderless) then
+        --     setting.windowed = true
+        --     saveConfigure()
+        --     lstg.Log(4, 'Failed to set mode with new style!')
+        --     if not lstg.ChangeVideoMode(setting.resx, setting.resy, setting.windowed, setting.vsync) then
+        --         lstg.Log(5, 'Failed to set mode')
+        --         stage.QuitGame()
+        --         return
+        --     end
+        -- end
+    local success = true
+    if setting.borderless and not setting.windowed and
+        not lstg.VideoModeFSBorderless(setting.resx, setting.resy, setting.vsync, setting.monitor)
+    then
+        setting.borderless = false
+        setting.windowed = true
+        lstg.Log(4, 'Borderless Failed!!')
+        saveConfigure()
+        success = false
+    elseif setting.borderless and not setting.windowed then
+        lstg.Log(4, 'trap for borderless')
+    elseif setting.windowed and
+        not lstg.VideoModeWindowed(setting.resx, setting.resy, setting.vsync, setting.monitor)
+    then
+        lstg.Log(4, 'Windowed Failed!!')
+        saveConfigure()
+        success = false
+    elseif setting.windowed then
+        lstg.Log(4, 'trap for windowed')
+    elseif
+        not lstg.VideoModeFSExclusive(setting.resx, setting.resy, setting.vsync)
+    then
+        lstg.Log(4, 'Exclusive Failed!!')
+        saveConfigure()
+        success = false
+    else
+        lstg.Log(4, 'trap for exclusive')
+    end
+
+    if not success and
+       not lstg.ChangeVideoMode(setting.resx, setting.resy, setting.windowed, setting.vsync)
+    then
+        setting.windowed = true
+        saveConfigure()
         if not lstg.ChangeVideoMode(setting.resx, setting.resy, setting.windowed, setting.vsync) then
-            setting.windowed = true
-            saveConfigure()
-            if not lstg.ChangeVideoMode(setting.resx, setting.resy, setting.windowed, setting.vsync) then
-                stage.QuitGame()
-                return
-            end
+            stage.QuitGame()
+            return
         end
+    end
         ResetScreen()
         lstg.SetSEVolume(setting.sevolume / 100)
         lstg.SetBGMVolume(setting.bgmvolume / 100)
@@ -1168,6 +1292,9 @@ function GameSetting:init(exit_f)
     local w_button_apply = subui.widget.Button("launcher.save_and_return", function()
         last_setting.resx = mode_window[mode_window_index][1]
         last_setting.resy = mode_window[mode_window_index][2]
+        last_setting.windowed = mode_fullscreen[mode_fullscreen_index].windowed
+        last_setting.borderless = mode_fullscreen[mode_fullscreen_index].borderless
+        last_setting.monitor = monitor_index
         copyDataToSetting()
         saveConfigure()
         applySetting()
@@ -1183,7 +1310,9 @@ function GameSetting:init(exit_f)
         self.title = i18n_str("launcher.menu.setting.game")
         w_button_back.text = i18n_str("launcher.back_icon")
         w_simpleselector_mode.text = i18n_str("launcher.menu.setting.game.display_mode")
-        w_checkbox_fullscreen.text = i18n_str("launcher.menu.setting.game.fullscreen")
+        -- w_checkbox_fullscreen.text = i18n_str("launcher.menu.setting.game.fullscreen")
+        w_simpleselector_fullscreen.text = i18n_str("launcher.menu.setting.game.fullscreen")
+        w_simpleselector_monitor.text = i18n_str("launcher.menu.setting.game.monitor")
         w_checkbox_vsync.text = i18n_str("launcher.menu.setting.game.vsync")
         w_slider_se.text = i18n_str("launcher.menu.setting.game.sound_effect")
         w_slider_bgm.text = i18n_str("launcher.menu.setting.game.music")
@@ -1191,6 +1320,8 @@ function GameSetting:init(exit_f)
         copyDataFromSetting()
         updateDisplayMode()
         updateModeText()
+        updateFullscreenText()
+        updateMonitorText()
         self._button_index = 2
     end
     function self:_discard()
@@ -1213,9 +1344,19 @@ function GameSetting:init(exit_f)
 
         top_y = top_y - _w_height
 
-        w_checkbox_fullscreen.alpha = self.alpha
-        w_checkbox_fullscreen.x = self.x - _width / 2
-        w_checkbox_fullscreen.y = top_y
+        -- w_checkbox_fullscreen.alpha = self.alpha
+        -- w_checkbox_fullscreen.x = self.x - _width / 2
+        -- w_checkbox_fullscreen.y = top_y
+
+        w_simpleselector_fullscreen.alpha = self.alpha
+        w_simpleselector_fullscreen.x = self.x - _width / 2
+        w_simpleselector_fullscreen.y = top_y
+
+        top_y = top_y - _w_height
+
+        w_simpleselector_monitor.alpha = self.alpha
+        w_simpleselector_monitor.x = self.x - _width / 2
+        w_simpleselector_monitor.y = top_y
 
         top_y = top_y - _w_height
 
@@ -1403,6 +1544,76 @@ local LauncherScene = SceneManager.add("LauncherScene")
 function LauncherScene:onCreate()
     self.timer = 0
     lstg.SetSplash(true)
+
+    lstg.Print(setting.borderless, setting.windowed)
+    -- if setting.borderless and not setting.windowed and
+    --    not lstg.ChangeVideoMode(true, lstg.ListMonitor()[setting.monitor], setting.vsync)
+    -- then
+    --     setting.borderless = false
+    --     setting.windowed = true
+    --     lstg.Log(4, 'Borderless Failed!!')
+    --     saveConfigure()
+    -- end
+    -- if not windowed and
+    --    not lstg.ChangeVideoMode(setting.windowed, setting.resx, setting.resy, setting.vsync) then
+    --     setting.windowed = true
+    --     saveConfigure()
+    --     lstg.Log(4, 'Failed to set mode with new style!')
+    --     if not lstg.ChangeVideoMode(setting.resx, setting.resy, setting.windowed, setting.vsync) then
+    --         lstg.Log(5, 'Failed to set mode')
+    --         stage.QuitGame()
+    --         return
+    --     end
+    -- end
+    -- if not lstg.ChangeVideoMode(setting.windowed, setting.resx, setting.resy, setting.vsync, lstg.ListMonitor()[setting.monitor], setting.borderless) then
+    --     setting.windowed = true
+    --     saveConfigure()
+    --     lstg.Log(4, 'Failed to set mode with new style!')
+    --     if not lstg.ChangeVideoMode(setting.resx, setting.resy, setting.windowed, setting.vsync) then
+    --         lstg.Log(5, 'Failed to set mode')
+    --         stage.QuitGame()
+    --         return
+    --     end
+    -- end
+    local success = true
+    if setting.borderless and not setting.windowed and
+        not lstg.VideoModeFSBorderless(setting.resx, setting.resy, setting.vsync, setting.monitor)
+    then
+        setting.borderless = false
+        setting.windowed = true
+        lstg.Log(4, 'Borderless Failed!!')
+        saveConfigure()
+        success = false
+    elseif setting.borderless and not setting.windowed then
+        lstg.Log(4, 'trap for borderless')
+    elseif setting.windowed and
+        not lstg.VideoModeWindowed(setting.resx, setting.resy, setting.vsync, setting.monitor)
+    then
+        lstg.Log(4, 'Windowed Failed!!')
+        saveConfigure()
+        success = false
+    elseif setting.windowed then
+        lstg.Log(4, 'trap for windowed')
+    elseif
+        not lstg.VideoModeFSExclusive(setting.resx, setting.resy, setting.vsync)
+    then
+        lstg.Log(4, 'Exclusive Failed!!')
+        saveConfigure()
+        success = false
+    else
+        lstg.Log(4, 'trap for exclusive')
+    end
+
+    if not success and
+       not lstg.ChangeVideoMode(setting.resx, setting.resy, setting.windowed, setting.vsync)
+    then
+        setting.windowed = true
+        saveConfigure()
+        if not lstg.ChangeVideoMode(setting.resx, setting.resy, setting.windowed, setting.vsync) then
+            stage.QuitGame()
+            return
+        end
+    end
 
     -- 背景
     self.color_value = 0
@@ -1658,5 +1869,6 @@ function LauncherLoadingScene:onCreate()
     InitScoreData()
     ext.reload()
     stage.Set("init", "none")
-    SceneManager.setNext("LoadScene") -- 此时 ext 也加载了，使用 GameScene 会更好
+    -- SceneManager.setNext("GameScene") -- 此时 ext 也加载了，使用 GameScene 会更好
+    SceneManager.setNext("LoadScene")
 end
