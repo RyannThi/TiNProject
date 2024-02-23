@@ -158,25 +158,19 @@ local current_res = ''
 -- loaderfunc can be any function that takes a resource name as 1st arg, path as 2nd arg,
 -- and has no other required arguments.
 -- do not use parentheses for loaderfunc.
-function Task_LoadRes(list, loaderfunc)
+function Task_LoadRes(list, loaderfunc, frame_amt)
+    if not frame_amt then
+        frame_amt = 24
+    end
     return function()
         buf_done = false
-        local interval = 1 / 50
-        local stopwatch = StopWatch()
+        local amt = 0
         for n, p in pairs(list) do
-            local p2
-            if type(p) == "table" then
-                p2 = p[1]
-            else
-                p2 = p
-            end
-            current_res = n .. ' (' .. p2 .. ')'
             loaderfunc(n, p)
-            if stopwatch:GetElapsed() > interval then
+            amt = amt + 1
+            if amt % frame_amt == 0 then
                 task.Wait()
-                stopwatch:Reset()
             end
-            stopwatch:Resume()
         end
         buf_done = true
     end
@@ -229,15 +223,13 @@ function Task_CallBuffer(fname)
         buf_done = false
         _G[fname] = _G['OLD_' .. fname]
         _G['OLD_' .. fname] = nil
-        local interval = 1 / 50
-        local stopwatch = StopWatch()
+        local amt = 0
         for _, v in ipairs(call_buffer[fname]) do
             _G[fname](unpack(v))
-            if stopwatch:GetElapsed() > interval then
+            amt = amt + 1
+            if amt % 48 == 0 then
                 task.Wait()
-                stopwatch:Reset()
             end
-            stopwatch:Resume()
         end
         buf_done = true
     end
@@ -274,10 +266,13 @@ local LoadScene = SceneManager.add("LoadScene")
 local timer = 0
 
 function LoadScene:onCreate()
+    self.loadCompleted = false
+    self.loadTimer = 0
+    lstg.SetImageState("white", "", Color(0, 0, 0, 0))
     -- DON'T TOUCH THIS PART
     local loader_list = {
-        { tex_list, OLD_LoadTexture },
-        { tex_mip_list, TexLoaderMip },
+        { tex_list, OLD_LoadTexture, 1 },
+        { tex_mip_list, TexLoaderMip, 1 },
         -- 'GetTextureSize',
         'LoadImageFromFile',
         '_LoadImageFromFile',
@@ -286,12 +281,12 @@ function LoadScene:onCreate()
         '_LoadImageGroupFromFile',
         'LoadLaserTexture',
         'SetTextureSamplerState',
-        { fnt_list, OLD_LoadFont },
-        { fnt_mip_list, FntLoaderMip },
+        { fnt_list, OLD_LoadFont, 1 },
+        { fnt_mip_list, FntLoaderMip, 1 },
 
         { snd_list, OLD_LoadSound },
         { fx__list, OLD_LoadFX },
-        { mdl_list, OLD_LoadModel },
+        { mdl_list, OLD_LoadModel, 4 },
 
         { bgm_list, BgmLoader },
         { ttf_list, TtfLoader },
@@ -324,12 +319,72 @@ function LoadScene:onCreate()
             _G[v] = _G['OLD_' .. v]
         end
 
-        -- task.Wait(10)
+        self.loadCompleted = true
+
+        while (true) do
+            GetInput() -- only do ONCE
+            if (KeyIsDown"shoot" or KeyIsDown"spell" or KeyIsPressed"special" or self.loadTimer == 60 * 4) then break end
+            task.Wait()
+        end
+
+        do
+            local _beg_blackoutAlpha=0 local blackoutAlpha=_beg_blackoutAlpha  local _w_blackoutAlpha=-90 local _end_blackoutAlpha=255 local _d_w_blackoutAlpha=180/(45-1)
+            for _=1,45 do
+                lstg.SetImageState("white", "", Color(blackoutAlpha, 0, 0, 0))
+                task._Wait(1)
+                _w_blackoutAlpha=_w_blackoutAlpha+_d_w_blackoutAlpha blackoutAlpha=(_end_blackoutAlpha-_beg_blackoutAlpha)/2*sin(_w_blackoutAlpha)+((_end_blackoutAlpha+_beg_blackoutAlpha)/2)
+            end
+        end
 
         SceneManager.setNext("GameScene")
     end)
     -- place your code below this --
     lstg.LoadTTF("loading", "assets/font/SourceHanSansCN-Bold.otf", 0, 36)
+    OLD_LoadTexture("loadbg", "THlib/loading/LOAD_Background.png", true)
+    OLD_LoadTexture("loadtext", "THlib/loading/LOAD_Text.png", true)
+    OLD_LoadTexture("loadgalaxy", "THlib/loading/LOAD_Galaxy.png", true)
+    OLD_LoadTexture("loadharae", "THlib/loading/LOAD_Harae.png", true)
+    OLD_LoadTexture("loadloading", "THlib/loading/LOAD_Loading.png", true)
+    OLD_LoadTexture("loadcomplete", "THlib/loading/LOAD_Complete.png", true)
+    OLD_LoadTexture("loadshadow", "THlib/loading/LOAD_Shadow.png", true)
+    OLD_LoadImage("loadbgimg", "loadbg", 0, 0, 1920, 1080)
+    OLD_LoadImage("loadtextimg", "loadtext", 0, 0, 1920, 1080)
+    OLD_LoadImage("loadgalaxyimg", "loadgalaxy", 0, 0, 3200, 3200)
+    OLD_LoadImage("loadharaeimg", "loadharae", 0, 0,400,400)
+    OLD_LoadImage("loadloadingimg", "loadloading", 0, 0, 1920, 1080)
+    OLD_LoadImage("loadcompleteimg", "loadcomplete", 0, 0, 1920, 1080)
+    OLD_LoadImage("loadshadowimg", "loadshadow", 0, 0, 1, 100)
+    lstg.SetImageState("loadbgimg", "", Color(0, 255, 255, 255))
+    lstg.SetImageState("loadtextimg", "", Color(0, 255, 255, 255))
+    lstg.SetImageState("loadgalaxyimg", "mul+rev", Color(0, 255, 255, 255))
+    lstg.SetImageState("loadharaeimg", "", Color(0, 255, 255, 255))
+    lstg.SetImageState("loadloadingimg", "", Color(0, 255, 255, 255))
+    lstg.SetImageState("loadcompleteimg", "", Color(0, 255, 255, 255))
+    lstg.SetImageState("loadshadowimg", "", Color(55, 255, 255, 255))
+    self.textScale = 1.3
+    task.New(self, function()
+        do
+            local _beg_textScale=1.3 local textScale=_beg_textScale  local _w_textScale=-90 local _end_textScale=1 local _d_w_textScale=180/(60-1)
+            local _beg_textAlpha=0 local textAlpha=_beg_textAlpha  local _w_textAlpha=-90 local _end_textAlpha=255 local _d_w_textAlpha=180/(60-1)
+            local _beg_bgAlpha=0 local bgAlpha=_beg_bgAlpha  local _w_bgAlpha=-90 local _end_bgAlpha=255 local _d_w_bgAlpha=180/(60-1)
+            local _beg_galaxyAlpha=0 local galaxyAlpha=_beg_galaxyAlpha  local _w_galaxyAlpha=-90 local _end_galaxyAlpha=200 local _d_w_galaxyAlpha=180/(60-1)
+            for _=1,60 do
+                lstg.SetImageState("loadbgimg", "", Color(bgAlpha, 255, 255, 255))
+                lstg.SetImageState("loadtextimg", "", Color(textAlpha, 255, 255, 255))
+                lstg.SetImageState("loadgalaxyimg", "mul+rev", Color(galaxyAlpha, 255, 255, 255))
+                lstg.SetImageState("loadharaeimg", "", Color(textAlpha - 50, 255, 255, 255))
+                lstg.SetImageState("loadloadingimg", "", Color(textAlpha, 255, 255, 255))
+                lstg.SetImageState("loadcompleteimg", "", Color(textAlpha, 255, 255, 255))
+                self.textScale = textScale
+                task._Wait(1)
+                _w_textScale=_w_textScale+_d_w_textScale textScale=(_end_textScale-_beg_textScale)/2*sin(_w_textScale)+((_end_textScale+_beg_textScale)/2)
+                _w_textAlpha=_w_textAlpha+_d_w_textAlpha textAlpha=(_end_textAlpha-_beg_textAlpha)/2*sin(_w_textAlpha)+((_end_textAlpha+_beg_textAlpha)/2)
+                _w_bgAlpha=_w_bgAlpha+_d_w_bgAlpha bgAlpha=(_end_bgAlpha-_beg_bgAlpha)/2*sin(_w_bgAlpha)+((_end_bgAlpha+_beg_bgAlpha)/2)
+                _w_galaxyAlpha=_w_galaxyAlpha+_d_w_galaxyAlpha galaxyAlpha=(_end_galaxyAlpha-_beg_galaxyAlpha)/2*sin(_w_galaxyAlpha)+((_end_galaxyAlpha+_beg_galaxyAlpha)/2)
+            end
+        end
+
+    end)
 end
 
 function LoadScene:onDestroy()
@@ -340,17 +395,44 @@ end
 function LoadScene:onUpdate()
     task.Do(self) -- NOT OPTIONAL
     timer = timer + 1
+    if self.loadCompleted == true then
+        self.loadTimer = self.loadTimer + 1
+    end
 end
 
 function LoadScene:onRender()
     BeforeRender() -- NOT OPTIONAL
 
+    local amt_res = 0
+    for i = 1, 9 do
+        local g, s = lstg.EnumRes(i)
+        amt_res = amt_res + #g + #s
+    end
+
     -- colors so you know it works
     SetViewMode('ui')
     lstg.RenderClear(Color(255, sin(timer * 2) * 80, sin(timer) * 80, sin(timer / 2) * 80))
-    lstg.RenderTTF('loading', current_res, 0, 0, 0, 0, 8, Color(0xFFFFFFFF), 1)
-
+    --lstg.RenderTTF('loading', current_res, 0, 0, 0, 0, 8, Color(0xFFFFFFFF), 1)
+    lstg.Render("loadbgimg", 854/2, 480/2, 0, 1/2.25, 1/2.25)
+    lstg.Render("loadgalaxyimg", 0, 0,timer * 0.125, 1/2.25, 1/2.25)
+    lstg.RenderRect("loadshadowimg", 0, 854 * (amt_res/1774), 0, 100)
+    lstg.Render("loadtextimg", 854/2, 480/2, 0, (1/2.25) * self.textScale, (1/2.25) * self.textScale)
+    lstg.Render("loadharaeimg", 775, 84,timer * -1, 1/3.15, 1/3.15)
+    if self.loadCompleted == false then
+        lstg.Render("loadloadingimg", 854/2, 480/2, 0, 1/2.25, 1/2.25)
+    else
+        lstg.Render("loadcompleteimg", 854/2, 480/2, 0, 1/2.25, 1/2.25)
+    end
     AfterRender() -- NOT OPTIONAL
+
+    lstg.Render("white", 854/2, 480/2,0, 854, 480)
+
+
+
+
+
+    --lstg.RenderTTF('loading', amt_res .. "/" .. 1774, 0, 0, 0, 0, 8, Color(0xFFFFFFFF), 1)
+    lstg.RenderTTF('loading', scoredata.spell_card_hist["All"][_sc_table[1][2]]["Reimu"][2], 0, 0, 0, 0, 8, Color(0xFFFFFFFF), 1)
 end
 
 function LoadScene:onActivated()

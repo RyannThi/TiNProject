@@ -4,6 +4,7 @@ _author = "Monodenounment Studios"
 _mod_version = 4096
 _allow_practice = true
 _allow_sc_practice = true
+spelldata = {}
 function math.lerp(a,b,x)
 	return a + (b - a) * x
 end
@@ -168,13 +169,17 @@ _LoadImageFromFile('image:'..'BombCutin','BombCutin.png',true,0,0,false,0)
 -- archive space: 
 -- archive space: ENEMY\
 _LoadImageFromFile('image:'..'BulletShadow','ENEMY\\BulletShadow.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy1_arml','ENEMY\\fairy1_arml.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy1_armr','ENEMY\\fairy1_armr.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy1_body','ENEMY\\fairy1_body.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy1_head','ENEMY\\fairy1_head.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy1_legs','ENEMY\\fairy1_legs.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy1_wingl','ENEMY\\fairy1_wingl.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy1_wingr','ENEMY\\fairy1_wingr.png',true,0,0,false,0)
+for _=1,18 do
+    do
+        print(_LoadImageFromFile('image:fairy' .. _ .. '_arml','ENEMY\\fairy' .. _ .. '\\fairy' .. _ .. '_arml.png',true,0,0,false,0))
+        _LoadImageFromFile('image:fairy' .. _ .. '_armr','ENEMY\\fairy' .. _ .. '\\fairy' .. _ .. '_armr.png',true,0,0,false,0)
+        _LoadImageFromFile('image:fairy' .. _ .. '_body','ENEMY\\fairy' .. _ .. '\\fairy' .. _ .. '_body.png',true,0,0,false,0)
+        _LoadImageFromFile('image:fairy' .. _ .. '_head','ENEMY\\fairy' .. _ .. '\\fairy' .. _ .. '_head.png',true,0,0,false,0)
+        _LoadImageFromFile('image:fairy' .. _ .. '_legs','ENEMY\\fairy' .. _ .. '\\fairy' .. _ .. '_legs.png',true,0,0,false,0)
+        _LoadImageFromFile('image:fairy' .. _ .. '_wingl','ENEMY\\fairy' .. _ .. '\\fairy' .. _ .. '_wingl.png',true,0,0,false,0)
+        _LoadImageFromFile('image:fairy' .. _ .. '_wingr','ENEMY\\fairy' .. _ .. '\\fairy' .. _ .. '_wingr.png',true,0,0,false,0)
+    end
+end
 -- archive space: 
 _editor_class["MainMenuBG"]=Class(_object)
 _editor_class["MainMenuBG"].init=function(self,_x,_y,_)
@@ -247,6 +252,7 @@ _editor_class["MainMenuMain"].init=function(self,_x,_y,_)
     last=New(_editor_class["MainMenuPlayer"],self.x,self.y,_)
     last=New(_editor_class["MainMenuHaraeAnim"],self.x,self.y,_)
     last=New(_editor_class["MainMenuOptions"],self.x,self.y,_)
+    last=New(_editor_class["MainMenuSpell"],self.x,self.y,_)
     lasttask=task.New(self,function()
         do
             local _beg_logoScale=0.2 local logoScale=_beg_logoScale  local _w_logoScale=0 local _end_logoScale=1 local _d_w_logoScale=90/(60*2.5-1)
@@ -1283,6 +1289,100 @@ _editor_class["MainMenuOptions"].render=function(self)
     end
     SetViewMode'world'
 end
+_editor_class["MainMenuSpell"]=Class(_object)
+_editor_class["MainMenuSpell"].init=function(self,_x,_y,_)
+    self.x,self.y=_x,_y
+    self.img="img_void"
+    self.layer=LAYER_TOP
+    self.group=GROUP_GHOST
+    self.hide=false
+    self.bound=false
+    self.navi=false
+    self.hp=10
+    self.maxhp=10
+    self.colli=false
+    self._servants={}
+    self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
+    self.canvasX = -854
+    self.canvasY = 0
+end
+_editor_class["MainMenuSpell"].frame=function(self)
+    if MainMenuRef.canvasIndex == 4 then
+    	self.canvasX = LerpDecel(self.canvasX, 0, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
+    else
+    	self.canvasX = LerpDecel(self.canvasX, -854, 0.05)
+    	self.canvasY = LerpDecel(self.canvasY, 0, 0.05)
+    end
+    
+    if MainMenuRef.canvasIndex == 4 then
+    	if KeyIsPressed"shoot" and MainMenuRef.interactDelay == 0 then
+    		PlaySound("ok00",0.1,self.x/256,false)
+    		MainMenuRef.interactDelay = 5
+    		MainMenuRef.canvasIndex = 9
+    		self.altPos = true
+    	end
+    
+    	if KeyIsPressed"spell" then
+    		PlaySound("cancel00",0.1,self.x/256,false)
+    		MainMenuRef.canvasIndex = 0
+    		self.altPos = false
+    	end
+    	
+    	if is_up_held or is_left_held then
+    		self.index = Wrap(self.index - 1, 1, 5)
+    		PlaySound("select00",0.1,0,false)
+    	end
+    	
+    	if is_down_held or is_right_held then
+    		self.index = Wrap(self.index + 1, 1, 5)
+    		PlaySound("select00",0.1,0,false)
+    	end
+    end
+    self.class.base.frame(self)
+end
+_editor_class["MainMenuSpell"].render=function(self)
+    SetViewMode'ui'
+    self.class.base.render(self)
+    lstg.RenderText("font:LTCarpet","Boss Name",100 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset + 60,0.2,0)
+    lstg.RenderText("font:LTCarpet","Spell Card Name",250 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset + 60,0.2,0)
+    lstg.RenderText("font:LTCarpet","Clear Times / Attempt Times",754 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset + 60,0.2,2)
+    for _=1,#_sc_table do
+        --local spellattempt = (scoredata.spell_card_hist["All"][_sc_table[_][2]]["Reimu"][2] or 0) +
+        --(scoredata.spell_card_hist["All"][_sc_table[_][2]]["Flandre"][2] or 0) +
+        --(scoredata.spell_card_hist["All"][_sc_table[_][2]]["Yuyuko"][2] or 0) +
+        --(scoredata.spell_card_hist["All"][_sc_table[_][2]]["MT"][2] or 0)
+        
+        local allHist = scoredata.spell_card_hist["All"]
+        local spellIndex = _sc_table[_][2]
+        local reimuHist = allHist and allHist[spellIndex] and allHist[spellIndex]["Reimu"]
+        local flandreHist = allHist and allHist[spellIndex] and allHist[spellIndex]["Flandre"]
+        local yuyukoHist = allHist and allHist[spellIndex] and allHist[spellIndex]["Yuyuko"]
+        local mtHist = allHist and allHist[spellIndex] and allHist[spellIndex]["MT"]
+        
+        local reimuAttempt = reimuHist and reimuHist[2] or 0
+        local flandreAttempt = flandreHist and flandreHist[2] or 0
+        local yuyukoAttempt = yuyukoHist and yuyukoHist[2] or 0
+        local mtAttempt = mtHist and mtHist[2] or 0
+        
+        local reimuClear = reimuHist and reimuHist[1] or 0
+        local flandreClear = flandreHist and flandreHist[1] or 0
+        local yuyukoClear = yuyukoHist and yuyukoHist[1] or 0
+        local mtClear = mtHist and mtHist[1] or 0
+        
+        local spellAttempt = reimuAttempt + flandreAttempt + yuyukoAttempt + mtAttempt
+        local spellClear = reimuClear + flandreClear + yuyukoClear + mtClear
+        if spellAttempt > 0 then
+            lstg.RenderText("font:LTCarpet",_editor_class[_sc_table[_][1]].name,100 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 40,0.2,0)
+            lstg.RenderText("font:LTCarpet",_sc_table[_][2],250 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 40,0.2,0)
+        else
+            lstg.RenderText("font:LTCarpet","???",100 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 40,0.2,0)
+            lstg.RenderText("font:LTCarpet","???",250 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 40,0.2,0)
+        end
+        lstg.RenderText("font:LTCarpet",spellClear .. "/" .. spellAttempt,754 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 40,0.2,2)
+    end
+    SetViewMode'world'
+end
 _editor_class["HUDScroller"]=Class(_object)
 _editor_class["HUDScroller"].init=function(self,_x,_y,_)
     self.x,self.y=_x,_y
@@ -1485,16 +1585,16 @@ _editor_class["FairySpawn"].init=function(self,_x,_y,style, hp, dropItem, contac
     self.bodyRot = 0
     self.headRot = 0
     self.legRot = 0
-    if style == 1 or style == 2 or style == 3 or style == 4 then
+    if style > 0 then
         function self.AE.renderAnim()
             self.AE.size = 1/6 * self.hscale
-            Render("image:fairy1_wingr",self.x, self.y, 0 - (sin(self.timer * 12) * 25) + self.wingRRot,self.AE.size, self.AE.size,0.5)
-            Render("image:fairy1_wingl",self.x, self.y, 0 + (sin(self.timer * 12) * 25) + self.wingRRot,self.AE.size, self.AE.size,0.5)
-            Render("image:fairy1_arml",self.x, self.y, 0 - (sin(self.timer * 4) * 8) + self.armLRot - 10,self.AE.size, self.AE.size,0.5)
-            Render("image:fairy1_armr",self.x, self.y, 0 + (sin(self.timer * 4) * 8) + self.armRRot + 10,self.AE.size, self.AE.size,0.5)
-            Render("image:fairy1_legs",self.x, self.y, 0 - (sin(self.timer * 3) * 2) + self.legRot,self.AE.size, self.AE.size,0.5)
-            Render("image:fairy1_body",self.x, self.y,self.bodyRot,self.AE.size, self.AE.size,0.5)
-            Render("image:fairy1_head",self.x, self.y,self.headRot,self.AE.size, self.AE.size,0.5)
+            Render("image:fairy" .. style .. "_wingr",self.x, self.y, 0 - (sin(self.timer * 12) * 25) + self.wingRRot,self.AE.size, self.AE.size,0.5)
+            Render("image:fairy" .. style .. "_wingl",self.x, self.y, 0 + (sin(self.timer * 12) * 25) + self.wingRRot,self.AE.size, self.AE.size,0.5)
+            Render("image:fairy" .. style .. "_arml",self.x, self.y, 0 - (sin(self.timer * 4) * 8) + self.armLRot - 10,self.AE.size, self.AE.size,0.5)
+            Render("image:fairy" .. style .. "_armr",self.x, self.y, 0 + (sin(self.timer * 4) * 8) + self.armRRot + 10,self.AE.size, self.AE.size,0.5)
+            Render("image:fairy" .. style .. "_legs",self.x, self.y, 0 - (sin(self.timer * 3) * 2) + self.legRot,self.AE.size, self.AE.size,0.5)
+            Render("image:fairy" .. style .. "_body",self.x, self.y,self.bodyRot,self.AE.size, self.AE.size,0.5)
+            Render("image:fairy" .. style .. "_head",self.x, self.y,self.headRot,self.AE.size, self.AE.size,0.5)
         end
         function self.AE.animate()
             if self.dx >= 1 then
@@ -1667,6 +1767,28 @@ _editor_class["BombEf"].render=function(self)
     PushRenderTarget("BombEf")
     RenderClear(Color(0,0,0,0))
     PopRenderTarget("BombEf")
+    SetViewMode'world'
+end
+_editor_class["LoadingManager"]=Class(_object)
+_editor_class["LoadingManager"].init=function(self,_x,_y,_)
+    self.x,self.y=_x,_y
+    self.img="img_void"
+    self.layer=LAYER_TOP
+    self.group=GROUP_GHOST
+    self.hide=false
+    self.bound=false
+    self.navi=false
+    self.hp=10
+    self.maxhp=10
+    self.colli=false
+    self._servants={}
+    self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
+end
+_editor_class["LoadingManager"].render=function(self)
+    SetViewMode'ui'
+    lstg.RenderTTF("loading","test",200,600,0,200,8,Color(255, 255, 255, 255),3)
+    print("ASLIJASLKRJALKSRJALSKRJALKSRJLAKSJRLKAJRSKLAQJSLKRJALSKRJALKSJRKLASJRLKAJSLKRASKRJLAKSRJLKASJR")
+    self.class.base.render(self)
     SetViewMode'world'
 end
 _editor_class["ReimuBaseShot"]=Class(_object)
@@ -2175,7 +2297,77 @@ Reimu.spell=function(self)
 end
 Reimu.special=function(self)
 end
-table.insert(player_list, {'Reimu Hakurei','Reimu','Reimu'})-- Loading Screen
+table.insert(player_list, {'Reimu Hakurei','Reimu','Reimu'})_editor_class["testboss"]=Class(boss)
+_editor_class["testboss"].cards={}
+_editor_class["testboss"].name="Boss Stage 1"
+_editor_class["testboss"].bgm=""
+_editor_class["testboss"]._bg=nil
+_editor_class["testboss"].difficulty="All"
+_editor_class["testboss"].init=function(self,cards)
+    boss.init(self,240,384,_editor_class["testboss"].name,cards,New(spellcard_background),_editor_class["testboss"].difficulty)
+end
+_tmp_sc=boss.card.New("spellnam",2,5,60,1800,{0,0,0},false)
+function _tmp_sc:before()
+end
+function _tmp_sc:init()
+    lasttask=task.New(self,function()
+        task.MoveTo(0,120,60,MOVE_NORMAL)
+    end)
+end
+function _tmp_sc:del()
+end
+_tmp_sc.perform=false
+table.insert(_editor_class["testboss"].cards,_tmp_sc)
+table.insert(_sc_table,{"testboss","spellnam",_tmp_sc,#_editor_class["testboss"].cards,false})
+_tmp_sc=boss.card.New("spellname",2,5,60,1800,{0,0,0},false)
+function _tmp_sc:before()
+end
+function _tmp_sc:init()
+    lasttask=task.New(self,function()
+        task.MoveTo(0,120,60,MOVE_NORMAL)
+    end)
+end
+function _tmp_sc:del()
+end
+_tmp_sc.perform=false
+table.insert(_editor_class["testboss"].cards,_tmp_sc)
+table.insert(_sc_table,{"testboss","spellname",_tmp_sc,#_editor_class["testboss"].cards,false})
+_editor_class["testboss2"]=Class(boss)
+_editor_class["testboss2"].cards={}
+_editor_class["testboss2"].name="Boss Stage 2"
+_editor_class["testboss2"].bgm=""
+_editor_class["testboss2"]._bg=nil
+_editor_class["testboss2"].difficulty="All"
+_editor_class["testboss2"].init=function(self,cards)
+    boss.init(self,240,384,_editor_class["testboss2"].name,cards,New(spellcard_background),_editor_class["testboss2"].difficulty)
+end
+_tmp_sc=boss.card.New("yeah",2,5,60,1800,{0,0,0},false)
+function _tmp_sc:before()
+end
+function _tmp_sc:init()
+    lasttask=task.New(self,function()
+        task.MoveTo(0,120,60,MOVE_NORMAL)
+    end)
+end
+function _tmp_sc:del()
+end
+_tmp_sc.perform=false
+table.insert(_editor_class["testboss2"].cards,_tmp_sc)
+table.insert(_sc_table,{"testboss2","yeah",_tmp_sc,#_editor_class["testboss2"].cards,false})
+_tmp_sc=boss.card.New("sfgs",2,5,60,1800,{0,0,0},false)
+function _tmp_sc:before()
+end
+function _tmp_sc:init()
+    lasttask=task.New(self,function()
+        task.MoveTo(0,120,60,MOVE_NORMAL)
+    end)
+end
+function _tmp_sc:del()
+end
+_tmp_sc.perform=false
+table.insert(_editor_class["testboss2"].cards,_tmp_sc)
+table.insert(_sc_table,{"testboss2","sfgs",_tmp_sc,#_editor_class["testboss2"].cards,false})
+-- Loading Screen
     stage_load = stage.New("loadscreen", false, true)
     function stage_load:init()
         last=New(_editor_class["LoadManager"],0,0,_)
@@ -2224,26 +2416,15 @@ stage.group.DefStageFunc('1@GameGroup','init',function(self)
                 Print(k, '=', v)
             end
         end
-        ChangeVideoMode(true, lstg.ListMonitor()[1], true)
         New(_editor_class["temple_background"] or temple_background)
         task._Wait(1)
         last=New(_editor_class["HUDManager"],self.x,self.y,_)
         last=New(_editor_class["ShotShadows"],self.x,self.y,_)
         task._Wait(60)
-        last=New(_editor_class["FairySpawn"],-100,self.y,1, 15, {1,1,1}, true, 1, true)
-        lasttask=task.New(last,function()
-            local self=task.GetSelf()
-            self.hscale, self.vscale = 3, 3
-            do
-                local _h_posx=(100-(-100))/2 local _t_posx=(100+(-100))/2 local posx=_h_posx*sin(0)+_t_posx local _w_posx=0 local _d_w_posx=1.5
-                for _=1,_infinite do
-                    self.x,self.y=posx, 100
-                    task._Wait(1)
-                    _w_posx=_w_posx+_d_w_posx posx=_h_posx*sin(_w_posx)+_t_posx
-                end
-            end
-        end)
-        task._Wait(18099)
+        local _boss_wait=true
+        local _ref=New(_editor_class["testboss"],_editor_class["testboss"].cards)
+        last=_ref
+        if _boss_wait then while IsValid(_ref) do task.Wait() end end
     end)
     task.New(self,function()
         while coroutine.status(self.task[1])~='dead' do task.Wait() end
