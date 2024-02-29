@@ -432,7 +432,7 @@ function LoadScene:onRender()
 
 
     --lstg.RenderTTF('loading', amt_res .. "/" .. 1774, 0, 0, 0, 0, 8, Color(0xFFFFFFFF), 1)
-    lstg.RenderTTF('loading', scoredata.spell_card_hist["All"][_sc_table[1][2]]["Reimu"][2], 0, 0, 0, 0, 8, Color(0xFFFFFFFF), 1)
+    --lstg.RenderTTF('loading', scoredata.spell_card_hist["All"][_sc_table[1][2]]["Reimu"][2], 0, 0, 0, 0, 8, Color(0xFFFFFFFF), 1)
 end
 
 function LoadScene:onActivated()

@@ -1,43 +1,44 @@
 {
+	"last_mod": "TiNProject",
+	"mod": "TiNProject",
+	"locale": "en_us",
 	"timezone": 8,
 	"keys": {
-		"spell": 88,
-		"special": 67,
-		"up": 38,
-		"down": 40,
 		"left": 37,
 		"right": 39,
 		"slow": 16,
-		"shoot": 90
+		"shoot": 90,
+		"spell": 88,
+		"special": 67,
+		"up": 38,
+		"down": 40
 	},
+	"bgmvolume": 0.8,
+	"nosplash": true,
 	"monitor": 1,
+	"windowed": true,
 	"resx": 1920,
 	"resy": 1080,
-	"vsync": true,
-	"sevolume": 80,
-	"bgmvolume": 50,
 	"keys2": {
-		"spell": 68,
-		"special": 70,
-		"up": 101,
-		"down": 98,
 		"left": 97,
 		"right": 99,
 		"slow": 65,
-		"shoot": 83
+		"shoot": 83,
+		"spell": 68,
+		"special": 70,
+		"up": 101,
+		"down": 98
 	},
 	"keysys": {
-		"menu": 27,
 		"repfast": 17,
 		"repslow": 16,
-		"retry": 82,
-		"snapshot": 36
+		"menu": 27,
+		"snapshot": 36,
+		"retry": 82
 	},
-	"last_mod": "launcher",
-	"mod": "launcher",
-	"lang": "EN",
 	"username": "User",
+	"sevolume": 0.8,
+	"lang": "EN",
 	"borderless": false,
-	"locale": "en_us",
-	"windowed": true
+	"vsync": false
 }

@@ -37,6 +37,7 @@ stage.group.DefStageFunc('SC Debugger@SC Debugger', 'init', function(self)
     local _boss_class_name = lstg.var._boss_class_name
     local _boss_class_sc_index = lstg.var._boss_class_sc_index
     task.New(self, function()
+        SetWorldUEX(screen.width/2, screen.height/2, 448, 448, 32, 32)
         local musicname = "spellcard"
         do
             --LoadMusicRecord('spellcard')

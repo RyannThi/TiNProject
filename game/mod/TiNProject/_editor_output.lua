@@ -111,6 +111,7 @@ _LoadImageFromFile('image:'..'MainMenuSpinner','TITLE\\MainMenuSpinner.png',true
 _LoadImageFromFile('image:'..'MainMenuGradient','TITLE\\MainMenuGradient.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'MainMenuCopyright','TITLE\\MainMenuCopyright.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'MainMenuRGB','TITLE\\MainMenuRGB.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'MainMenuSpellHeader','TITLE\\MainMenuSpellHeader.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'MainMenuDifficultyHeader','TITLE\\MainMenuDifficultyHeader.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'MainMenuDifficultyShadow','TITLE\\MainMenuDifficultyShadow.png',true,0,0,false,0)
 _LoadImageFromFile('image:'..'MainMenuDifficultyHalo','TITLE\\MainMenuDifficultyHalo.png',true,0,0,false,0)
@@ -180,6 +181,27 @@ for _=1,18 do
         _LoadImageFromFile('image:fairy' .. _ .. '_wingr','ENEMY\\fairy' .. _ .. '\\fairy' .. _ .. '_wingr.png',true,0,0,false,0)
     end
 end
+_LoadImageFromFile('image:'..'fairy1_arml','ENEMY\\fairy1_arml.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy1_armr','ENEMY\\fairy1_armr.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy1_body','ENEMY\\fairy1_body.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy1_head','ENEMY\\fairy1_head.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy1_legs','ENEMY\\fairy1_legs.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy1_wingl','ENEMY\\fairy1_wingl.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy1_wingr','ENEMY\\fairy1_wingr.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy2_arml','ENEMY\\fairy2_arml.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy2_armr','ENEMY\\fairy2_armr.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy2_body','ENEMY\\fairy2_body.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy2_head','ENEMY\\fairy2_head.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy2_legs','ENEMY\\fairy2_legs.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy2_wingl','ENEMY\\fairy2_wingl.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy2_wingr','ENEMY\\fairy2_wingr.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy3_arml','ENEMY\\fairy3_arml.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy3_armr','ENEMY\\fairy3_armr.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy3_body','ENEMY\\fairy3_body.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy3_head','ENEMY\\fairy3_head.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy3_legs','ENEMY\\fairy3_legs.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy3_wingl','ENEMY\\fairy3_wingl.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'fairy3_wingr','ENEMY\\fairy3_wingr.png',true,0,0,false,0)
 -- archive space: 
 _editor_class["MainMenuBG"]=Class(_object)
 _editor_class["MainMenuBG"].init=function(self,_x,_y,_)
@@ -236,6 +258,7 @@ _editor_class["MainMenuMain"].init=function(self,_x,_y,_)
     self.canvasY = 0
     self.canvasIndex = 0
     self.interactDelay = 0
+    self.isSpellPractice = false
     
     self.selections = {
     	{ alpha = 255, scale = 1, color = {255, 158+20, 195+20, 255} },
@@ -615,9 +638,14 @@ _editor_class["MainMenuDifficulty"].frame=function(self)
     	end
     
     	if KeyIsPressed"spell" then
-    		PlaySound("cancel00",0.1,self.x/256,false)
-    		MainMenuRef.canvasIndex = 0
+    		if MainMenuRef.isSpellPractice == true then
+    			MainMenuRef.canvasIndex = 4
+    		else
+    			MainMenuRef.canvasIndex = 0
+    		end
     		self.altPos = false
+    		MainMenuRef.interactDelay = 5
+    		PlaySound("cancel00",0.1,self.x/256,false)
     	end
     	
     	if is_up_held or is_left_held then
@@ -1009,7 +1037,12 @@ _editor_class["MainMenuTransitioner"].init=function(self,_x,_y,_)
             end
         end
         task._Wait(60)
-        stage.group.Start(stage.groups["GameGroup"], 0)
+        if MainMenuRef.isSpellPractice == false then
+        	stage.group.Start(stage.groups["GameGroup"], 0)
+        else
+        	stage.IsSCpractice = true--判定进入符卡练习的flag add by OLC
+        	stage.group.PracticeStart('Spell Practice@Spell Practice')
+        end
     end)
     lasttask=task.New(self,function()
         do
@@ -1305,6 +1338,8 @@ _editor_class["MainMenuSpell"].init=function(self,_x,_y,_)
     self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
     self.canvasX = -854
     self.canvasY = 0
+    self.index = 1
+    self.subindex = 0
 end
 _editor_class["MainMenuSpell"].frame=function(self)
     if MainMenuRef.canvasIndex == 4 then
@@ -1319,23 +1354,50 @@ _editor_class["MainMenuSpell"].frame=function(self)
     	if KeyIsPressed"shoot" and MainMenuRef.interactDelay == 0 then
     		PlaySound("ok00",0.1,self.x/256,false)
     		MainMenuRef.interactDelay = 5
-    		MainMenuRef.canvasIndex = 9
+    		MainMenuRef.canvasIndex = 1
     		self.altPos = true
+    		MainMenuRef.isSpellPractice = true
+    		lstg.var.sc_index = self.index + self.subindex
     	end
     
-    	if KeyIsPressed"spell" then
+    	if KeyIsPressed"spell" and MainMenuRef.interactDelay == 0 then
     		PlaySound("cancel00",0.1,self.x/256,false)
     		MainMenuRef.canvasIndex = 0
     		self.altPos = false
+    		MainMenuRef.isSpellPractice = false
     	end
     	
-    	if is_up_held or is_left_held then
-    		self.index = Wrap(self.index - 1, 1, 5)
+    	if is_up_held then
+    		if self.index == 2 and _sc_table[self.index - 2] ~= nil then
+    			self.subindex = self.subindex - 1
+    		else
+    			if self.subindex > 0 then
+    				self.subindex = self.subindex - 1
+    			else
+    				if self.index == 1 then
+    					self.index = 9
+    					self.subindex = #_sc_table - 9
+    				else
+    					self.index = Wrap(self.index - 1, 1, 10)
+    				end
+    			end
+    		end
     		PlaySound("select00",0.1,0,false)
     	end
     	
-    	if is_down_held or is_right_held then
-    		self.index = Wrap(self.index + 1, 1, 5)
+    	if is_down_held then
+    		if self.index == 9 and _sc_table[self.index + 2] ~= nil then
+    			if self.index == 9 and self.subindex == #_sc_table - 9 then
+    				self.index = 1
+    				self.subindex = 0
+    			else
+    				self.subindex = self.subindex + 1
+    			end
+    		else
+    			
+    			self.index = Wrap(self.index + 1, 1, 10)
+    		end
+    		--self.index = Wrap(self.index + 1, 1, 10)
     		PlaySound("select00",0.1,0,false)
     	end
     end
@@ -1344,17 +1406,13 @@ end
 _editor_class["MainMenuSpell"].render=function(self)
     SetViewMode'ui'
     self.class.base.render(self)
-    lstg.RenderText("font:LTCarpet","Boss Name",100 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset + 60,0.2,0)
-    lstg.RenderText("font:LTCarpet","Spell Card Name",250 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset + 60,0.2,0)
-    lstg.RenderText("font:LTCarpet","Clear Times / Attempt Times",754 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset + 60,0.2,2)
+    Render("image:MainMenuSpellHeader",screen.width / 2 + self.canvasX, 400 + MainMenuRef.yOffset + self.canvasY,0,1/2.25 - 0.2,1/2.25 - 0.2,0.5)
+    lstg.RenderText("font:LTCarpet","Boss Name",100 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset + 80,0.2,0)
+    lstg.RenderText("font:LTCarpet","Spell Card Name",250 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset + 80,0.2,0)
+    lstg.RenderText("font:LTCarpet","Clear Times / Attempt Times",754 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset + 80,0.2,2)
     for _=1,#_sc_table do
-        --local spellattempt = (scoredata.spell_card_hist["All"][_sc_table[_][2]]["Reimu"][2] or 0) +
-        --(scoredata.spell_card_hist["All"][_sc_table[_][2]]["Flandre"][2] or 0) +
-        --(scoredata.spell_card_hist["All"][_sc_table[_][2]]["Yuyuko"][2] or 0) +
-        --(scoredata.spell_card_hist["All"][_sc_table[_][2]]["MT"][2] or 0)
-        
         local allHist = scoredata.spell_card_hist["All"]
-        local spellIndex = _sc_table[_][2]
+        local spellIndex = _sc_table[_ + self.subindex] and _sc_table[_ + self.subindex][2]
         local reimuHist = allHist and allHist[spellIndex] and allHist[spellIndex]["Reimu"]
         local flandreHist = allHist and allHist[spellIndex] and allHist[spellIndex]["Flandre"]
         local yuyukoHist = allHist and allHist[spellIndex] and allHist[spellIndex]["Yuyuko"]
@@ -1372,14 +1430,27 @@ _editor_class["MainMenuSpell"].render=function(self)
         
         local spellAttempt = reimuAttempt + flandreAttempt + yuyukoAttempt + mtAttempt
         local spellClear = reimuClear + flandreClear + yuyukoClear + mtClear
-        if spellAttempt > 0 then
-            lstg.RenderText("font:LTCarpet",_editor_class[_sc_table[_][1]].name,100 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 40,0.2,0)
-            lstg.RenderText("font:LTCarpet",_sc_table[_][2],250 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 40,0.2,0)
+        if self.index == _ then
+            SetFontState("font:LTCarpet","",Color(255,255,255,255))
         else
-            lstg.RenderText("font:LTCarpet","???",100 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 40,0.2,0)
-            lstg.RenderText("font:LTCarpet","???",250 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 40,0.2,0)
+            SetFontState("font:LTCarpet","",Color(175,175,175,175))
         end
-        lstg.RenderText("font:LTCarpet",spellClear .. "/" .. spellAttempt,754 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 40,0.2,2)
+        if spellAttempt > 0 then
+            lstg.RenderText("font:LTCarpet",_editor_class[_sc_table[_ + self.subindex][1]].name,100 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 60,0.2,0)
+            lstg.RenderText("font:LTCarpet",_sc_table[_ + self.subindex][2],250 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 60,0.2,0)
+        else
+            if _sc_table[_ + self.subindex] ~= nil then
+                lstg.RenderText("font:LTCarpet","???",100 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 60,0.2,0)
+                lstg.RenderText("font:LTCarpet","???",250 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 60,0.2,0)
+            else
+            end
+        end
+        if _sc_table[_ + self.subindex] ~= nil then
+            lstg.RenderText("font:LTCarpet",spellClear .. "/" .. spellAttempt,754 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 60,0.2,2)
+            lstg.RenderText("font:LTCarpet",self.index,810 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 70,0.2,2)
+            lstg.RenderText("font:LTCarpet",self.subindex,840 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 70,0.15,2)
+        else
+        end
     end
     SetViewMode'world'
 end
@@ -2332,6 +2403,32 @@ end
 _tmp_sc.perform=false
 table.insert(_editor_class["testboss"].cards,_tmp_sc)
 table.insert(_sc_table,{"testboss","spellname",_tmp_sc,#_editor_class["testboss"].cards,false})
+_tmp_sc=boss.card.New("spellnasdme",2,5,60,1800,{0,0,0},false)
+function _tmp_sc:before()
+end
+function _tmp_sc:init()
+    lasttask=task.New(self,function()
+        task.MoveTo(0,120,60,MOVE_NORMAL)
+    end)
+end
+function _tmp_sc:del()
+end
+_tmp_sc.perform=false
+table.insert(_editor_class["testboss"].cards,_tmp_sc)
+table.insert(_sc_table,{"testboss","spellnasdme",_tmp_sc,#_editor_class["testboss"].cards,false})
+_tmp_sc=boss.card.New("spellnamxe",2,5,60,1800,{0,0,0},false)
+function _tmp_sc:before()
+end
+function _tmp_sc:init()
+    lasttask=task.New(self,function()
+        task.MoveTo(0,120,60,MOVE_NORMAL)
+    end)
+end
+function _tmp_sc:del()
+end
+_tmp_sc.perform=false
+table.insert(_editor_class["testboss"].cards,_tmp_sc)
+table.insert(_sc_table,{"testboss","spellnamxe",_tmp_sc,#_editor_class["testboss"].cards,false})
 _editor_class["testboss2"]=Class(boss)
 _editor_class["testboss2"].cards={}
 _editor_class["testboss2"].name="Boss Stage 2"
@@ -2341,7 +2438,88 @@ _editor_class["testboss2"].difficulty="All"
 _editor_class["testboss2"].init=function(self,cards)
     boss.init(self,240,384,_editor_class["testboss2"].name,cards,New(spellcard_background),_editor_class["testboss2"].difficulty)
 end
-_tmp_sc=boss.card.New("yeah",2,5,60,1800,{0,0,0},false)
+_tmp_sc=boss.card.New("",2,5,60,1800,{0,0,0},false)
+function _tmp_sc:before()
+end
+function _tmp_sc:init()
+    lasttask=task.New(self,function()
+        task.MoveTo(0,120,60,MOVE_DECEL)
+        for _=1,_infinite do
+            PlaySound("tan00",0.1,self.x/256,false)
+            last_list=_create_bullet_group(arrow_big,COLOR_RED,self.x,self.y,3,0,2,2,self.timer,360,false,0,true,true,0,false,self)
+            for _,unit in ipairs(last_list) do
+                lasttask=task.New(unit,function()
+                    local self=task.GetSelf()
+                    task._Wait(60)
+                    do
+                        local _beg_curve=0 local curve=_beg_curve  local _w_curve=-90 local _end_curve=3 * ran:Sign() local _d_w_curve=180/(30-1)
+                        for _=1,30 do
+                            SetV2(self,2,self.rot + curve,true,false)
+                            task._Wait(1)
+                            _w_curve=_w_curve+_d_w_curve curve=(_end_curve-_beg_curve)/2*sin(_w_curve)+((_end_curve+_beg_curve)/2)
+                        end
+                    end
+                    self.navi = true
+                    lasttask=task.New(self,function()
+                        local w = lstg.world
+                        self.tbounce, self.tbouncemax = 0, 1
+                        for _=1, _infinite do
+                            if self.y > w.t or self.y < w.b then
+                                self.vy = self.vy * -1
+                                self.tbounce = self.tbounce + 1
+                            end
+                            if self.x > w.r or self.x < w.l then
+                                self.vx = self.vx * -1
+                                self.tbounce = self.tbounce + 1
+                            end
+                            if self.tbounce >= self.tbouncemax then break end
+                            task._Wait(1)
+                        end
+                    end)
+                end)
+            end
+            last_list=_create_bullet_group(arrow_big,COLOR_RED,self.x,self.y,3,0,2,2,-self.timer,360,false,0,true,true,0,false,self)
+            for _,unit in ipairs(last_list) do
+                lasttask=task.New(unit,function()
+                    local self=task.GetSelf()
+                    task._Wait(60)
+                    do
+                        local _beg_curve=0 local curve=_beg_curve  local _w_curve=-90 local _end_curve=3 * ran:Sign() local _d_w_curve=180/(30-1)
+                        for _=1,30 do
+                            SetV2(self,2,self.rot + curve,true,false)
+                            task._Wait(1)
+                            _w_curve=_w_curve+_d_w_curve curve=(_end_curve-_beg_curve)/2*sin(_w_curve)+((_end_curve+_beg_curve)/2)
+                        end
+                    end
+                    self.navi = true
+                    lasttask=task.New(self,function()
+                        local w = lstg.world
+                        self.tbounce, self.tbouncemax = 0, 1
+                        for _=1, _infinite do
+                            if self.y > w.t or self.y < w.b then
+                                self.vy = self.vy * -1
+                                self.tbounce = self.tbounce + 1
+                            end
+                            if self.x > w.r or self.x < w.l then
+                                self.vx = self.vx * -1
+                                self.tbounce = self.tbounce + 1
+                            end
+                            if self.tbounce >= self.tbouncemax then break end
+                            task._Wait(1)
+                        end
+                    end)
+                end)
+            end
+            task._Wait(5)
+        end
+    end)
+end
+function _tmp_sc:del()
+end
+_tmp_sc.perform=false
+table.insert(_editor_class["testboss2"].cards,_tmp_sc)
+
+_boss_class_name="testboss2" _editor_class["testboss2"].cards={boss.move.New(0,144,60,MOVE_NORMAL),_tmp_sc} _tmp_sc=boss.card.New("yeahd",2,5,60,1800,{0,0,0},false)
 function _tmp_sc:before()
 end
 function _tmp_sc:init()
@@ -2353,7 +2531,33 @@ function _tmp_sc:del()
 end
 _tmp_sc.perform=false
 table.insert(_editor_class["testboss2"].cards,_tmp_sc)
-table.insert(_sc_table,{"testboss2","yeah",_tmp_sc,#_editor_class["testboss2"].cards,false})
+table.insert(_sc_table,{"testboss2","yeahd",_tmp_sc,#_editor_class["testboss2"].cards,false})
+_tmp_sc=boss.card.New("gg",2,5,60,1800,{0,0,0},false)
+function _tmp_sc:before()
+end
+function _tmp_sc:init()
+    lasttask=task.New(self,function()
+        task.MoveTo(0,120,60,MOVE_NORMAL)
+    end)
+end
+function _tmp_sc:del()
+end
+_tmp_sc.perform=false
+table.insert(_editor_class["testboss2"].cards,_tmp_sc)
+table.insert(_sc_table,{"testboss2","gg",_tmp_sc,#_editor_class["testboss2"].cards,false})
+_tmp_sc=boss.card.New("yeahx",2,5,60,1800,{0,0,0},false)
+function _tmp_sc:before()
+end
+function _tmp_sc:init()
+    lasttask=task.New(self,function()
+        task.MoveTo(0,120,60,MOVE_NORMAL)
+    end)
+end
+function _tmp_sc:del()
+end
+_tmp_sc.perform=false
+table.insert(_editor_class["testboss2"].cards,_tmp_sc)
+table.insert(_sc_table,{"testboss2","yeahx",_tmp_sc,#_editor_class["testboss2"].cards,false})
 _tmp_sc=boss.card.New("sfgs",2,5,60,1800,{0,0,0},false)
 function _tmp_sc:before()
 end
@@ -2367,6 +2571,45 @@ end
 _tmp_sc.perform=false
 table.insert(_editor_class["testboss2"].cards,_tmp_sc)
 table.insert(_sc_table,{"testboss2","sfgs",_tmp_sc,#_editor_class["testboss2"].cards,false})
+_tmp_sc=boss.card.New("fff",2,5,60,1800,{0,0,0},false)
+function _tmp_sc:before()
+end
+function _tmp_sc:init()
+    lasttask=task.New(self,function()
+        task.MoveTo(0,120,60,MOVE_NORMAL)
+    end)
+end
+function _tmp_sc:del()
+end
+_tmp_sc.perform=false
+table.insert(_editor_class["testboss2"].cards,_tmp_sc)
+table.insert(_sc_table,{"testboss2","fff",_tmp_sc,#_editor_class["testboss2"].cards,false})
+_tmp_sc=boss.card.New("sfgsas",2,5,60,1800,{0,0,0},false)
+function _tmp_sc:before()
+end
+function _tmp_sc:init()
+    lasttask=task.New(self,function()
+        task.MoveTo(0,120,60,MOVE_NORMAL)
+    end)
+end
+function _tmp_sc:del()
+end
+_tmp_sc.perform=false
+table.insert(_editor_class["testboss2"].cards,_tmp_sc)
+table.insert(_sc_table,{"testboss2","sfgsas",_tmp_sc,#_editor_class["testboss2"].cards,false})
+_tmp_sc=boss.card.New("sfgsasr",2,5,60,1800,{0,0,0},false)
+function _tmp_sc:before()
+end
+function _tmp_sc:init()
+    lasttask=task.New(self,function()
+        task.MoveTo(0,120,60,MOVE_NORMAL)
+    end)
+end
+function _tmp_sc:del()
+end
+_tmp_sc.perform=false
+table.insert(_editor_class["testboss2"].cards,_tmp_sc)
+table.insert(_sc_table,{"testboss2","sfgsasr",_tmp_sc,#_editor_class["testboss2"].cards,false})
 -- Loading Screen
     stage_load = stage.New("loadscreen", false, true)
     function stage_load:init()
@@ -2422,7 +2665,7 @@ stage.group.DefStageFunc('1@GameGroup','init',function(self)
         last=New(_editor_class["ShotShadows"],self.x,self.y,_)
         task._Wait(60)
         local _boss_wait=true
-        local _ref=New(_editor_class["testboss"],_editor_class["testboss"].cards)
+        local _ref=New(_editor_class["testboss2"],_editor_class["testboss2"].cards)
         last=_ref
         if _boss_wait then while IsValid(_ref) do task.Wait() end end
     end)
@@ -2445,3 +2688,4 @@ stage.group.DefStageFunc('1@GameGroup','init',function(self)
         stage.group.FinishStage()
     end)
 end)
+Include 'THlib\\UI\\scdebugger.lua'

@@ -67,6 +67,9 @@ stage.group.DefStageFunc('Spell Practice@Spell Practice', 'init', function(self)
                 New(temple_background or default_stage_background)
             end
         end
+        SetWorldUEX(screen.width/2, screen.height/2, 448, 448, 32, 32)
+        New(_editor_class["HUDManager"],self.x,self.y,_)
+        New(_editor_class["ShotShadows"],self.x,self.y,_)
         task._Wait(30)
         local _, bgm = EnumRes('bgm')
         for _, v in pairs(bgm) do
