@@ -93,10 +93,17 @@ LoadFX('fx:'..'alpha_mask','SHADER\\alpha_mask.fx')
 CreateRenderTarget("RenderTarget")
 CreateRenderTarget("Mask")
 CreateRenderTarget("BombEf")
+CreateRenderTarget("3DTest")
+-- rendertarget size setting
+local rt_w, rt_h = 1280, 1280
+
+-- init
+CreateRenderTarget('rt:yeah', rt_w, rt_h)
+LoadImage('img:yeah', 'rt:yeah', 0, 0, rt_w, rt_h)
 -- archive space: 
 -- archive space: TITLE\
 _LoadImageFromFile('image:'..'MainMenuBackground','TITLE\\MainMenuBackground.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'MainMenuLogo','TITLE\\MainMenuLogo.png',true,0,0,false,0)
+_LoadImageFromFile('image:'..'MainMenuLogo','TITLE\\MainMenuLogo.png',false,0,0,false,0)
 _LoadImageGroupFromFile('image:'..'MainMenuSelections_','TITLE\\MainMenuSelections_.png',true,1,8,0,0,false)
 _LoadImageFromFile('image:'..'MainMenuSelectionsShadow','TITLE\\MainMenuSelectionsShadow.png',true,0,0,false,0)
 do
@@ -181,27 +188,6 @@ for _=1,18 do
         _LoadImageFromFile('image:fairy' .. _ .. '_wingr','ENEMY\\fairy' .. _ .. '\\fairy' .. _ .. '_wingr.png',true,0,0,false,0)
     end
 end
-_LoadImageFromFile('image:'..'fairy1_arml','ENEMY\\fairy1_arml.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy1_armr','ENEMY\\fairy1_armr.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy1_body','ENEMY\\fairy1_body.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy1_head','ENEMY\\fairy1_head.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy1_legs','ENEMY\\fairy1_legs.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy1_wingl','ENEMY\\fairy1_wingl.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy1_wingr','ENEMY\\fairy1_wingr.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy2_arml','ENEMY\\fairy2_arml.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy2_armr','ENEMY\\fairy2_armr.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy2_body','ENEMY\\fairy2_body.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy2_head','ENEMY\\fairy2_head.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy2_legs','ENEMY\\fairy2_legs.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy2_wingl','ENEMY\\fairy2_wingl.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy2_wingr','ENEMY\\fairy2_wingr.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy3_arml','ENEMY\\fairy3_arml.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy3_armr','ENEMY\\fairy3_armr.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy3_body','ENEMY\\fairy3_body.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy3_head','ENEMY\\fairy3_head.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy3_legs','ENEMY\\fairy3_legs.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy3_wingl','ENEMY\\fairy3_wingl.png',true,0,0,false,0)
-_LoadImageFromFile('image:'..'fairy3_wingr','ENEMY\\fairy3_wingr.png',true,0,0,false,0)
 -- archive space: 
 _editor_class["MainMenuBG"]=Class(_object)
 _editor_class["MainMenuBG"].init=function(self,_x,_y,_)
@@ -224,6 +210,123 @@ _editor_class["MainMenuBG"].render=function(self)
     SetViewMode'ui'
     self.class.base.render(self)
     SetViewMode'world'
+end
+local particle = require("particle")
+_editor_class["MainMenuParticle"]=Class(_object)
+_editor_class["MainMenuParticle"].init=function(self,_x,_y,_)
+    self.x,self.y=_x,_y
+    self.img="img_void"
+    self.layer=LAYER_TOP+5
+    self.group=GROUP_GHOST
+    self.hide=false
+    self.bound=false
+    self.navi=false
+    self.hp=10
+    self.maxhp=10
+    self.colli=false
+    self._servants={}
+    self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
+    particle_pool = particle.NewPool2D("white", "mul+add", 8192 / 16)
+end
+_editor_class["MainMenuParticle"].frame=function(self)
+    -- frame
+    local flicker = lstg.sin(self.timer * 15) * 0.4 + ran:Float(-1, 1)
+    local scale = 1
+    local x, y = 400, 400
+    for _ = 1, 128 / 16 do
+        local pdx = ran:Float(-1, 1) * scale
+        local p = particle_pool:AddParticle(x + flicker * -8, y, 0, pdx * 2.1 + flicker * 0.8, ran:Float(-1, 1) * scale, 0.8 * scale)
+        p.ax = -pdx * 0.09 + 1
+        p.ay = ran:Float(0.06, 0.18) * scale
+        p.omiga = ran:Float(-1, 1)
+        p.color = lstg.Color(0xFF000000 + bit.lshift(0x88, ran:Int(1, 2) * 8))
+    end
+    
+    particle_pool:Update()
+    
+    particle_pool:Apply(function(p)
+        local r = ran:Int(0, 13)
+        p.color = p.color * (1 - p.timer / 2048)
+        if p.timer % 4 ~= 0 then return end
+        if r == 6 then
+            p.vx = p.vx * 0.5
+            if p.vx * p.ax > 0 then
+                p.ax = -p.ax
+            end
+        end
+        if r == 0 or (p.y - y > 40 * scale and p.ay > 0) then
+            p.ay = -p.ay * 0.3
+        end
+        if p.y - y < -8 * scale then
+            p.vy = p.vy * 0.3
+            if p.ay < 0 then
+                p.ay = -p.ay * 2.1
+            end
+        end
+    end)
+end
+_editor_class["MainMenuParticle"].render=function(self)
+    SetViewMode'ui'
+    particle_pool:Render()
+    SetViewMode'world'
+end
+_editor_class["MainMenu3D"]=Class(_object)
+_editor_class["MainMenu3D"].init=function(self,_x,_y,_)
+    self.x,self.y=_x,_y
+    self.img="img_void"
+    self.layer=LAYER_TOP+5
+    self.group=GROUP_GHOST
+    self.hide=false
+    self.bound=false
+    self.navi=false
+    self.hp=10
+    self.maxhp=10
+    self.colli=false
+    self._servants={}
+    self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
+end
+_editor_class["MainMenu3D"].render=function(self)
+    -- render
+    PushRenderTarget('rt:yeah')
+    SetViewport(0, rt_w, 0, rt_h)
+    SetScissorRect(0, rt_w, 0, rt_h)
+    SetPerspective( -- settings to change how the Thing renders
+        --== camera position ==--
+        -- x position.
+        0,
+        -- y position.
+        0,
+        -- z position.
+        -10,
+    
+        --== camera target position ==--
+        -- probably not a good idea to touch this
+        0, 0, 0,
+    
+        --== up vector ==--
+        -- x component (side-to-side tilt)
+        0,
+        -- y component (upwards straightness)
+        1,
+        -- z component (forwards tilt)
+        0,
+    
+        --== misc variables ==--
+        -- vertical field of view. setting this higher will make the view narrower.
+        0.72,
+        -- aspect ratio. automatically handled, do not touch.
+        rt_w / rt_h,
+        -- z near plane. probably not a good idea to touch this
+        0.1,
+        -- z far plane. probably not a good idea to touch this
+        40
+    )
+    SetFog()
+    RenderClear(Color(0))
+    lstg.Render3D('image:MainMenuLogo', 0, 0, 0, self.timer, self.timer, self.timer, 0.003, 0.003)
+    PopRenderTarget()
+    SetViewMode('ui')
+    Render('img:yeah', 600, 200, 0, 1, 1)
 end
 _editor_class["MainMenuMain"]=Class(_object)
 _editor_class["MainMenuMain"].init=function(self,_x,_y,_)
@@ -276,6 +379,7 @@ _editor_class["MainMenuMain"].init=function(self,_x,_y,_)
     last=New(_editor_class["MainMenuHaraeAnim"],self.x,self.y,_)
     last=New(_editor_class["MainMenuOptions"],self.x,self.y,_)
     last=New(_editor_class["MainMenuSpell"],self.x,self.y,_)
+    last=New(_editor_class["MainMenuParticle"],self.x,self.y,_)
     lasttask=task.New(self,function()
         do
             local _beg_logoScale=0.2 local logoScale=_beg_logoScale  local _w_logoScale=0 local _end_logoScale=1 local _d_w_logoScale=90/(60*2.5-1)
@@ -1170,10 +1274,12 @@ _editor_class["MainMenuOptions"].init=function(self,_x,_y,_)
     self.canvasY = 0
     self.index = 1
     self.resIndex = scoredata.resolutionIndex or 1
-    self.windowed = scoredata.windowed or false
+    self.windowed = scoredata.windowed or 1
+    self.monitor = scoredata.monitor or 1
     self.vsync = scoredata.vsync or false
-    self.bgmVol = scoredata.bgmVolume or 0.8
-    self.seVol = scoredata.seVol or 0.8
+    self.bgmVol = scoredata.bgmVolume or setting.bgmvolume or 0.8
+    self.seVol = scoredata.seVol or setting.sevolume or 0.8
+    self.windowedText = {"Windowed", "Borderless", "Exclusive"}
     
     self.resolutionValues = {
     	{640, 360},
@@ -1195,6 +1301,10 @@ _editor_class["MainMenuOptions"].init=function(self,_x,_y,_)
     	"Save and Return"
     }
     
+    SetBGMVolume(self.bgmVol)
+    --SetBGMVolume("bgm:BGM_Title", setting.bgmvolume/100)
+    SetSEVolume(self.seVol)
+    
 end
 _editor_class["MainMenuOptions"].frame=function(self)
     if MainMenuRef.canvasIndex == 7 then
@@ -1212,29 +1322,40 @@ _editor_class["MainMenuOptions"].frame=function(self)
     		if self.index == 1 then
     			self.resIndex = Wrap(self.resIndex + 1, 1, 9)
     		elseif self.index == 2 then
-    			self.windowed = not self.windowed
+    			self.windowed = Wrap(self.windowed + 1, 1, 4)
     		elseif self.index == 3 then
-    			self.vsync = not self.vsync
+    			self.monitor = Wrap(self.monitor + 1, 1, #lstg.ListMonitor() + 1) or 1
     		elseif self.index == 4 then
+    			self.vsync = not self.vsync
+    		elseif self.index == 5 then
     			self.bgmVol = Wrap(self.bgmVol + 0.1, 0, 1.1)
     			SetBGMVolume(self.bgmVol)
-    		elseif self.index == 5 then
+    		elseif self.index == 6 then
     			self.seVol = Wrap(self.seVol + 0.1, 0, 1.1)
     			SetSEVolume(self.seVol)
-    		elseif self.index == 6 then
+    		elseif self.index == 7 then
     			scoredata.resolutionIndex = self.resIndex
     			scoredata.windowed = self.windowed
+    			scoredata.monitor = self.monitor
     			scoredata.vsync = self.vsync
     			scoredata.bgmVolume = self.bgmVol
     			scoredata.seVolume = self.seVol
     			setting.resx = self.resolutionValues[self.resIndex][1]
     			setting.resy = self.resolutionValues[self.resIndex][2]
     			setting.windowed = self.windowed
+    			setting.monitor = self.monitor
     			setting.vsync = self.vsync
     			setting.bgmvolume = self.bgmVol
     			setting.sevolume = self.seVol
     			saveConfigure()
-    			ChangeVideoMode(self.resolutionValues[self.resIndex][1], self.resolutionValues[self.resIndex][2], self.windowed, self.vsync)
+    			if self.windowed == 1 then
+    				lstg.VideoModeWindowed(setting.resx, setting.resy, setting.vsync, setting.monitor)
+    			elseif self.windowed == 2 then
+    				lstg.VideoModeFSBorderless(setting.resx, setting.resy, setting.vsync, setting.monitor)
+    			else
+    				lstg.VideoModeFSExclusive(setting.resx, setting.resy, setting.vsync)
+    			end
+    			--ChangeVideoMode(self.resolutionValues[self.resIndex][1], self.resolutionValues[self.resIndex][2], self.windowed, self.vsync)
     			ResetScreen()
     			SetBGMVolume(self.bgmVol)
     			--SetBGMVolume("bgm:BGM_Title", setting.bgmvolume/100)
@@ -1249,7 +1370,7 @@ _editor_class["MainMenuOptions"].frame=function(self)
     	end
     	
     	if is_up_held then
-    		self.index = Wrap(self.index - 1, 1, 7)
+    		self.index = Wrap(self.index - 1, 1, 8)
     		PlaySound("select00",0.1,0,false)
     	end
     	
@@ -1257,13 +1378,15 @@ _editor_class["MainMenuOptions"].frame=function(self)
     		if self.index == 1 then
     			self.resIndex = Wrap(self.resIndex + 1, 1, 9)
     		elseif self.index == 2 then
-    			self.windowed = not self.windowed
+    			self.windowed = Wrap(self.windowed + 1, 1, 4)
     		elseif self.index == 3 then
-    			self.vsync = not self.vsync
+    			self.monitor = Wrap(self.monitor + 1, 1, #lstg.ListMonitor() + 1) or 1
     		elseif self.index == 4 then
+    			self.vsync = not self.vsync
+    		elseif self.index == 5 then
     			self.bgmVol = Wrap(self.bgmVol + 0.1, 0, 1.1)
     			SetBGMVolume(self.bgmVol)
-    		elseif self.index == 5 then
+    		elseif self.index == 6 then
     			self.seVol = Wrap(self.seVol + 0.1, 0, 1.1)
     			SetSEVolume(self.seVol)
     		end
@@ -1274,13 +1397,15 @@ _editor_class["MainMenuOptions"].frame=function(self)
     		if self.index == 1 then
     			self.resIndex = Wrap(self.resIndex - 1, 1, 9)
     		elseif self.index == 2 then
-    			self.windowed = not self.windowed
+    			self.windowed = Wrap(self.windowed - 1, 1, 4)
     		elseif self.index == 3 then
-    			self.vsync = not self.vsync
+    			self.monitor = Wrap(self.monitor - 1, 1, #lstg.ListMonitor() + 1) or 1
     		elseif self.index == 4 then
+    			self.vsync = not self.vsync
+    		elseif self.index == 5 then
     			self.bgmVol = Wrap(self.bgmVol - 0.1, 0, 1.1)
     			SetBGMVolume(self.bgmVol)
-    		elseif self.index == 5 then
+    		elseif self.index == 6 then
     			self.seVol = Wrap(self.seVol - 0.1, 0, 1.1)
     			SetSEVolume(self.seVol)
     		end
@@ -1288,14 +1413,15 @@ _editor_class["MainMenuOptions"].frame=function(self)
     	end
     	
     	if is_down_held then
-    		self.index = Wrap(self.index + 1, 1, 7)
+    		self.index = Wrap(self.index + 1, 1, 8)
     		PlaySound("select00",0.1,0,false)
     	end
     end
     
     self.text = {
     	"Resolution: " .. self.resolutionValues[self.resIndex][1] .. "x" .. self.resolutionValues[self.resIndex][2],
-    	"Windowed: " .. tostring(self.windowed),
+    	"Fullscreen: " .. tostring(self.windowedText[self.windowed]),
+    	"Monitor: " .. tostring(self.monitor),
     	"Vsync: " .. tostring(self.vsync),
     	"BGM Volume: " .. self.bgmVol * 100 .. "%",
     	"SE Volume: " .. self.seVol * 100 .. "%",
@@ -1308,13 +1434,14 @@ _editor_class["MainMenuOptions"].render=function(self)
     self.class.base.render(self)
     SetFontState("font:LTCarpet","",Color(100,255,255,255))
     lstg.RenderText("font:LTCarpet","Resolution: " .. self.resolutionValues[self.resIndex][1] .. "x" .. self.resolutionValues[self.resIndex][2] .. "\n" ..
-"Windowed: " .. tostring(self.windowed) .. "\n" ..
+"Fullscreen: " .. tostring(self.windowedText[self.windowed]) .. "\n" ..
+"Monitor: " .. tostring(self.monitor) .. "\n" ..
 "Vsync: " .. tostring(self.vsync) .. "\n" ..
 "BGM Volume: " .. self.bgmVol * 100 .. "%" .. "\n" ..
 "SE Volume: " .. self.seVol * 100 .. "%" .. "\n" ..
 "Save and Return",screen.width / 2 + self.canvasX + 325, 300 + MainMenuRef.yOffset + self.canvasY,0.3,2)
     SetFontState("font:LTCarpet","",Color(255,255,255,255))
-    for _=1,6 do
+    for _=1,7 do
         if _ == self.index then
             lstg.RenderText("font:LTCarpet",string.rep("\n", _ - 1) .. self.text[_],screen.width / 2 + self.canvasX + 325, 300 + MainMenuRef.yOffset + self.canvasY,0.3,2)
         else
@@ -1447,8 +1574,6 @@ _editor_class["MainMenuSpell"].render=function(self)
         end
         if _sc_table[_ + self.subindex] ~= nil then
             lstg.RenderText("font:LTCarpet",spellClear .. "/" .. spellAttempt,754 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 60,0.2,2)
-            lstg.RenderText("font:LTCarpet",self.index,810 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 70,0.2,2)
-            lstg.RenderText("font:LTCarpet",self.subindex,840 + self.canvasX, screen.height/2 + self.canvasY + MainMenuRef.yOffset - _ * 20 + 70,0.15,2)
         else
         end
     end
@@ -1723,6 +1848,8 @@ _editor_class["ShotShadows"].init=function(self,_x,_y,_)
 end
 _editor_class["ShotShadows"].render=function(self)
     for _,unit in ObjList(GROUP_ENEMY_BULLET) do
+        SetImageState("image:BulletShadow", "", Color(math.min(125, 1 * (unit.timer * 2)), 255, 255, 255))
+        Render("image:BulletShadow",unit.x, unit.y,0,((1 * unit.hscale)/2.25) * 0.25,((1 * unit.vscale)/2.25) * 0.25,0.5)
     end
     self.class.base.render(self)
 end
@@ -2450,7 +2577,7 @@ function _tmp_sc:init()
             for _,unit in ipairs(last_list) do
                 lasttask=task.New(unit,function()
                     local self=task.GetSelf()
-                    task._Wait(60)
+                    task._Wait(25)
                     do
                         local _beg_curve=0 local curve=_beg_curve  local _w_curve=-90 local _end_curve=3 * ran:Sign() local _d_w_curve=180/(30-1)
                         for _=1,30 do
@@ -2460,29 +2587,13 @@ function _tmp_sc:init()
                         end
                     end
                     self.navi = true
-                    lasttask=task.New(self,function()
-                        local w = lstg.world
-                        self.tbounce, self.tbouncemax = 0, 1
-                        for _=1, _infinite do
-                            if self.y > w.t or self.y < w.b then
-                                self.vy = self.vy * -1
-                                self.tbounce = self.tbounce + 1
-                            end
-                            if self.x > w.r or self.x < w.l then
-                                self.vx = self.vx * -1
-                                self.tbounce = self.tbounce + 1
-                            end
-                            if self.tbounce >= self.tbouncemax then break end
-                            task._Wait(1)
-                        end
-                    end)
                 end)
             end
             last_list=_create_bullet_group(arrow_big,COLOR_RED,self.x,self.y,3,0,2,2,-self.timer,360,false,0,true,true,0,false,self)
             for _,unit in ipairs(last_list) do
                 lasttask=task.New(unit,function()
                     local self=task.GetSelf()
-                    task._Wait(60)
+                    task._Wait(25)
                     do
                         local _beg_curve=0 local curve=_beg_curve  local _w_curve=-90 local _end_curve=3 * ran:Sign() local _d_w_curve=180/(30-1)
                         for _=1,30 do
@@ -2492,22 +2603,6 @@ function _tmp_sc:init()
                         end
                     end
                     self.navi = true
-                    lasttask=task.New(self,function()
-                        local w = lstg.world
-                        self.tbounce, self.tbouncemax = 0, 1
-                        for _=1, _infinite do
-                            if self.y > w.t or self.y < w.b then
-                                self.vy = self.vy * -1
-                                self.tbounce = self.tbounce + 1
-                            end
-                            if self.x > w.r or self.x < w.l then
-                                self.vx = self.vx * -1
-                                self.tbounce = self.tbounce + 1
-                            end
-                            if self.tbounce >= self.tbouncemax then break end
-                            task._Wait(1)
-                        end
-                    end)
                 end)
             end
             task._Wait(5)
@@ -2519,7 +2614,7 @@ end
 _tmp_sc.perform=false
 table.insert(_editor_class["testboss2"].cards,_tmp_sc)
 
-_boss_class_name="testboss2" _editor_class["testboss2"].cards={boss.move.New(0,144,60,MOVE_NORMAL),_tmp_sc} _tmp_sc=boss.card.New("yeahd",2,5,60,1800,{0,0,0},false)
+_tmp_sc=boss.card.New("yeahd",2,5,60,1800,{0,0,0},false)
 function _tmp_sc:before()
 end
 function _tmp_sc:init()
@@ -2688,4 +2783,3 @@ stage.group.DefStageFunc('1@GameGroup','init',function(self)
         stage.group.FinishStage()
     end)
 end)
-Include 'THlib\\UI\\scdebugger.lua'
