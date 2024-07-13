@@ -226,48 +226,9 @@ _editor_class["MainMenuParticle"].init=function(self,_x,_y,_)
     self.colli=false
     self._servants={}
     self._blend,self._a,self._r,self._g,self._b='',255,255,255,255
-    particle_pool = particle.NewPool2D("white", "mul+add", 8192 / 16)
-end
-_editor_class["MainMenuParticle"].frame=function(self)
-    -- frame
-    local flicker = lstg.sin(self.timer * 15) * 0.4 + ran:Float(-1, 1)
-    local scale = 1
-    local x, y = 400, 400
-    for _ = 1, 128 / 16 do
-        local pdx = ran:Float(-1, 1) * scale
-        local p = particle_pool:AddParticle(x + flicker * -8, y, 0, pdx * 2.1 + flicker * 0.8, ran:Float(-1, 1) * scale, 0.8 * scale)
-        p.ax = -pdx * 0.09 + 1
-        p.ay = ran:Float(0.06, 0.18) * scale
-        p.omiga = ran:Float(-1, 1)
-        p.color = lstg.Color(0xFF000000 + bit.lshift(0x88, ran:Int(1, 2) * 8))
-    end
-    
-    particle_pool:Update()
-    
-    particle_pool:Apply(function(p)
-        local r = ran:Int(0, 13)
-        p.color = p.color * (1 - p.timer / 2048)
-        if p.timer % 4 ~= 0 then return end
-        if r == 6 then
-            p.vx = p.vx * 0.5
-            if p.vx * p.ax > 0 then
-                p.ax = -p.ax
-            end
-        end
-        if r == 0 or (p.y - y > 40 * scale and p.ay > 0) then
-            p.ay = -p.ay * 0.3
-        end
-        if p.y - y < -8 * scale then
-            p.vy = p.vy * 0.3
-            if p.ay < 0 then
-                p.ay = -p.ay * 2.1
-            end
-        end
-    end)
 end
 _editor_class["MainMenuParticle"].render=function(self)
     SetViewMode'ui'
-    particle_pool:Render()
     SetViewMode'world'
 end
 _editor_class["MainMenu3D"]=Class(_object)

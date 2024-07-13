@@ -1,25 +1,17 @@
 {
+	"last_mod": "TiNProject",
+	"mod": "TiNProject",
+	"username": "User",
+	"windowed": 1,
 	"resx": 1600,
 	"resy": 900,
 	"vsync": false,
 	"sevolume": 0.5,
 	"bgmvolume": 0.7,
 	"nosplash": true,
-	"username": "User",
-	"locale": "en_us",
-	"timezone": 8,
-	"keys": {
-		"special": 67,
-		"up": 38,
-		"down": 40,
-		"left": 37,
-		"right": 39,
-		"slow": 16,
-		"shoot": 90,
-		"spell": 88
-	},
-	"last_mod": "TiNProject",
-	"mod": "TiNProject",
+	"borderless": false,
+	"monitor": 1,
+	"lang": "EN",
 	"keys2": {
 		"special": 70,
 		"up": 101,
@@ -37,8 +29,16 @@
 		"snapshot": 36,
 		"retry": 82
 	},
-	"borderless": false,
-	"monitor": 1,
-	"lang": "EN",
-	"windowed": 1
+	"keys": {
+		"special": 67,
+		"up": 38,
+		"down": 40,
+		"left": 37,
+		"right": 39,
+		"slow": 16,
+		"shoot": 90,
+		"spell": 88
+	},
+	"locale": "en_us",
+	"timezone": 8
 }
